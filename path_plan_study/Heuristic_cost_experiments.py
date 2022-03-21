@@ -23,15 +23,18 @@ print('Graph loaded!')
 
 
 #Load the open airspace grid
+#input_file=open("smaller_cells_open_airspace_grid.dill", 'rb')
 input_file=open("open_airspace_final.dill", 'rb')
-#input_file=open("open_airspace_grid_updated.dill", 'rb')##for 3d path planning
 grid=dill.load(input_file)
 
 
 ##Initialise the flow control entity
-input_file=open("Flow_control.dill", 'rb')
-graph=dill.load(input_file)#street_graph(G,edges,grid) 
+#input_file=open("Flow_control.dill", 'rb')
+graph=street_graph(G,edges,grid) 
 
+fig, ax = ox.plot_graph(G,node_color="w",show=False,close=False)
+ax.set_xlim([16.2,16.6])
+ax.set_ylim([48.1,48.3])
 
 origins=[(16.33250526, 48.15055387)] #TODO: define teh origin destination pairs
 destinations=[( 16.42270378, 48.15712307)]
@@ -54,6 +57,13 @@ for i in range(len(origins)):
 
     plan = PathPlanning(aircraft_type,grid,graph,gdf,origins[i][0], origins[i][1], destinations[i][0], destinations[i][1],0.05)
     route,turns,edges,next_turn,groups,in_constrained,turn_speed,repetition_cnt=plan.plan()
+    x_list=[]
+    y_list=[]
+    for r in route:
+        x_list.append(r[0])
+        y_list.append(r[1])
+    
+    ax.scatter(x_list,y_list,c="b")
     
     route_cart=[]
     leng=0

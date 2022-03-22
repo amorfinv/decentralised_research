@@ -15,6 +15,7 @@ from pyproj import  Transformer
 from plugins.streets.open_airspace_grid import Cell, open_airspace
 import dill
 import shapely
+import geopandas as gpd
 
 
 ##https://github.com/chuducty/KD-Tree-Python
@@ -324,7 +325,7 @@ class street_graph:
         for p in constrained_poly:
             poly=shapely.geometry.Polygon(p)
             self.nfz_list.append(poly)
-        del self.nfz_list[-1]
+       # del self.nfz_list[-1]
  
         input_file=open("airspace_design/extra_augmented_nfz_open.dill", 'rb')
         constrained_poly=dill.load(input_file)
@@ -333,26 +334,18 @@ class street_graph:
             poly=shapely.geometry.Polygon(p)
             self.nfz_augm_list.append(poly)  
         del self.nfz_augm_list[-1]
-            
-        f = open('airspace_design/entries.txt','r')      
-        contents = f.read()
-        f.close()
-        entry_points_list_old=[int(x) for x in contents.split(",")]
-                 
-        f = open('airspace_design/exits.txt','r')
-        contents = f.read()
-        f.close()
-        exit_points_list_old=[int(x) for x in contents.split(",")] 
+        border_polygon = gpd.read_file('airspace_design/offset_border_polygon.gpkg')
+        self.nfz_augm_list.append(border_polygon.loc[0]["geometry"])
+
         
+        input_file=open("airspace_design/geom_entries.dill", 'rb')
+        self.entries_dict=dill.load(input_file)
+        input_file=open("airspace_design/geom_exits.dill", 'rb')
+        self.exits_dict=dill.load(input_file)
         
-        ##Convert to updated node keys
-        with open('whole_vienna/gis/old_to_new_nodes.json', 'r') as filename:
-            old2new_nodes_dict = json.load(filename)
-           
-        input_file=open("airspace_design/exit_nodes.dill", 'rb')
-        self.exit_points_list=dill.load(input_file)
-        input_file=open("airspace_design/entry_nodes.dill", 'rb')
-        self.entry_points_list=dill.load(input_file)
+
+        self.exit_points_list=list(self.exits_dict.keys())
+        self.entry_points_list=list(self.entries_dict.keys())
 
  
         # Open strokes.JSON as a dictionary

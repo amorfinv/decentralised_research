@@ -11,7 +11,7 @@ from pyproj import Transformer,Proj, transform
 def main():
 
     # read in data
-    graph_path = 'whole_vienna/gis/graph_flow_sectors.graphml'
+    graph_path = 'whole_vienna/gis/graph_sector_group.graphml'
     G = ox.io.load_graphml(graph_path)
 
     # read in airspace grid dill from parent directory
@@ -30,12 +30,12 @@ def main():
     # also remove some columns from dataframe
     edge_stroke = pd.DataFrame(edge_gdf['stroke_group'].copy())
     edge_flow = pd.DataFrame(edge_gdf['flow_group'].copy())
-    edge_sector = pd.DataFrame(edge_gdf['flow_sector'].copy())
+    edge_sector = pd.DataFrame(edge_gdf['sector_group'].copy())
 
     # for each edge, get the stroke group
     stroke_array = np.sort(np.unique(edge_stroke.loc[:, 'stroke_group'].to_numpy()).astype(np.int64))
     flow_array = np.sort(np.unique(edge_gdf.loc[:, 'flow_group'].to_numpy()).astype(np.int64))
-    sector_array = np.sort(np.unique(edge_gdf.loc[:, 'flow_sector'].to_numpy()).astype(np.int64))
+    sector_array = np.sort(np.unique(edge_gdf.loc[:, 'sector_group'].to_numpy()).astype(np.int64))
 
     stroke_length = {}
     for stroke in stroke_array:
@@ -72,7 +72,7 @@ def main():
     sector_length = {}
     for sector in sector_array:
         # get the edges with the flow group
-        sector_edges = edge_gdf.loc[edge_gdf['flow_sector'] == str(sector)].to_crs(crs='epsg:32633')
+        sector_edges = edge_gdf.loc[edge_gdf['sector_group'] == str(sector)].to_crs(crs='epsg:32633')
         
         # get the nodes of the edges
         sector_flow = sum(sector_edges.length)
@@ -183,17 +183,17 @@ def main():
 
     # add entry and exit edges to edge_dict
     for entry_edge in entry_edges:
-        edge_dict_new[entry_edge] = {'stroke_group': str(stroke_entry), 'flow_group': 0, 'flow_sector': 0,'height_allocation': 'open', 'speed_limit': 30}
+        edge_dict_new[entry_edge] = {'stroke_group': str(stroke_entry), 'flow_group': 0, 'sector_group': 0,'height_allocation': 'open', 'speed_limit': 30}
 
     for exit_edge in exit_edges:
-        edge_dict_new[exit_edge] = {'stroke_group': str(stroke_exit), 'flow_group': 0,  'flow_sector': 0,'height_allocation': 'open', 'speed_limit': 30}
+        edge_dict_new[exit_edge] = {'stroke_group': str(stroke_exit), 'flow_group': 0,  'sector_group': 0,'height_allocation': 'open', 'speed_limit': 30}
     
     # add open airspace edges to the edge dictionary
     for open_edge in open_airspace_edges:
-        edge_dict_new[open_edge] = {'stroke_group': str(stroke_open), 'flow_group': 0,  'flow_sector': 0,'height_allocation': 'open', 'speed_limit': 30}
+        edge_dict_new[open_edge] = {'stroke_group': str(stroke_open), 'flow_group': 0,  'sector_group': 0,'height_allocation': 'open', 'speed_limit': 30}
     
     # add open airspace edges to edge_dict
-    edge_dict_new[f'{dummy_osmid}-{dummy_osmid}'] = {'stroke_group': str(stroke_open), 'flow_group': 0, 'flow_sector': 0,'height_allocation': 'open', 'speed_limit': 30}
+    edge_dict_new[f'{dummy_osmid}-{dummy_osmid}'] = {'stroke_group': str(stroke_open), 'flow_group': 0, 'sector_group': 0,'height_allocation': 'open', 'speed_limit': 30}
 
     # save edge dictionary as json
     with open('airspace_design/edges.json', 'w') as fp:
@@ -257,7 +257,7 @@ def main():
     # simplify edge_dict keys into a string rather than tuple for flow
     sector_dict_new = {}
     for key, value in sector_dict.items():
-        new_key = value['flow_sector']
+        new_key = value['sector_group']
         new_value = f'{key[0]}-{key[1]}'
 
         if new_key in sector_dict_new.keys():
@@ -277,14 +277,14 @@ def main():
     dummy_edge_dict = {}
     # add entry and exit edges to dummy_edge_dict
     for entry_edge in entry_edges:
-        dummy_edge_dict[entry_edge] = {'stroke_group': str(stroke_entry), 'flow_group': 0, 'flow_sector': 0, 'height_allocation': 'open', 'speed_limit': 30}
+        dummy_edge_dict[entry_edge] = {'stroke_group': str(stroke_entry), 'flow_group': 0, 'sector_group': 0, 'height_allocation': 'open', 'speed_limit': 30}
 
     for exit_edge in exit_edges:
-        dummy_edge_dict[exit_edge] = {'stroke_group': str(stroke_exit), 'flow_group': 0, 'flow_sector': 0, 'height_allocation': 'open', 'speed_limit': 30}
+        dummy_edge_dict[exit_edge] = {'stroke_group': str(stroke_exit), 'flow_group': 0, 'sector_group': 0, 'height_allocation': 'open', 'speed_limit': 30}
     
     # add open edges to dummy_edge_dict
     for open_edge in open_airspace_edges:
-        dummy_edge_dict[open_edge] = {'stroke_group': str(stroke_open), 'flow_group': 0, 'flow_sector': 0, 'height_allocation': 'open', 'speed_limit': 30}
+        dummy_edge_dict[open_edge] = {'stroke_group': str(stroke_open), 'flow_group': 0, 'sector_group': 0, 'height_allocation': 'open', 'speed_limit': 30}
     
     dummy_stroke_dict = {}
     dummy_stroke_dict[str(stroke_entry)] = stroke_dict_new[str(stroke_entry)]

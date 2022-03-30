@@ -17,7 +17,7 @@ nodes, edges = ox.graph_to_gdfs(G)
 
 edges=edges.to_crs(epsg='32633')
 
-flow_grid=gd.read_file("grid.gpkg")
+flow_grid=gd.read_file("whole_vienna/gis/grid.gpkg")
 
 edges2flowgroup_dict={}
 
@@ -47,14 +47,14 @@ for ii, edg in edges.iterrows():
     edges2flowgroup_dict[ii]=edges_indices[0] + 1
     
     
-edges['Flow_sectors'] = pd.Series(edges2flowgroup_dict)   
+edges['flow_sector'] = pd.Series(edges2flowgroup_dict)   
 
 edges=edges.to_crs(epsg='4326')
 
 g=ox.graph_from_gdfs(nodes,edges)
 
-ox.save_graphml(g,"graph_flow_sectors.graphml")
+ox.save_graphml(g,"whole_vienna/gis/graph_flow_sectors.graphml")
 
-ox.save_graph_geopackage(g,"graph_flow_sectors.gpkg",directed=True)
+ox.save_graph_geopackage(g,"whole_vienna/gis/graph_flow_sectors.gpkg",directed=True)
 
 # %%

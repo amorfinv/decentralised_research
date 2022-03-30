@@ -41,10 +41,10 @@ for ii, edg in edges.iterrows():
                 print(i,ii)
         max_len=max(lens_list)
         flow_index=lens_list.index(max_len)
-        edges_indices=[flow_index]
+        edges_indices=[edges_indices[flow_index]]
             
-        
-    edges2flowgroup_dict[ii]=edges_indices[0]
+    # add one to index because grid starts with index 1 and the gdf starts with index 0
+    edges2flowgroup_dict[ii]=edges_indices[0] + 1
     
     
 edges['Flow_sectors'] = pd.Series(edges2flowgroup_dict)   
@@ -56,3 +56,5 @@ g=ox.graph_from_gdfs(nodes,edges)
 ox.save_graphml(g,"graph_flow_sectors.graphml")
 
 ox.save_graph_geopackage(g,"graph_flow_sectors.gpkg",directed=True)
+
+# %%

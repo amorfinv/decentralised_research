@@ -46,9 +46,9 @@ for ii, edg in edges.iterrows():
     # add one to index because grid starts with index 1 and the gdf starts with index 0
     edges2flowgroup_dict[ii]=edges_indices[0] + 1
     
-    
-edges['sector_group'] = pd.Series(edges2flowgroup_dict)   
-
+# drop the old flow_group column
+edges.drop(columns=["flow_group"],inplace=True)    
+edges['flow_group'] = pd.Series(edges2flowgroup_dict)   
 edges=edges.to_crs(epsg='4326')
 
 g=ox.graph_from_gdfs(nodes,edges)

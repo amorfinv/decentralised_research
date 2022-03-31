@@ -16,11 +16,13 @@ try:
     graphml_path = sys.argv[sys.argv.index('--graph') + 1]
 except (NameError, ValueError):
     print("Please provide a path to the JSONS and the graphml file.")
-    print("python prepare_jsons.py --json graph_sectors --graph graph_sector_group.graphml")
+    print("python prepare_jsons.py --json graph_sectors --graph graph_sector_group")
+    print('The graph should be inside whole_vienna/gis/')
+    print('Write path without file extensions')
     sys.exit()
 
 # read in data
-graph_path = f'whole_vienna/gis/{graphml_path}'
+graph_path = f'whole_vienna/gis/{graphml_path}.graphml'
 G = ox.io.load_graphml(graph_path)
 
 # read in airspace grid dill from parent directory

@@ -11,7 +11,8 @@ import os
 scenario_folders = ['M2_scenarios/', 
                     'airspace_structure_study/1_to_1_scenarios/',
                     'heading_layer_allocation_study/head_alloc_scenarios/',
-                    'heading_layer_allocation_study/heading_alloc_scenarios_no_flow/']
+                    'heading_layer_allocation_study/heading_alloc_scenarios_no_flow/',
+                    'heading_based_cr/hdg_cr_scenarios/']
 
 
 # set location of places that bluesky should search for all the blueksy scenarios

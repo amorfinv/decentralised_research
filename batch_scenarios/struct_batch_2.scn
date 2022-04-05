@@ -328,50 +328,8 @@
 00:00:00>SCHEDULE 03:00:00 HOLD
 00:00:00>SCHEDULE 03:00:00 DELETEALL
 
-00:00:00>SCEN Flight_intention_high_60_1_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_60_1_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_50_6_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_50_6_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_50_1_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_50_1_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_60_6_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_60_6_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
 00:00:00>SCEN Flight_intention_high_40_4_gridsectors
 00:00:00>PCALL M2sensitivity/Flight_intention_high_40_4_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_60_7_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_60_7_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_50_0_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_50_0_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_60_8_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_60_8_gridsectors.scn
 00:00:00>FF
 00:00:00>SCHEDULE 03:00:00 HOLD
 00:00:00>SCHEDULE 03:00:00 DELETEALL
@@ -382,44 +340,14 @@
 00:00:00>SCHEDULE 03:00:00 HOLD
 00:00:00>SCHEDULE 03:00:00 DELETEALL
 
-00:00:00>SCEN Flight_intention_high_50_8_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_50_8_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
 00:00:00>SCEN Flight_intention_high_40_2_gridsectors
 00:00:00>PCALL M2sensitivity/Flight_intention_high_40_2_gridsectors.scn
 00:00:00>FF
 00:00:00>SCHEDULE 03:00:00 HOLD
 00:00:00>SCHEDULE 03:00:00 DELETEALL
 
-00:00:00>SCEN Flight_intention_high_50_7_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_50_7_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_60_0_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_60_0_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_60_5_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_60_5_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
 00:00:00>SCEN Flight_intention_high_40_8_gridsectors
 00:00:00>PCALL M2sensitivity/Flight_intention_high_40_8_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_50_2_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_50_2_gridsectors.scn
 00:00:00>FF
 00:00:00>SCHEDULE 03:00:00 HOLD
 00:00:00>SCHEDULE 03:00:00 DELETEALL
@@ -436,44 +364,8 @@
 00:00:00>SCHEDULE 03:00:00 HOLD
 00:00:00>SCHEDULE 03:00:00 DELETEALL
 
-00:00:00>SCEN Flight_intention_high_50_5_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_50_5_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_60_2_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_60_2_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
 00:00:00>SCEN Flight_intention_high_40_1_gridsectors
 00:00:00>PCALL M2sensitivity/Flight_intention_high_40_1_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_60_3_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_60_3_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_50_4_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_50_4_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_50_3_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_50_3_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_high_60_4_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_high_60_4_gridsectors.scn
 00:00:00>FF
 00:00:00>SCHEDULE 03:00:00 HOLD
 00:00:00>SCHEDULE 03:00:00 DELETEALL
@@ -808,24 +700,6 @@
 00:00:00>SCHEDULE 03:00:00 HOLD
 00:00:00>SCHEDULE 03:00:00 DELETEALL
 
-00:00:00>SCEN Flight_intention_ultra_50_0_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_50_0_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_60_7_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_60_7_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_60_8_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_60_8_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
 00:00:00>SCEN Flight_intention_ultra_40_5_gridsectors
 00:00:00>PCALL M2sensitivity/Flight_intention_ultra_40_5_gridsectors.scn
 00:00:00>FF
@@ -838,50 +712,8 @@
 00:00:00>SCHEDULE 03:00:00 HOLD
 00:00:00>SCHEDULE 03:00:00 DELETEALL
 
-00:00:00>SCEN Flight_intention_ultra_50_8_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_50_8_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_60_0_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_60_0_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_50_7_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_50_7_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
 00:00:00>SCEN Flight_intention_ultra_40_3_gridsectors
 00:00:00>PCALL M2sensitivity/Flight_intention_ultra_40_3_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_50_6_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_50_6_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_60_1_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_60_1_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_60_6_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_60_6_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_50_1_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_50_1_gridsectors.scn
 00:00:00>FF
 00:00:00>SCHEDULE 03:00:00 HOLD
 00:00:00>SCHEDULE 03:00:00 DELETEALL
@@ -898,44 +730,8 @@
 00:00:00>SCHEDULE 03:00:00 HOLD
 00:00:00>SCHEDULE 03:00:00 DELETEALL
 
-00:00:00>SCEN Flight_intention_ultra_50_4_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_50_4_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_60_3_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_60_3_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_60_4_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_60_4_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_50_3_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_50_3_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
 00:00:00>SCEN Flight_intention_ultra_40_6_gridsectors
 00:00:00>PCALL M2sensitivity/Flight_intention_ultra_40_6_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_50_2_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_50_2_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_60_5_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_60_5_gridsectors.scn
 00:00:00>FF
 00:00:00>SCHEDULE 03:00:00 HOLD
 00:00:00>SCHEDULE 03:00:00 DELETEALL
@@ -954,18 +750,6 @@
 
 00:00:00>SCEN Flight_intention_ultra_40_0_gridsectors
 00:00:00>PCALL M2sensitivity/Flight_intention_ultra_40_0_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_60_2_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_60_2_gridsectors.scn
-00:00:00>FF
-00:00:00>SCHEDULE 03:00:00 HOLD
-00:00:00>SCHEDULE 03:00:00 DELETEALL
-
-00:00:00>SCEN Flight_intention_ultra_50_5_gridsectors
-00:00:00>PCALL M2sensitivity/Flight_intention_ultra_50_5_gridsectors.scn
 00:00:00>FF
 00:00:00>SCHEDULE 03:00:00 HOLD
 00:00:00>SCHEDULE 03:00:00 DELETEALL

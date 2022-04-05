@@ -13,7 +13,8 @@ scenario_folders = ['M2_scenarios/',
                     'heading_layer_allocation_study/head_alloc_scenarios/',
                     'heading_layer_allocation_study/heading_alloc_scenarios_no_flow/',
                     'heading_based_cr/hdg_cr_scenarios/',
-                    'baseline_scenarios/']
+                    'baseline_scenarios/',
+                    'flow_control/grid_sector_scenarios']
 
 
 # set location of places that bluesky should search for all the blueksy scenarios

@@ -14,7 +14,7 @@ scenario_folders = ['M2_scenarios/',
                     'heading_layer_allocation_study/heading_alloc_scenarios_no_flow/',
                     'heading_based_cr/hdg_cr_scenarios/',
                     'baseline_scenarios/',
-                    # 'flow_control/grid_sector_scenarios'
+                    'flow_control/grid_sector_scenarios'
                     ]
 
 

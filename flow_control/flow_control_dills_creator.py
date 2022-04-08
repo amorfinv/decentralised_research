@@ -7,7 +7,7 @@ Created on Tue Dec 21 17:00:22 2021
 import osmnx as ox
 import numpy as np
 
-from plugins.streets.flow_control_sectors import street_graph,bbox
+from plugins.streets.flow_control import street_graph,bbox
 #from plugins.streets.flow_control_clusters import street_graph,bbox#unocmment that and comment the previous line to create teh flow control dill for clusters
 
 from plugins.streets.agent_path_planning import PathPlanning,Path

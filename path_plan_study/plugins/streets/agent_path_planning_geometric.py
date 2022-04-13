@@ -828,20 +828,22 @@ class PathPlanning:
     def plan(self):
         next_turn_point=[]
         repetition_cnt=0
+        geom_rep=0
         
         if self.only_in_open:
 
-            route,turns,edges_list,groups,in_constrained,turn_speed=self.compute_open_path(self.start_point_orig, self.goal_point_orig,True)
+            route,turns,edges_list,groups,in_constrained,turn_speed,geom_rep=self.compute_open_path(self.start_point_orig, self.goal_point_orig,True)
 
             
         else:
             if self.start_in_open and self.dest_in_open:
-                route_open,turns_open,edges_list_open,groups_open,in_constrained_open,turn_speed_open=self.compute_open_path(self.start_point_orig, self.flow_graph.entries_dict[self.start_index])
-                route_open_g,turns_open_g,edges_list_open_g,groups_open_g,in_constrained_open_g,turn_speed_open_g=self.compute_open_path(self.flow_graph.exits_dict[self.goal_index], self.goal_point_orig,False)
+                route_open,turns_open,edges_list_open,groups_open,in_constrained_open,turn_speed_open,geom_rep=self.compute_open_path(self.start_point_orig, self.flow_graph.entries_dict[self.start_index])
+                route_open_g,turns_open_g,edges_list_open_g,groups_open_g,in_constrained_open_g,turn_speed_open_g,geom_rep_d=self.compute_open_path(self.flow_graph.exits_dict[self.goal_index], self.goal_point_orig,False)
+                geom_rep+=geom_rep_d
             elif self.start_in_open :
-                route_open,turns_open,edges_list_open,groups_open,in_constrained_open,turn_speed_open=self.compute_open_path(self.start_point_orig, self.flow_graph.entries_dict[self.start_index])
+                route_open,turns_open,edges_list_open,groups_open,in_constrained_open,turn_speed_open,geom_rep=self.compute_open_path(self.start_point_orig, self.flow_graph.entries_dict[self.start_index])
             elif self.dest_in_open:
-                route_open,turns_open,edges_list_open,groups_open,in_constrained_open,turn_speed_open=self.compute_open_path(self.flow_graph.exits_dict[self.goal_index], self.goal_point_orig,False)
+                route_open,turns_open,edges_list_open,groups_open,in_constrained_open,turn_speed_open,geom_rep=self.compute_open_path(self.flow_graph.exits_dict[self.goal_index], self.goal_point_orig,False)
 
             
             start_id=None
@@ -966,13 +968,14 @@ class PathPlanning:
         self.in_constrained=np.array(in_constrained,dtype=np.bool8)
         self.turn_speed=np.array(turn_speed,dtype=np.uint16())
         
-        return route,turns,edges_list,next_turn_point,groups,in_constrained,turn_speed ,repetition_cnt
+        return route,turns,edges_list,next_turn_point,groups,in_constrained,turn_speed ,repetition_cnt,geom_rep
     
     ##Function to compute the path for open airspace
     #P1 should always be the point in open and p2 the open in constrained, except if both point in open
     #if p2 in constarined teh function may update teh entry/exit point, to be used from D*
     #if the path is from constrained to destination the input variable entry shoudl be set to False
     def compute_open_path(self,p1, p2,entry=True):
+        rep=1
         route=[(p1.x,p1.y)]
         turns=[False]
         edges_list=[(5999,6000)]
@@ -1036,6 +1039,7 @@ class PathPlanning:
             poly_index=poly_indices[i]#poly_index=math.floor(i/2)
             
             p_intermediate= Point(poly_intersection_points[i][0],poly_intersection_points[i][1])
+            rep+=1
 
             
             ##Find the closest polygon point of teh extra augmented polygons to the closets intersection point and add it to route after converting it to geodetic 
@@ -1102,7 +1106,8 @@ class PathPlanning:
                     i=distance_list.index(min_d)
                     poly_index=poly_indices[i]
                     
-                    p_intermediate= Point(poly_intersection_points[i][0],poly_intersection_points[i][1])                    
+                    p_intermediate= Point(poly_intersection_points[i][0],poly_intersection_points[i][1])   
+                    rep+=1
 
                     ##Find the closest polygon point of teh extra augmented polygons to the closets intersection point and add it to route after converting it to geodetic 
 
@@ -1236,7 +1241,7 @@ class PathPlanning:
                 turn_coords.append((self.start_point.x,self.start_point.y))
                 
               
-        return route,turns,edges_list,groups,in_constrained,turn_speed 
+        return route,turns,edges_list,groups,in_constrained,turn_speed,rep
         
     
     ##Function to export the route based on the D* search graph

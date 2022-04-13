@@ -1259,7 +1259,7 @@ class PathPlanning:
             self.in_constrained=[False,False]
             self.turn_speed=[0,5]
             
-            return self.route,self.turns,self.edges_list,self.next_turn_point,self.groups,self.in_constrained,self.turn_speed
+            return self.route,self.turns,self.edges_list,self.next_turn_point,self.groups,self.in_constrained,self.turn_speed,0
 
            
         start_id=None

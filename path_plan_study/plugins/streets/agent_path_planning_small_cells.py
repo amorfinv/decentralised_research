@@ -1321,8 +1321,9 @@ class PathPlanning:
             route,turns,indices_nodes,turn_coord,groups,in_constrained,turn_speed,init_groups=self.get_path(self.path,self.graph,self.flow_graph.edges_init_speed,self.flow_graph.edges_graph)
 
             if route==None:
+                print("NO path found")
                 #No path was found
-                return [],[],[],[],[],[],[]
+                return [],[],[],[],[],[],[],[]
             
             os_id1=self.start_index_previous
 

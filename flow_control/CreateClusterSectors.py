@@ -55,35 +55,37 @@ clf.fit_predict(points)#cluster
 label=clf.labels_
 u_labels=np.unique(label)
 centre=clf.cluster_centers_
-for i in u_labels:#plot clusters
-    plt.scatter(points[label == i , 0] , points[label == i , 1] , label = i,s=3)
-
-plt.show()
-
-points=centre#use cluster center for voronoi
-vor = Voronoi(points,qhull_options='Qbb Qc Qx')#make and plot voronoi
-fig = voronoi_plot_2d(vor, show_vertices=False, line_colors='orange',
-                line_width=2, line_alpha=0.6, point_size=2)
-plt.show()
-#make shapely polygons
-lines = [
-    LineString(vor.vertices[line])
-    for line in vor.ridge_vertices if -1 not in line
-]
-
-convex_hull = MultiPoint([Point(i) for i in points]).convex_hull.buffer(100)#convex hul with 100 offset
-result = MultiPolygon(
-    [poly.intersection(convex_hull) for poly in polygonize(lines)])
-result = MultiPolygon(
-    [p for p in result]
-    + [p for p in convex_hull.difference(unary_union(result))])
-pointss=np.array(smal) #show all points in next plot
-plt.plot(pointss[:,0], pointss[:,1], 'ko')
-
-for r in result:#draw polygons
-    plt.fill(*zip(*np.array(list(
-        zip(r.boundary.coords.xy[0][:-1], r.boundary.coords.xy[1][:-1])))),
-        alpha=0.4)
+# =============================================================================
+# for i in u_labels:#plot clusters
+#     plt.scatter(points[label == i , 0] , points[label == i , 1] , label = i,s=3)
+# 
+# plt.show()
+# 
+# points=centre#use cluster center for voronoi
+# vor = Voronoi(points,qhull_options='Qbb Qc Qx')#make and plot voronoi
+# fig = voronoi_plot_2d(vor, show_vertices=False, line_colors='orange',
+#                 line_width=2, line_alpha=0.6, point_size=2)
+# plt.show()
+# #make shapely polygons
+# lines = [
+#     LineString(vor.vertices[line])
+#     for line in vor.ridge_vertices if -1 not in line
+# ]
+# 
+# convex_hull = MultiPoint([Point(i) for i in points]).convex_hull.buffer(100)#convex hul with 100 offset
+# result = MultiPolygon(
+#     [poly.intersection(convex_hull) for poly in polygonize(lines)])
+# result = MultiPolygon(
+#     [p for p in result]
+#     + [p for p in convex_hull.difference(unary_union(result))])
+# pointss=np.array(smal) #show all points in next plot
+# plt.plot(pointss[:,0], pointss[:,1], 'ko')
+# 
+# for r in result:#draw polygons
+#     plt.fill(*zip(*np.array(list(
+#         zip(r.boundary.coords.xy[0][:-1], r.boundary.coords.xy[1][:-1])))),
+#         alpha=0.4)
+# =============================================================================
 
 
 #code to merge polygons built from points of the same cluster

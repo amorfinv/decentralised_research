@@ -20,6 +20,8 @@ import matplotlib.patches as patches
 
 from matplotlib.patches import Polygon
 
+import shapely.geometry
+
 # Step 1: Import the graph we will be using
 
 G = ox.io.load_graphml('whole_vienna/gis/finalized_graph.graphml')
@@ -46,6 +48,15 @@ ax.set_ylim([48.1,48.3])
 
 
 
+
+transformer = Transformer.from_crs('epsg:4326','epsg:32633')
+p=transformer.transform(48.165476,16.3651211)
+po=shapely.geometry.Point(p[0],p[1])
+
+print(graph.nfz_list[-1].contains(po))
+
+
+ 
 origins=[(16.33250526, 48.15055387)] #TODO: define teh origin destination pairs
 #destinations=[( 16.42270378, 48.15712307)]
 destinations=[(16.3739846152,48.262058079)]#[(16.3485847214, 48.1952774822)]#
@@ -67,7 +78,7 @@ for i in range(len(origins)):
         turn_cost=9.75
 
     plan = PathPlanning(aircraft_type,graph,gdf,origins[i][0], origins[i][1], destinations[i][0], destinations[i][1],0.05)
-    route,turns,edges,next_turn,groups,in_constrained,turn_speed,repetition_cnt=plan.plan()
+    route,turns,edges,next_turn,groups,in_constrained,turn_speed,repetition_cnt,geom_rep=plan.plan()
     x_list=[]
     y_list=[]
     for r in route:
@@ -75,6 +86,7 @@ for i in range(len(origins)):
         y_list.append(r[1])
     
     ax.scatter(x_list,y_list,c="b")
+
    
 
 

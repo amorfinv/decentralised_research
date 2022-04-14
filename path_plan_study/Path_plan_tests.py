@@ -84,7 +84,8 @@ for experiment in [1,2,3,4,5]:
                 speed_max=15.43 # 30 knots
                 turn_cost=9.75
                 
-            aircraft_types.append(aircraft_type)   
+            aircraft_types.append(aircraft_type)  
+            print(pair) 
             start=time.time()
             plan = pp.PathPlanning(aircraft_type,grid_orig,graph,gdf,pair[0], pair[1], pair[2], pair[3],0.05)
             route,turns,edges,next_turn,groups,in_constrained,turn_speed,repetition_cnt=plan.plan()

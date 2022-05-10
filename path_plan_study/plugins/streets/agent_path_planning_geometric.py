@@ -17,6 +17,8 @@ import shapely
 from plugins.streets.flow_control_geom import street_graph,bbox
 from plugins.streets.open_airspace_grid import Cell, open_airspace
 
+
+#Find the nearest node used as entry point to constrained airspace
 def get_nearest_entry_node(graph,p):
     transformer = Transformer.from_crs('epsg:4326','epsg:32633')  
     point=transformer.transform(p.y,p.x)
@@ -34,6 +36,8 @@ def get_nearest_entry_node(graph,p):
     v=graph.nodes_graph[u].parents[0]
     
     return u,v
+
+#Find the nearest node used as exit point from constrained airspace
 def get_nearest_exit_node(graph,p):
     transformer = Transformer.from_crs('epsg:4326','epsg:32633')  
     point=transformer.transform(p.y,p.x)

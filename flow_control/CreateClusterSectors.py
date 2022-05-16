@@ -7,6 +7,9 @@ from shapely.ops import polygonize,unary_union,cascaded_union
 from shapely.geometry import LineString, MultiPolygon, MultiPoint, Point
 from scipy.spatial import Voronoi,voronoi_plot_2d
 from scipy.spatial import ConvexHull, convex_hull_plot_2d
+import dill
+import geopandas as gpd
+from shapely.geometry import Point
 
 points=[[0.55428776, 0.5186973 ],
  [0.10756755 ,0.72728379],
@@ -110,4 +113,12 @@ centre=clf.cluster_centers_
 #         alpha=0.4)    
     
 # plt.show()
+
+input_file=open("Flow_control_clusters_centers2.dill", 'rb')
+
+clusters2=dill.load(input_file)
+
+points2 = [Point(geom) for geom in clusters2]
+
+gdf2 = gpd.GeoDataFrame(geometry=points2, crs='epsg:32633')
 

@@ -38,8 +38,9 @@ ultra_scenarios = [file for file in scenario_files if '_ultra_' in file]
 
 # %%
 # assemble scenarios into two batches
-batch_1 = very_low_scenarios + low_scenarios + medium_scenarios
-batch_2 = high_scenarios + ultra_scenarios
+batch_1 = very_low_scenarios + low_scenarios
+batch_2 = medium_scenarios
+batch_3 = high_scenarios + ultra_scenarios
 
 # create the first batch scenatio
 
@@ -83,4 +84,22 @@ for scenario in batch_2:
 with open(f'{batch_scenario_folder}struct_batch_2.scn', 'w') as file:
     file.writelines(batch_2_scenario)
 
-# %%
+# now do batch scenario 3
+batch_3_scenario = []
+for scenario in batch_3:
+    # remove last 4 characters
+    line1 = f'00:00:00>SCEN {scenario[:-4]}\n'
+    line2 = f'00:00:00>PCALL {scenario_path_bluesky}{scenario}\n'
+    line3 = '00:00:00>FF\n'
+    line4 = '00:00:00>SCHEDULE 03:00:00 HOLD\n'
+    line5 = '00:00:00>SCHEDULE 03:00:00 DELETEALL\n\n'
+
+    batch_3_scenario.append(line1)
+    batch_3_scenario.append(line2)
+    batch_3_scenario.append(line3)
+    batch_3_scenario.append(line4)
+    batch_3_scenario.append(line5)
+
+# write to a file
+with open(f'{batch_scenario_folder}struct_batch_3.scn', 'w') as file:
+    file.writelines(batch_3_scenario)

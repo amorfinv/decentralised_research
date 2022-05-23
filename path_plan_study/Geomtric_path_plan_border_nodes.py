@@ -65,6 +65,7 @@ for index in entry_points_list:
         if dd<d:
             d=dd
             min_index=ii
+
     point=border_nodes.loc[min_index]["geometry"]
     in_geofence=False
     for poly in nfz_augm_list:

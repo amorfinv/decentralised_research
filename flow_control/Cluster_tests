@@ -1,0 +1,58 @@
+CONFLOG_Flight_intention_low_40_8_noflow
+12916
+
+cLUSTER 1:
+clf = KMeansConstrained(
+     n_clusters=100,
+     size_min=1,
+     size_max=300,
+     random_state=0
+) 
+Flow_control_clusters_centers1.dill
+
+cLUSTER 2:
+clf = KMeansConstrained(
+     n_clusters=100,
+     size_min=1,
+     size_max=200,
+     random_state=0
+) 
+Flow_control_clusters_centers2.dill
+
+cLUSTER 3:
+clf = KMeansConstrained(
+     n_clusters=200,
+     size_min=1,
+     size_max=100,
+     random_state=0
+) 
+Flow_control_clusters_centers3.dill
+
+
+cLUSTER 4:
+clf = KMeansConstrained(
+     n_clusters=200,
+     size_min=1,
+     size_max=200,
+     random_state=0
+) 
+Flow_control_clusters_centers4.dill
+
+
+cLUSTER 5:
+clf = KMeansConstrained(
+     n_clusters=300,
+     size_min=1,
+     size_max=100,
+     random_state=0
+) 
+Flow_control_clusters_centers5.dill
+
+cLUSTER 6:
+clf = KMeansConstrained(
+     n_clusters=60,
+     size_min=1,
+     size_max=250,
+     random_state=0
+) 
+Flow_control_clusters_centers6.dill

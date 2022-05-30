@@ -34,12 +34,13 @@ for i in   exit_points_list_tmp   :
           
 G = ox.io.load_graphml('whole_vienna/gis/finalized_graph.graphml')
 transformer = Transformer.from_crs('epsg:4326','epsg:32633')
+transformer2 = Transformer.from_crs('epsg:32633','epsg:4326')
 
 border_nodes = gpd.read_file('airspace_design/offset_border_nodes.gpkg')
 
 
 
-
+print(border_nodes.columns)
 
 input_file=open("airspace_design/extra_augmented_nfz_open.dill", 'rb')
 constrained_poly=dill.load(input_file)
@@ -65,7 +66,7 @@ for index in entry_points_list:
         if dd<d:
             d=dd
             min_index=ii
-
+    #print(d)
     point=border_nodes.loc[min_index]["geometry"]
     in_geofence=False
     for poly in nfz_augm_list:
@@ -73,7 +74,14 @@ for index in entry_points_list:
             in_geofence=True
             break
     if not in_geofence:
-        entry_points_dict[index]=shapely.geometry.Point(border_nodes.loc[min_index].x,border_nodes.loc[min_index].y)
+        p=transformer2.transform(border_nodes.loc[min_index]["geometry"].x,border_nodes.loc[min_index]["geometry"].y)
+        entry_points_dict[index]=shapely.geometry.Point(p[1],p[0])
+
+        #entry_points_dict[index]=shapely.geometry.Point(border_nodes.loc[min_index].x,border_nodes.loc[min_index].y)
+        #print(entry_points_dict[index])
+        #p=transformer.transform(border_nodes.loc[min_index].y,border_nodes.loc[min_index].x)
+        #print(p)
+        #print(border_nodes.loc[min_index]["geometry"])
 
 for index in exit_points_list:
     lon=G._node[index]['x']
@@ -95,8 +103,11 @@ for index in exit_points_list:
             in_geofence=True
             break
     if not in_geofence:
-        exit_points_dict[index]=shapely.geometry.Point(border_nodes.loc[min_index].x,border_nodes.loc[min_index].y)
-            
+        p=transformer2.transform(border_nodes.loc[min_index]["geometry"].x,border_nodes.loc[min_index]["geometry"].y)
+        exit_points_dict[index]=shapely.geometry.Point(p[1],p[0])
+
+        #exit_points_dict[index]=shapely.geometry.Point(border_nodes.loc[min_index].x,border_nodes.loc[min_index].y)
+print(list(exit_points_dict.values())[0])            
 
 output_file=open("airspace_design/geom_entries.dill", 'wb')
 dill.dump(entry_points_dict,output_file)

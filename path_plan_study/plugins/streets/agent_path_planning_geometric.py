@@ -535,7 +535,30 @@ class PathPlanning:
                 self.only_in_open=True
             else:
                 self.only_in_open=False
-                coords = list(intersection_line.coords)
+
+    
+                if  intersection_line.geom_type=='Point':
+                    coords = list(intersection_line.coords)
+                elif intersection_line.geom_type=='GeometryCollection':
+                    #print(intersection_line)
+                    coords=[]
+                    for l in intersection_line:
+                        if l.geom_type=='LineString':
+                            for lp in list(l.coords):
+                                coords.append(lp)
+                        else:
+                            coords.append(l.coords)
+
+                elif intersection_line.geom_type=='MultiLineString':
+                    coords=[]
+                    for l in intersection_line:
+                        for lp in list(l.coords):
+                            coords.append(lp)
+                elif intersection_line.geom_type=='LineString':
+                    coords = list(intersection_line.coords)
+
+
+                #coords = list(intersection_line.coords)
                 transformer = Transformer.from_crs('epsg:32633','epsg:4326') 
                 if self.start_in_open and self.dest_in_open:
                     p1=coords[0]
@@ -845,6 +868,7 @@ class PathPlanning:
                 route_open_g,turns_open_g,edges_list_open_g,groups_open_g,in_constrained_open_g,turn_speed_open_g,geom_rep_d=self.compute_open_path(self.flow_graph.exits_dict[self.goal_index], self.goal_point_orig,False)
                 geom_rep+=geom_rep_d
             elif self.start_in_open :
+                #print(self.flow_graph.entries_dict[self.start_index])
                 route_open,turns_open,edges_list_open,groups_open,in_constrained_open,turn_speed_open,geom_rep=self.compute_open_path(self.start_point_orig, self.flow_graph.entries_dict[self.start_index])
             elif self.dest_in_open:
                 route_open,turns_open,edges_list_open,groups_open,in_constrained_open,turn_speed_open,geom_rep=self.compute_open_path(self.flow_graph.exits_dict[self.goal_index], self.goal_point_orig,False)
@@ -1060,19 +1084,19 @@ class PathPlanning:
             poly=self.flow_graph.nfz_augm_list[poly_index]
             poly_direction={}
             distance_list=[]
-            for poly_p in list(poly.convex_hull.exterior.coords)[:-1]:
+            for poly_p in list(poly.exterior.coords)[:-1]:
                 d=(poly_p[0]-p_intermediate.x)*(poly_p[0]-p_intermediate.x)+(poly_p[1]-p_intermediate.y)*(poly_p[1]-p_intermediate.y)
                 distance_list.append(d)
             min_d=min(distance_list)
             i=distance_list.index(min_d)
             
-            if list(poly.convex_hull.exterior.coords)[i][0]==pp1.x and list(poly.convex_hull.exterior.coords)[i][1]==pp1.y:
-                distance_list[min_d]=10000000
+            if list(poly.exterior.coords)[i][0]==pp1.x and list(poly.exterior.coords)[i][1]==pp1.y:
+                distance_list[i]=10000000
                 min_d=min(distance_list)
                 i=distance_list.index(min_d)
             
             poly_direction[poly_index]=[[i],0]
-            pp1=Point(list(poly.convex_hull.exterior.coords)[i][0],list(poly.convex_hull.exterior.coords)[i][1])
+            pp1=Point(list(poly.exterior.coords)[i][0],list(poly.exterior.coords)[i][1])
             
             
 
@@ -1105,8 +1129,8 @@ class PathPlanning:
                     if intersection_line.geom_type=='GeometryCollection':
                         intersection_line=intersection_line[0]
                     if intersection_line.geom_type=='MultiLineString':
-                        print(i)
-                        print(intersection_line)
+                        #print(i)
+                        #print(intersection_line)
                         points=[]
                         for l in intersection_line:
                             for lp in list(l.coords):
@@ -1130,6 +1154,7 @@ class PathPlanning:
                     min_d=min(distance_list)
                     i=distance_list.index(min_d)
                     poly_index=poly_indices[i]
+                    #print(poly_index)
                     
                     p_intermediate= Point(poly_intersection_points[i][0],poly_intersection_points[i][1])   
                     rep+=1
@@ -1137,7 +1162,7 @@ class PathPlanning:
                     ##Find the closest polygon point of teh extra augmented polygons to the closets intersection point and add it to route after converting it to geodetic 
 
                     poly=self.flow_graph.nfz_augm_list[poly_index]
-                    coords=list(poly.convex_hull.exterior.coords)[:-1]
+                    coords=list(poly.exterior.coords)[:-1]#coords=list(poly.convex_hull.exterior.coords)[:-1]
                     if poly_index in poly_direction.keys():
                         if poly_direction[poly_index][1]==0:
                             i=poly_direction[poly_index][0][0]
@@ -1175,7 +1200,7 @@ class PathPlanning:
                         min_d=min(distance_list)
                         i=distance_list.index(min_d)   
                         poly_direction[poly_index]=[[i],0]  
-                        pp1=Point(list(poly.convex_hull.exterior.coords)[i][0],list(poly.convex_hull.exterior.coords)[i][1])
+                        pp1=Point(list(poly.exterior.coords)[i][0],list(poly.exterior.coords)[i][1])
                         
 
                         ##TODO :fix that, it gets stuck between two poitns, maybe i should check fo rteh used points, r copy the self.flow_graph.nfz_augm_list and delet the used points
@@ -1189,7 +1214,7 @@ class PathPlanning:
 
                     #print(poly_index,pp1.x,pp1.y)
                     route.append((p_tmp[1],p_tmp[0]))
-                   # print(route)
+                    #print(route)
                     
                     turns.append(False)
                     edges_list.append((5999,6000))
@@ -1223,6 +1248,7 @@ class PathPlanning:
                         for p_i in points:
                             poly_intersection_points.append(p_i)
                             poly_indices.append(i)
+                           
                     if poly_indices==[]:
                         intersection=False
                         

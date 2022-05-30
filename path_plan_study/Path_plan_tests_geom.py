@@ -81,7 +81,7 @@ geobreach=[] #1 for geofence intersections
 
 
 pair=[16.3695248087,48.1500879358,16.3565153618,48.2062880537] ## only used for testing
-if 1: #for pair in path_plan_pairs: ##commented out for testing
+for pair in path_plan_pairs: ##commented out for testing
     for aircraft_type in [1,2]:
         if aircraft_type==1:
             speed_max=10.29 ##20 knots

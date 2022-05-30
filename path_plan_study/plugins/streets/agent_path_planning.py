@@ -7,10 +7,11 @@ Created on Tue Oct 12 10:51:03 2021
 
 #experimetn number
 #1 for baseline eucledean and manhattan with turning cost =9.144/av_speed_vertical
-#2 for eucledean with turning cost =9.144/av_speed_vertical
-#3 for  manhattan with turning cost =9.144/av_speed_vertical
+#2 for manhattan with turning cost =9.144/av_speed_vertical
+#3 for  eucledean with turning cost =9.144/av_speed_vertical
 # 4 for eucledean and manhattan with turning cost =0.01 , almost 0 changed tunring cost to 1
-#5 for eucledean and manhattan with turning cost =150 for mp30 and 67 for mp20
+#5 for  eucledean and manhattan with turning cost =150 for mp30 and 67 for mp20
+#6 for  eucledean with turning cost =150 for mp30 and 67 for mp20
 experiment_number=1
 
 
@@ -501,7 +502,7 @@ def heuristic(current, goal,speed,flow_graph,graph):
     
         if graph.groups_list[current]!=graph.groups_list[goal]:
             h=h+9.144/av_speed_vertical
-    elif experiment_number==3:#only eucledean
+    elif experiment_number==3 :#only eucledean
         av_speed_vertical=5.0
         h=eucledean_distance(cc, gg)/speed
     
@@ -528,7 +529,15 @@ def heuristic(current, goal,speed,flow_graph,graph):
                 h=h+6.7
             else:
                 h=h+9.75
-                     
+    elif experiment_number==6:#only eucledean
+        av_speed_vertical=5.0
+        h=eucledean_distance(cc, gg)/speed
+    
+        if graph.groups_list[current]!=graph.groups_list[goal]:
+           if speed==10.29:
+                h=h+6.7
+           else:
+                h=h+9.75                   
     return h
 
 
@@ -569,7 +578,7 @@ def compute_c(current,neigh,edges_speed,flow_graph,speed,graph):
                 g=9.144/av_speed_vertical
             elif experiment_number==4:
                 g=1#0.01
-            elif experiment_number==5:
+            elif experiment_number==5 or experiment_number==6:
                 if speed==10.29:
                     g=6.7
                 else:

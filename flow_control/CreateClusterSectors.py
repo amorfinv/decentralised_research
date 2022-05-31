@@ -117,11 +117,3 @@ output_file=open("Flow_control_clusters_centers6.dill", 'wb')
 dill.dump(centre,output_file)
 output_file.close()
 clusters2=centre
-#input_file=open("Flow_control_clusters_centers3.dill", 'rb')
-
-#clusters2=dill.load(input_file)
-
-#points2 = [Point(geom) for geom in clusters2]
-
-#gdf2 = gpd.GeoDataFrame(geometry=points2, crs='epsg:32633')
-

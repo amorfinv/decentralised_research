@@ -8,7 +8,8 @@ clf = KMeansConstrained(
      size_max=300,
      random_state=0
 ) 
-Flow_control_clusters_centers1.dill
+Flow_control_clusters_centers1.dill We have  a winner ! 
+Maybe delete point 75
 
 cLUSTER 2:
 clf = KMeansConstrained(
@@ -26,7 +27,7 @@ clf = KMeansConstrained(
      size_max=100,
      random_state=0
 ) 
-Flow_control_clusters_centers3.dill
+Flow_control_clusters_centers3.dill Too many
 
 
 cLUSTER 4:
@@ -46,7 +47,7 @@ clf = KMeansConstrained(
      size_max=100,
      random_state=0
 ) 
-Flow_control_clusters_centers5.dill
+Flow_control_clusters_centers5.dill Too many
 
 cLUSTER 6:
 clf = KMeansConstrained(

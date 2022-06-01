@@ -638,9 +638,11 @@ for i in range(len(grid_list)):
 grid.grid=grid_list
     
 ##Dill the new grid
-output_file=open("smaller_cells_open_airspace_grid.dill", 'wb')
-dill.dump(grid,output_file)
-output_file.close()
+# =============================================================================
+# output_file=open("smaller_cells_open_airspace_grid.dill", 'wb')
+# dill.dump(grid,output_file)
+# output_file.close()
+# =============================================================================
 
 # =============================================================================
 # exit_nodes_in_use=[]

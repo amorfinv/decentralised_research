@@ -130,19 +130,18 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
         gpkg_fpath = os.path.join('gpkgs', gpkg_name)
         gdf.to_file(gpkg_fpath + '.gpkg', driver='GPKG')
 
-    except Exception as e:
+    except ValueError:
         print('[red]Problem with these files:')
         print(scenario_list)
-        raise e
 
 
 def conflog(scenario_list, gpkg_name, gpkg_args):
 
     # filter out any non reglog files
-    conflog_files = [os.path.join('results',f) + '.log' for f in scenario_list if 'CONFLOG' in f]
+    conflog_files = [os.path.join('results',f) for f in scenario_list if 'CONFLOG' in f]
 
     # read the files and skip the first 9 rows
-    header_columns = ['time','ACID1','ACID2','LAT1','LON1','ALT1','LAT2','LON2','ALT2','CPALAT','CPALON']
+    header_columns = ['time','ACID1','ACID2','LAT1','LON1','ALT1','LAT2','LON2','ALT2','CPALAT','CPALON', 'EDGEID1', 'EDGEID2']
 
     print(f'[green]Parsing {gpkg_name}...')
     try:
@@ -172,7 +171,7 @@ def conflog(scenario_list, gpkg_name, gpkg_args):
 def loslog(scenario_list, gpkg_name, gpkg_args):
 
     # filter out any non reglog files
-    loslog_files = [os.path.join('results',f) + '.log' for f in scenario_list if 'LOSLOG' in f]
+    loslog_files = [os.path.join('results',f) for f in scenario_list if 'LOSLOG' in f]
 
     # read the files and skip the first 9 rows
     header_columns = ['exittime','starttime','timemindist','ACID1','ACID2','LAT1','LON1','ALT1','LAT2','LON2','ALT2','DIST']

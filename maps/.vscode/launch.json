@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--concept", "m2", "--logtype",  "REGLOG",  "--density", "very_low",  "--create", "gpkgs"]
+            "args": ["--concept", "m2", "--logtype",  "CONFLOG",  "--density", "very_low",  "--create", "gpkgs"]
         }
     ]
 }

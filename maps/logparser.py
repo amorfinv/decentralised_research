@@ -19,30 +19,16 @@ def logparse(args):
         scn_comb = args['combinations'][i]
             
         # get global parameters for current combination
-        gpkg_args = {'concept':scn_comb[0], 'logtype':scn_comb[1], 'density':scn_comb[2], 'mix':scn_comb[3]}
+        gpkg_args = {'logtype':scn_comb[0], 'density':scn_comb[1], 'concept':scn_comb[2]}
 
-        # get the filenames for this combination.
-        # determinsitc files have length 4, and uncertain files have length 6
-        if len(scn_comb) == 4:
-            # deterministic scenarios
-            # name of geopackage file
-            gpkg_name = '_'.join(scn_comb)
+        # make the name of gpkg
+        gpkg_name = '_'.join(scn_comb)
 
-            # file_names
-            scenario_list = [gpkg_name + '_' + f'{i}' for i in range(9)]
-
-        else:
-            # uncertain scenarios
-            # extend gpkg args
-            gpkg_args['uncertainty'] = scn_comb[4]
-            gpkg_args['uncertainty_level'] = scn_comb[5]
-            # name of geopackage file
-            gpkg_name = '_'.join(scn_comb)
-
-            # file_name
-            scenario_list = ['_'.join(scn_comb[0:4]) + '_' + f'{i}_' + '_'.join(scn_comb[4:]) for i in range(9)]
+        # get the log file names
+        log_prefix = scn_comb[0] + '_Flight_intention_' + scn_comb[1] + '_40_'
+        log_suffix = '_' + scn_comb[2] + '.log'
+        scenario_list = [f'{log_prefix}{i}{log_suffix}' for i in range(9)]
     
-
         if gpkg_args['logtype'] == 'REGLOG':
             # check if the file exists
             if os.path.exists(os.path.join('gpkgs', gpkg_name + '.gpkg')):
@@ -72,11 +58,11 @@ def logparse(args):
 def reglog(scenario_list, gpkg_name, gpkg_args):
 
     # filter out any non reglog files
-    reglog_files = [os.path.join('results',f) + '.log' for f in scenario_list if 'REGLOG' in f]
+    reglog_files = [os.path.join('results',f) for f in scenario_list if 'REGLOG' in f]
 
     # read the files and skip the first 9 rows
-    header_columns = ['ACID','ALT','LATS','LONS']
-    header_2 = ['ACID','ALT','LATS','LONS','scenario']
+    header_columns = ['ACID','ALT','LATS','LONS','EDGE_ID']
+    header_2 = ['ACID','ALT','LATS','LONS','EDGE_ID','scenario']
 
     # get the start date
     data = {}
@@ -95,7 +81,7 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
                 for line_num, line in enumerate(f):
                     if line_num < 9:
                         continue
-                    header_id = (line_num - 9) % 4
+                    header_id = (line_num - 9) % 5
 
                     # get the time
                     sec_sim = float(line.split(',')[0])
@@ -105,7 +91,8 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
                         data[time_stamp] = {header_col:[] for header_col in header_2}            
                         data[time_stamp][header_columns[header_id]] = line.strip('\n').split(',')[1:]
                         data[time_stamp]['scenario'] = filepath[len('results')+1:] 
-
+                    elif header_id == 4:
+                        data[time_stamp][header_columns[header_id]] = [i for i in line.strip('\n').split(',')[1:]]
                     else:
                         data[time_stamp][header_columns[header_id]] = [float(i) for i in line.strip('\n').split(',')[1:]]
 
@@ -125,7 +112,7 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
         multi_point = np.array([MultiPoint(np.column_stack((x, y))) for x,y in zip(df['LONS'], df['LATS'])], dtype=MultiPoint)
 
         # remove ACID, LAT, LON, ALT columns
-        df.drop(columns=['ACID','LATS', 'LONS', 'ALT'], inplace=True)
+        df.drop(columns=['ACID','LATS', 'LONS', 'EDGE_ID', 'ALT'], inplace=True)
         # make a geodataframe from the pandas dataframe
         gdf = gpd.GeoDataFrame(df, geometry=multi_point, crs='epsg:4326')
 
@@ -143,9 +130,10 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
         gpkg_fpath = os.path.join('gpkgs', gpkg_name)
         gdf.to_file(gpkg_fpath + '.gpkg', driver='GPKG')
 
-    except ValueError:
+    except Exception as e:
         print('[red]Problem with these files:')
         print(scenario_list)
+        raise e
 
 
 def conflog(scenario_list, gpkg_name, gpkg_args):

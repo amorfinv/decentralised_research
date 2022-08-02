@@ -131,3 +131,4 @@ dmypy.json
 *launch.json
 
 maps/*.gpkg
+turn_maps/tmp/*

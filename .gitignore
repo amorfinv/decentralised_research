@@ -132,3 +132,4 @@ dmypy.json
 
 maps/*.gpkg
 turn_maps/tmp/*
+turn_maps/*tif

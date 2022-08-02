@@ -25,7 +25,7 @@ for result_file in results_files:
 
     # make a geoseries
     gseries = gpd.GeoSeries(points, crs='epsg:4326')
-
+    gseries = gseries.to_crs('epsg:32633')
     # save as file
     gseries.to_file('turns.gpkg', layer=result_file[8:-4])
 

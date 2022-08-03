@@ -133,3 +133,5 @@ dmypy.json
 maps/*.gpkg
 turn_maps/tmp/*
 turn_maps/*tif
+maps/geotif/*.tif
+maps/images/*.pdf

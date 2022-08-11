@@ -59,7 +59,7 @@ def plotter(args, plot_dict):
             #get the data for this density
             density_df = alt_df[alt_df['density'] == density]
 
-            plot_title = f'density_{density}_ltypes'
+            plot_title = f'density_{density}_altbins'
             
             # plot the data
             sea_plotter(df=density_df, df_col='altitudebins', xlabels=altbins, title=plot_title)

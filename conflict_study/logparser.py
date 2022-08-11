@@ -16,7 +16,8 @@ def logparse(args):
     
     conf_layer_dfs = {}
     conf_alt_dfs = {}
-
+    los_layer_dfs = {}
+    los_alt_dfs = {}
     for i in track(range(len(args['combinations'])), description="Processing..."):
         scn_comb = args['combinations'][i]
         
@@ -28,6 +29,10 @@ def logparse(args):
         if density not in conf_layer_dfs:
             conf_layer_dfs[density] = {}
             conf_alt_dfs[density] = {}
+
+        if density not in los_layer_dfs:
+            los_layer_dfs[density] = {}
+            los_alt_dfs[density] = {}
 
         parse_args = {'logtype':logtype, 'density':density, 'concept':concept}
 
@@ -49,26 +54,46 @@ def logparse(args):
             conf_alt_dfs[density][concept] = altitude_confs
 
         if logtype == 'LOSLOG':
-            loslog(scenario_list, dataset_name, parse_args)
-
+            layer_type_los,altitude_los = loslog(scenario_list, dataset_name, parse_args)
+            los_layer_dfs[density][concept] = layer_type_los
+            los_alt_dfs[density][concept] = altitude_los
     
+    # part 2 is to combine all dfs
     plot_df = {}
     if 'CONFLOG' in args['logtype']:
         # merge the dataframes to a big one of conf_layer_dfs
-        conf_df = pd.DataFrame(columns=['scenario', 'layertype', 'count', 'concept', 'density'])
+        ltype_conf_df = pd.DataFrame(columns=['scenario', 'layertype', 'count', 'concept', 'density'])
         for density, conf_layer_df in conf_layer_dfs.items():
             for concept, unique_df in conf_layer_df.items():
                 # append to the dataframe
-                conf_df = conf_df.append(unique_df)
+                ltype_conf_df = ltype_conf_df.append(unique_df)
 
         # merge the dataframes to a big one of conf_alt_dfs
-        alt_df = pd.DataFrame(columns=['scenario', 'altitudebins', 'count', 'concept', 'density'])
+        alt_conf_df = pd.DataFrame(columns=['scenario', 'altitudebins', 'count', 'concept', 'density'])
         for density, conf_alt_df in conf_alt_dfs.items():
             for concept, unique_df in conf_alt_df.items():
                 # append to the dataframe
-                alt_df = alt_df.append(unique_df)
+                alt_conf_df = alt_conf_df.append(unique_df)
         
-        plot_df['CONFLOG'] = {'LAYERTYPES': conf_df, 'ALTITUDEBINS': alt_df}
+        plot_df['CONFLOG'] = {'LAYERTYPES': ltype_conf_df, 'ALTITUDEBINS': alt_conf_df}
+
+    if 'LOSLOG' in args['logtype']:
+        # merge the dataframes to a big one of conf_layer_dfs
+        ltype_los_df = pd.DataFrame(columns=['scenario', 'layertype', 'count', 'concept', 'density'])
+        for density, los_layer_df in los_layer_dfs.items():
+            for concept, unique_df in los_layer_df.items():
+                # append to the dataframe
+                ltype_los_df = ltype_los_df.append(unique_df)
+
+        # merge the dataframes to a big one of conf_alt_dfs
+        alt_los_df = pd.DataFrame(columns=['scenario', 'altitudebins', 'count', 'concept', 'density'])
+        for density, los_alt_df in los_alt_dfs.items():
+            for concept, unique_df in los_alt_df.items():
+                # append to the dataframe
+                alt_los_df = alt_los_df.append(unique_df)
+        
+        plot_df['LOSLOG'] = {'LAYERTYPES': ltype_los_df, 'ALTITUDEBINS': alt_los_df}
+    
     
     return plot_df
 
@@ -193,14 +218,16 @@ def conflog(scenario_list, dataset_name, parse_args):
         print(scenario_list)
 
 
-def loslog(scenario_list, gpkg_name, gpkg_args):
+def loslog(scenario_list, gpkg_name, parse_args):
 
     # filter out any non reglog files
     loslog_files = [os.path.join('results',f) for f in scenario_list if 'LOSLOG' in f]
 
     # read the files and skip the first 9 rows
     header_columns = ['exittime','starttime','timemindist','ACID1','ACID2','LAT1','LON1','ALT1','LAT2','LON2','ALT2','DIST', 'AIRSPACETYPE1', 'AIRSPACETYPE2', 'LAYERTYPE1', 'LAYERTYPE2', 'EDGEID1', 'EDGEID2']
-
+    
+    concept = parse_args['concept']
+    density = parse_args['density']
     print(f'[green]Parsing {gpkg_name}...')
     try:
 
@@ -217,11 +244,14 @@ def loslog(scenario_list, gpkg_name, gpkg_args):
         # look at column "AIRSPACETYPE1" and "AIRSPACETYPE2". Only keep the rows if they are both "constrained"
         df = df[(df['AIRSPACETYPE1'] == 'constrained') & (df['AIRSPACETYPE2'] == 'constrained')]
 
-        # go through layertype1 and layertype2 and check if one is a NAN, if so replace the value with 'S'
-        df['LAYERTYPE1'] = df['LAYERTYPE1'].fillna('S')
-        df['LAYERTYPE2'] = df['LAYERTYPE2'].fillna('S')
+        # Filter logs and get a layer type count
+        layer_type_los = filerlogs_for_layertype(df, concept, density)
 
-        cc
+        # Filter logs and get an altitude bin count
+        altitude_los = filterlogs_for_altbins(df, concept, density)
+
+        return layer_type_los, altitude_los
+
     except ValueError:
         print('[red]Problem with these files:')
         print(scenario_list)
@@ -238,10 +268,12 @@ def filterlogs_for_altbins(df: pd.DataFrame, concept: str, density: str)-> pd.Da
     # create some altitude bins to place alt-diff values in 0-9.144, 9.144-18.288, 18.288-27.432, 27.432-36.576, 36.576-45.72, 45.72-150
     df['altitudebins'] = pd.cut(df['ALT_DIFF'], bins=[0, 9.144, 18.288, 27.432, 36.576, 45.72, 150], labels=['0L', '1L', '2L', '3L', '4L', '>4L'])
     
-    altitude_confs = df.groupby(by=['scenario','altitudebins']).size()
-    altitude_confs = altitude_confs.to_frame().reset_index().rename(columns={0:'count'})
-    altitude_confs['concept'] = concept
-    altitude_confs['density'] = density
+    altitude = df.groupby(by=['scenario','altitudebins']).size()
+    altitude = altitude.to_frame().reset_index().rename(columns={0:'count'})
+    altitude['concept'] = concept
+    altitude['density'] = density
+
+    return altitude
 
 def filerlogs_for_layertype(df: pd.DataFrame, concept: str, density: str) -> pd.DataFrame:
     '''
@@ -271,22 +303,22 @@ def filerlogs_for_layertype(df: pd.DataFrame, concept: str, density: str) -> pd.
     df['layertype'] = df.apply(lambda row: row['LAYERTYPE1'] + '-' + row['LAYERTYPE2'] if row['LAYERTYPE1'] < row['LAYERTYPE2'] else row['LAYERTYPE2'] + '-' + row['LAYERTYPE1'], axis=1)
 
     # get the layer type conflict counts
-    layer_type_confs = df.groupby(by=['scenario','layertype']).size()
+    layer_type = df.groupby(by=['scenario','layertype']).size()
 
     # make into a dataframe and make index into columns and name column count
-    layer_type_confs = layer_type_confs.to_frame().reset_index().rename(columns={0:'count'})
-    layer_type_confs['concept'] = concept
-    layer_type_confs['density'] = density
+    layer_type = layer_type.to_frame().reset_index().rename(columns={0:'count'})
+    layer_type['concept'] = concept
+    layer_type['density'] = density
 
     # check if any of these are missing per scenario and add it with a value of 0
     conflict_types = ['C-C', 'S-S', 'T-T', 'F-F', 'C-T', 'C-F', 'F-T', 'C-S', 'S-T', 'F-S']
     for scenario in df['scenario'].unique():
         for conflict_type in conflict_types:
-            if conflict_type not in layer_type_confs[layer_type_confs['scenario'] == scenario]['layertype'].unique():
-                layer_type_confs = layer_type_confs.append({'scenario': scenario, 'layertype': conflict_type, 'count': 0, 'concept': concept, 'density': density}, ignore_index=True)
+            if conflict_type not in layer_type[layer_type['scenario'] == scenario]['layertype'].unique():
+                layer_type = layer_type.append({'scenario': scenario, 'layertype': conflict_type, 'count': 0, 'concept': concept, 'density': density}, ignore_index=True)
 
 
     # add a new column called 'repetition' that takes the 'scenario' string and splits it on the underscore and takes the last value
-    layer_type_confs['repetition'] = layer_type_confs['scenario'].apply(lambda x: x.split('_')[-2])
+    layer_type['repetition'] = layer_type['scenario'].apply(lambda x: x.split('_')[-2])
 
-    return layer_type_confs
+    return layer_type

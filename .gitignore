@@ -137,4 +137,5 @@ maps/geotif/*.tif
 maps/images/*.pdf
 *.gpkg-*
 conflict_study/Intentions/*.csv
-conflict_study/images/*.png
+conflict_study/images/confs/*.png
+conflict_study/images/los/*.png

@@ -22,7 +22,7 @@ def plotter(args, plot_dict):
             # get the data for this layer type
             layertype_df = layertypes_df[layertypes_df['layertype'] == layertype]
             
-            plot_title = f'layertype_{layertype}'
+            plot_title = f'confs/layertype_{layertype}'
             # plot the data
             sea_plotter(df=layertype_df, df_col='density', xlabels=densities, title=plot_title)
 
@@ -31,7 +31,7 @@ def plotter(args, plot_dict):
             #get the data for this density
             density_df = layertypes_df[layertypes_df['density'] == density]
 
-            plot_title = f'density_{density}_ltypes'
+            plot_title = f'confs/density_{density}_ltypes'
             
             # plot the data
             sea_plotter(df=density_df, df_col='layertype', xlabels=layertypes, title=plot_title)
@@ -50,7 +50,64 @@ def plotter(args, plot_dict):
             # get the data for this layer type
             altbin_df = alt_df[alt_df['altitudebins'] == altbin]
             
-            plot_title = f'altitudebin_{altbin}'
+            plot_title = f'confs/altitudebin_{altbin}'
+            # plot the data
+            sea_plotter(df=altbin_df, df_col='density', xlabels=densities, title=plot_title)
+        
+        for density in densities:
+            #get the data for this density
+            density_df = alt_df[alt_df['density'] == density]
+
+            plot_title = f'confs/density_{density}_altbins'
+            
+            # plot the data
+            sea_plotter(df=density_df, df_col='altitudebins', xlabels=altbins, title=plot_title)
+
+
+    if 'LOSLOG' in args['logtype']:
+        # LAYERTYPES plotting
+        layertypes_df = plot_dict['LOSLOG']['LAYERTYPES']
+
+        # option 1 is to plot x-axis as density and give one plot per layer type
+        densities = layertypes_df['density'].unique()
+
+        # option 2 is to plot x-axis as layer type and give one plot per density
+        layertypes = layertypes_df['layertype'].unique()
+
+        # if option 1 loop through layer types
+        for layertype in layertypes:
+            # get the data for this layer type
+            layertype_df = layertypes_df[layertypes_df['layertype'] == layertype]
+            
+            plot_title = f'los/layertype_{layertype}'
+            # plot the data
+            sea_plotter(df=layertype_df, df_col='density', xlabels=densities, title=plot_title)
+
+        
+        for density in densities:
+            #get the data for this density
+            density_df = layertypes_df[layertypes_df['density'] == density]
+
+            plot_title = f'los/density_{density}_ltypes'
+            
+            # plot the data
+            sea_plotter(df=density_df, df_col='layertype', xlabels=layertypes, title=plot_title)
+
+        # ALTITUDE plotting
+        alt_df = plot_dict['LOSLOG']['ALTITUDEBINS']
+
+        # option 1 is to plot x-axis as density and give one plot per altitude bin
+        densities = alt_df['density'].unique()
+
+        # option 2 is to plot x-axis as altitude bin and give one plot per density
+        altbins = alt_df['altitudebins'].unique()
+
+        # if option 1 loop through layer types
+        for altbin in altbins:
+            # get the data for this layer type
+            altbin_df = alt_df[alt_df['altitudebins'] == altbin]
+            
+            plot_title = f'los/altitudebin_{altbin}'
             # plot the data
             sea_plotter(df=altbin_df, df_col='density', xlabels=densities, title=plot_title)
 
@@ -59,7 +116,7 @@ def plotter(args, plot_dict):
             #get the data for this density
             density_df = alt_df[alt_df['density'] == density]
 
-            plot_title = f'density_{density}_altbins'
+            plot_title = f'los/density_{density}_altbins'
             
             # plot the data
             sea_plotter(df=density_df, df_col='altitudebins', xlabels=altbins, title=plot_title)

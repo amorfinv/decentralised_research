@@ -19,18 +19,33 @@ dir_files = 'results'
 # send the information to the logparser
 # parse the logs if creating geoapackages
 if 'plots' in args['create']:
-    plot_df = logp.logparse(args)
-    # plot_df.groupby(['concept']).mean()
-    # plot_df.boxplot(by ='LAYERTYPE', column =['count'], grid = False)
-    # plt.show()
+    plot_dict = logp.logparse(args)
+
+
 
 # get unique layertypes from df for x-axis
-layertypes = plot_df['layertype'].unique()
+layertypes_df = plot_dict['CONFLOG']['LAYERTYPES']
+
+layertypes = layertypes_df['layertype'].unique()
 
 fig, axes = plt.subplots(ncols=1, sharey=True)
 
 ax = (
-      plot_df.pipe((sns.boxplot, 'data'), x='layertype', y='count', hue='concept', order=layertypes)  
+      layertypes_df.pipe((sns.boxplot, 'data'), x='layertype', y='count', hue='concept', order=layertypes)  
+)
+sns.despine(trim=True)
+plt.show()
+
+
+# get unique layertypes from df for x-axis
+altbins_df = plot_dict['CONFLOG']['ALTITUDEBINS']
+
+altitudebins= altbins_df['altitudebins'].unique()
+
+fig, axes = plt.subplots(ncols=1, sharey=True)
+
+ax = (
+      altbins_df.pipe((sns.boxplot, 'data'), x='altitudebins', y='count', hue='concept', order=altitudebins)  
 )
 sns.despine(trim=True)
 plt.show()

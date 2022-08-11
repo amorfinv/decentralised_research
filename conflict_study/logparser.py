@@ -14,7 +14,9 @@ warnings.filterwarnings('ignore')
 
 def logparse(args):
     
-    plot_args = {}
+    conf_layer_dfs = {}
+    conf_alt_dfs = {}
+
     for i in track(range(len(args['combinations'])), description="Processing..."):
         scn_comb = args['combinations'][i]
         
@@ -23,8 +25,9 @@ def logparse(args):
         density = scn_comb[1]
         concept = scn_comb[2]
 
-        if density not in plot_args:
-            plot_args[density] = {}
+        if density not in conf_layer_dfs:
+            conf_layer_dfs[density] = {}
+            conf_alt_dfs[density] = {}
 
         parse_args = {'logtype':logtype, 'density':density, 'concept':concept}
 
@@ -40,21 +43,34 @@ def logparse(args):
             log_args = reglog(scenario_list, dataset_name, parse_args)
 
         if logtype == 'CONFLOG':
-            layer_type_confs = conflog(scenario_list, dataset_name, parse_args)
+            layer_type_confs,altitude_confs = conflog(scenario_list, dataset_name, parse_args)            
+            # add concept column and density column 
+            conf_layer_dfs[density][concept] = layer_type_confs
+            conf_alt_dfs[density][concept] = altitude_confs
 
         if logtype == 'LOSLOG':
             loslog(scenario_list, dataset_name, parse_args)
 
-        # add concept column and density column 
-        plot_args[density][concept] = layer_type_confs
     
-    # merge the dataframes to a big one
-    df = pd.DataFrame(columns=['scenario', 'LAYERTYPE', 'count', 'concept', 'density'])
-    for density, plot_arg in plot_args.items():
-        for concept, unique_df in plot_arg.items():
-            # append to the dataframe
-            df = df.append(unique_df)
-    return df
+    plot_df = {}
+    if 'CONFLOG' in args['logtype']:
+        # merge the dataframes to a big one of conf_layer_dfs
+        conf_df = pd.DataFrame(columns=['scenario', 'layertype', 'count', 'concept', 'density'])
+        for density, conf_layer_df in conf_layer_dfs.items():
+            for concept, unique_df in conf_layer_df.items():
+                # append to the dataframe
+                conf_df = conf_df.append(unique_df)
+
+        # merge the dataframes to a big one of conf_alt_dfs
+        alt_df = pd.DataFrame(columns=['scenario', 'altitudebins', 'count', 'concept', 'density'])
+        for density, conf_alt_df in conf_alt_dfs.items():
+            for concept, unique_df in conf_alt_df.items():
+                # append to the dataframe
+                alt_df = alt_df.append(unique_df)
+        
+        plot_df['CONFLOG'] = {'LAYERTYPES': conf_df, 'ALTITUDEBINS': alt_df}
+    
+    return plot_df
 
 
 
@@ -205,23 +221,18 @@ def conflog(scenario_list, dataset_name, parse_args):
         # add a new column called 'repetition' that takes the 'scenario' string and splits it on the underscore and takes the last value
         layer_type_confs['repetition'] = layer_type_confs['scenario'].apply(lambda x: x.split('_')[-2])
         
+        # another interesting study would be to look at the altitude differences between conflicts
+        df['ALT_DIFF'] = df.apply(lambda row: abs(row['ALT1'] - row['ALT2']), axis=1)
         
-        # # calculate the absolute difference between alt1 and alt2
-        # df['ALT_DIFF'] = df.apply(lambda row: abs(row['ALT1'] - row['ALT2']), axis=1)
+        # create some altitude bins to place alt-diff values in 0-9.144, 9.144-18.288, 18.288-27.432, 27.432-36.576, 36.576-45.72, 45.72-150
+        df['altitudebins'] = pd.cut(df['ALT_DIFF'], bins=[0, 9.144, 18.288, 27.432, 36.576, 45.72, 150], labels=['0L', '1L', '2L', '3L', '4L', '>4L'])
         
-        # # remove any smaller than 2 meters
-        # df = df[df['ALT_DIFF'] > 2]
+        altitude_confs = df.groupby(by=['scenario','altitudebins']).size()
+        altitude_confs = altitude_confs.to_frame().reset_index().rename(columns={0:'count'})
+        altitude_confs['concept'] = concept
+        altitude_confs['density'] = density
 
-        # scenario_count = df.groupby(by=['scenario']).count()
-
-        # # convert to epsg 32633
-        # gdf = gdf.to_crs(epsg=32633)
-
-        # # convert to a geopackage
-        # gpkg_fpath = os.path.join('gpkgs', gpkg_name)
-        # gdf.to_file(gpkg_fpath + '.gpkg', driver='GPKG')
-        
-        return layer_type_confs
+        return layer_type_confs, altitude_confs
 
     except ValueError:
         print('[red]Problem with these files:')

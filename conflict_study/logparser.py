@@ -18,6 +18,8 @@ def logparse(args):
     conf_alt_dfs = {}
     los_layer_dfs = {}
     los_alt_dfs = {}
+    general_conf_df = pd.DataFrame()
+    general_los_df = pd.DataFrame()
     for i in track(range(len(args['combinations'])), description="Processing..."):
         scn_comb = args['combinations'][i]
         
@@ -48,14 +50,16 @@ def logparse(args):
             log_args = reglog(scenario_list, dataset_name, parse_args)
 
         if logtype == 'CONFLOG':
-            layer_type_confs,altitude_confs = conflog(scenario_list, dataset_name, parse_args)            
+            layer_type_confs, altitude_confs, conf_df = conflog(scenario_list, dataset_name, parse_args)            
             conf_layer_dfs[density][concept] = layer_type_confs
             conf_alt_dfs[density][concept] = altitude_confs
+            general_conf_df = pd.concat([general_conf_df, conf_df])
 
         if logtype == 'LOSLOG':
-            layer_type_los,altitude_los = loslog(scenario_list, dataset_name, parse_args)
+            layer_type_los, altitude_los, los_df = loslog(scenario_list, dataset_name, parse_args)
             los_layer_dfs[density][concept] = layer_type_los
             los_alt_dfs[density][concept] = altitude_los 
+            general_los_df = pd.concat([general_los_df, los_df])
     
     # part 2 is to combine all dfs
     plot_df = {}
@@ -74,7 +78,11 @@ def logparse(args):
                 # append to the dataframe
                 alt_conf_df = alt_conf_df.append(unique_df)
         
-        plot_df['CONFLOG'] = {'LAYERTYPES': ltype_conf_df, 'ALTITUDEBINS': alt_conf_df}
+        plot_df['CONFLOG'] = {
+            'LAYERTYPES':   ltype_conf_df, 
+            'ALTITUDEBINS': alt_conf_df,
+            'DF':           general_conf_df
+            }
 
     if 'LOSLOG' in args['logtype']:
         # merge the dataframes to a big one of conf_layer_dfs
@@ -91,7 +99,11 @@ def logparse(args):
                 # append to the dataframe
                 alt_los_df = alt_los_df.append(unique_df)
         
-        plot_df['LOSLOG'] = {'LAYERTYPES': ltype_los_df, 'ALTITUDEBINS': alt_los_df}
+        plot_df['LOSLOG'] = {
+            'LAYERTYPES':   ltype_los_df, 
+            'ALTITUDEBINS': alt_los_df,
+            'DF':           general_los_df
+            }
     
     
     return plot_df
@@ -192,7 +204,7 @@ def conflog(scenario_list, dataset_name, parse_args):
     # place all logs in a dataframe
     df = pd.concat((pd.read_csv(f, skiprows=9, header=None, names=header_columns).assign(scenario = f[8:-4]) for f in conflog_files))
     
-    # convert time to datetime
+    # convert time to float
     df['time'] = pd.to_datetime(df['time'], unit='s', errors='coerce')
 
     # convert coords to numpy array
@@ -202,15 +214,18 @@ def conflog(scenario_list, dataset_name, parse_args):
     # look at column "AIRSPACETYPE1" and "AIRSPACETYPE2". Only keep the rows if they are both "constrained"
     df = df[(df['AIRSPACETYPE1'] == 'constrained') & (df['AIRSPACETYPE2'] == 'constrained')]
 
+    # add concept and density columns
+    df['concept'] = concept
+    df['density'] = density
+    df['repetition'] = df['scenario'].apply(lambda x: x.split('_')[-2])
+
     # Filter logs and get a layer type count
     layer_type_confs = filerlogs_for_layertype(df, concept, density)
 
     # Filter logs and get an altitude bin count
     altitude_confs = filterlogs_for_altbins(df, concept, density)
 
-    return layer_type_confs, altitude_confs
-
-
+    return layer_type_confs, altitude_confs, df
 
 
 def loslog(scenario_list, gpkg_name, parse_args):
@@ -229,7 +244,7 @@ def loslog(scenario_list, gpkg_name, parse_args):
     df = pd.concat((pd.read_csv(f, skiprows=9, header=None, names=header_columns).assign(scenario = f[8:-4]) for f in loslog_files))
     
     # convert time to datetime
-    df['timemindist'] = pd.to_datetime(df['timemindist'], unit='s', errors='coerce')
+    df['starttime'] = pd.to_datetime(df['starttime'], unit='s', errors='coerce')
 
     # convert coords to numpy array
     # convert to geodataframe
@@ -238,13 +253,18 @@ def loslog(scenario_list, gpkg_name, parse_args):
     # look at column "AIRSPACETYPE1" and "AIRSPACETYPE2". Only keep the rows if they are both "constrained"
     df = df[(df['AIRSPACETYPE1'] == 'constrained') & (df['AIRSPACETYPE2'] == 'constrained')]
 
+    # add concept and density columns
+    df['concept'] = concept
+    df['density'] = density
+    df['repetition'] = df['scenario'].apply(lambda x: x.split('_')[-2])
+
     # Filter logs and get a layer type count
     layer_type_los = filerlogs_for_layertype(df, concept, density)
 
     # Filter logs and get an altitude bin count
     altitude_los = filterlogs_for_altbins(df, concept, density)
 
-    return layer_type_los, altitude_los
+    return layer_type_los, altitude_los, df
 
 
 def filterlogs_for_altbins(df: pd.DataFrame, concept: str, density: str)-> pd.DataFrame:

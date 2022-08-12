@@ -10,9 +10,14 @@ dir_files = 'results'
 
 
 # send the information to the logparser and plot
-if 'plots' in args['create']:
+if 'dfs' in args['create']:
     # parse the data
     plot_dict = logp.logparse(args)
 
-    # now plot
-    plotp.plotter(args, plot_dict)
+    if 'plots' in args['create']:
+        # now plot
+        plotp.plotter(args, plot_dict)
+
+    if 'conftime':
+        # now plot
+        plotp.conftime(args, plot_dict)

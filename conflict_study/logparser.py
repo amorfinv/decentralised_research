@@ -49,14 +49,13 @@ def logparse(args):
 
         if logtype == 'CONFLOG':
             layer_type_confs,altitude_confs = conflog(scenario_list, dataset_name, parse_args)            
-            # add concept column and density column 
             conf_layer_dfs[density][concept] = layer_type_confs
             conf_alt_dfs[density][concept] = altitude_confs
 
         if logtype == 'LOSLOG':
             layer_type_los,altitude_los = loslog(scenario_list, dataset_name, parse_args)
             los_layer_dfs[density][concept] = layer_type_los
-            los_alt_dfs[density][concept] = altitude_los
+            los_alt_dfs[density][concept] = altitude_los 
     
     # part 2 is to combine all dfs
     plot_df = {}
@@ -96,7 +95,6 @@ def logparse(args):
     
     
     return plot_df
-
 
 
 def reglog(scenario_list, gpkg_name, gpkg_args):
@@ -190,32 +188,29 @@ def conflog(scenario_list, dataset_name, parse_args):
     concept = parse_args['concept']
     density = parse_args['density']
     print(f'[green]Parsing {dataset_name}...')
-    try:
 
-        # place all logs in a dataframe
-        df = pd.concat((pd.read_csv(f, skiprows=9, header=None, names=header_columns).assign(scenario = f[8:-4]) for f in conflog_files))
-        
-        # convert time to datetime
-        df['time'] = pd.to_datetime(df['time'], unit='s', errors='coerce')
+    # place all logs in a dataframe
+    df = pd.concat((pd.read_csv(f, skiprows=9, header=None, names=header_columns).assign(scenario = f[8:-4]) for f in conflog_files))
+    
+    # convert time to datetime
+    df['time'] = pd.to_datetime(df['time'], unit='s', errors='coerce')
 
-        # convert coords to numpy array
-        # convert to geodataframe
-        # df = gpd.GeoDataFrame(df, geometry=df.apply(lambda row: MultiPoint([(row['LON1'], row['LAT1']), (row['LON2'], row['LAT2'])]), axis=1), crs='epsg:4326')    
+    # convert coords to numpy array
+    # convert to geodataframe
+    # df = gpd.GeoDataFrame(df, geometry=df.apply(lambda row: MultiPoint([(row['LON1'], row['LAT1']), (row['LON2'], row['LAT2'])]), axis=1), crs='epsg:4326')    
 
-        # look at column "AIRSPACETYPE1" and "AIRSPACETYPE2". Only keep the rows if they are both "constrained"
-        df = df[(df['AIRSPACETYPE1'] == 'constrained') & (df['AIRSPACETYPE2'] == 'constrained')]
+    # look at column "AIRSPACETYPE1" and "AIRSPACETYPE2". Only keep the rows if they are both "constrained"
+    df = df[(df['AIRSPACETYPE1'] == 'constrained') & (df['AIRSPACETYPE2'] == 'constrained')]
 
-        # Filter logs and get a layer type count
-        layer_type_confs = filerlogs_for_layertype(df, concept, density)
+    # Filter logs and get a layer type count
+    layer_type_confs = filerlogs_for_layertype(df, concept, density)
 
-        # Filter logs and get an altitude bin count
-        altitude_confs = filterlogs_for_altbins(df, concept, density)
+    # Filter logs and get an altitude bin count
+    altitude_confs = filterlogs_for_altbins(df, concept, density)
 
-        return layer_type_confs, altitude_confs
+    return layer_type_confs, altitude_confs
 
-    except ValueError:
-        print('[red]Problem with these files:')
-        print(scenario_list)
+
 
 
 def loslog(scenario_list, gpkg_name, parse_args):
@@ -229,32 +224,27 @@ def loslog(scenario_list, gpkg_name, parse_args):
     concept = parse_args['concept']
     density = parse_args['density']
     print(f'[green]Parsing {gpkg_name}...')
-    try:
 
-        # place all logs in a dataframe
-        df = pd.concat((pd.read_csv(f, skiprows=9, header=None, names=header_columns).assign(scenario = f[8:-4]) for f in loslog_files))
-        
-        # convert time to datetime
-        df['timemindist'] = pd.to_datetime(df['timemindist'], unit='s', errors='coerce')
+    # place all logs in a dataframe
+    df = pd.concat((pd.read_csv(f, skiprows=9, header=None, names=header_columns).assign(scenario = f[8:-4]) for f in loslog_files))
+    
+    # convert time to datetime
+    df['timemindist'] = pd.to_datetime(df['timemindist'], unit='s', errors='coerce')
 
-        # convert coords to numpy array
-        # convert to geodataframe
-        # gdf = gpd.GeoDataFrame(df, geometry=df.apply(lambda row: MultiPoint([(row['LON1'], row['LAT1']), (row['LON2'], row['LAT2'])]), axis=1), crs='epsg:4326')
+    # convert coords to numpy array
+    # convert to geodataframe
+    # gdf = gpd.GeoDataFrame(df, geometry=df.apply(lambda row: MultiPoint([(row['LON1'], row['LAT1']), (row['LON2'], row['LAT2'])]), axis=1), crs='epsg:4326')
 
-        # look at column "AIRSPACETYPE1" and "AIRSPACETYPE2". Only keep the rows if they are both "constrained"
-        df = df[(df['AIRSPACETYPE1'] == 'constrained') & (df['AIRSPACETYPE2'] == 'constrained')]
+    # look at column "AIRSPACETYPE1" and "AIRSPACETYPE2". Only keep the rows if they are both "constrained"
+    df = df[(df['AIRSPACETYPE1'] == 'constrained') & (df['AIRSPACETYPE2'] == 'constrained')]
 
-        # Filter logs and get a layer type count
-        layer_type_los = filerlogs_for_layertype(df, concept, density)
+    # Filter logs and get a layer type count
+    layer_type_los = filerlogs_for_layertype(df, concept, density)
 
-        # Filter logs and get an altitude bin count
-        altitude_los = filterlogs_for_altbins(df, concept, density)
+    # Filter logs and get an altitude bin count
+    altitude_los = filterlogs_for_altbins(df, concept, density)
 
-        return layer_type_los, altitude_los
-
-    except ValueError:
-        print('[red]Problem with these files:')
-        print(scenario_list)
+    return layer_type_los, altitude_los
 
 
 def filterlogs_for_altbins(df: pd.DataFrame, concept: str, density: str)-> pd.DataFrame:

@@ -8,7 +8,9 @@ import traceback
 
 
 # There are three folders
-folders = ['projectedcd']#['1to1', 'm2', 'projectedcd']
+folders = ['projectedcd']
+# folders = ['1to1']
+# folders = ['m2']
 
 # # Fix the files in these folders
 # for folder in folders:

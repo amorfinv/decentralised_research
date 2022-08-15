@@ -276,7 +276,7 @@ def filterlogs_for_altbins(df: pd.DataFrame, concept: str, density: str)-> pd.Da
     df['ALT_DIFF'] = df.apply(lambda row: abs(row['ALT1'] - row['ALT2']), axis=1)
     
     # create some altitude bins to place alt-diff values in 0-9.144, 9.144-18.288, 18.288-27.432, 27.432-36.576, 36.576-45.72, 45.72-150
-    df['altitudebins'] = pd.cut(df['ALT_DIFF'], bins=[0, 9.144, 18.288, 27.432, 36.576, 45.72, 150], labels=['0L', '1L', '2L', '3L', '4L', '>4L'])
+    df['altitudebins'] = pd.cut(df['ALT_DIFF'], bins=[0, 2, 50], labels=['HOZ', 'VER'])
     
     altitude = df.groupby(by=['scenario','altitudebins']).size()
     altitude = altitude.to_frame().reset_index().rename(columns={0:'count'})

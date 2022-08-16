@@ -16,6 +16,8 @@ def plotter(args, plot_dict):
         # LAYERTYPES plotting
         layertypes_df = plot_dict['CONFLOG']['LAYERTYPES']
 
+        totals_df = plot_dict['CONFLOG']['DF'].groupby('scenario').size()
+
         # option 1 is to plot x-axis as density and give one plot per layer type
         densities = layertypes_df['density'].unique()
 
@@ -27,6 +29,10 @@ def plotter(args, plot_dict):
             # get the data for this layer type
             layertype_df = layertypes_df[layertypes_df['layertype'] == layertype]
             
+            # get percentage
+            layertype_df['total'] = layertype_df.apply(lambda x: totals_df.loc[x['scenario']], axis=1)
+            layertype_df['percentage'] = layertype_df.apply(lambda x: x['count']/x['total']*100, axis=1)
+            
             plot_title = f'confs/layertype_{layertype}'
             # plot the data
             sea_plotter(df=layertype_df, df_col='density', xlabels=densities, title=plot_title)
@@ -36,11 +42,14 @@ def plotter(args, plot_dict):
             #get the data for this density
             density_df = layertypes_df[layertypes_df['density'] == density]
 
-            plot_title = f'confs/density_{density}_ltypes'
+            density_df['total'] = density_df.apply(lambda x: totals_df.loc[x['scenario']], axis=1)
+            density_df['percentage'] = density_df.apply(lambda x: x['count']/x['total']*100, axis=1)
             
+            plot_title = f'confs/density_{density}_ltypes'
+
             # plot the data
             sea_plotter(df=density_df, df_col='layertype', xlabels=layertypes, title=plot_title)
-
+        
         # ALTITUDE plotting
         alt_df = plot_dict['CONFLOG']['ALTITUDEBINS']
 
@@ -54,7 +63,9 @@ def plotter(args, plot_dict):
         for altbin in altbins:
             # get the data for this layer type
             altbin_df = alt_df[alt_df['altitudebins'] == altbin]
-            
+            altbin_df['total'] = altbin_df.apply(lambda x: totals_df.loc[x['scenario']], axis=1)
+            altbin_df['percentage'] = altbin_df.apply(lambda x: x['count']/x['total']*100, axis=1)
+
             plot_title = f'confs/altitudebin_{altbin}'
             # plot the data
             sea_plotter(df=altbin_df, df_col='density', xlabels=densities, title=plot_title)
@@ -63,15 +74,20 @@ def plotter(args, plot_dict):
             #get the data for this density
             density_df = alt_df[alt_df['density'] == density]
 
+            density_df['total'] = density_df.apply(lambda x: totals_df.loc[x['scenario']], axis=1)
+            density_df['percentage'] = density_df.apply(lambda x: x['count']/x['total']*100, axis=1)
+
             plot_title = f'confs/density_{density}_altbins'
             
             # plot the data
             sea_plotter(df=density_df, df_col='altitudebins', xlabels=altbins, title=plot_title)
 
-
+    
     if 'LOSLOG' in args['logtype']:
         # LAYERTYPES plotting
         layertypes_df = plot_dict['LOSLOG']['LAYERTYPES']
+        
+        totals_df = plot_dict['LOSLOG']['DF'].groupby('scenario').size()
 
         # option 1 is to plot x-axis as density and give one plot per layer type
         densities = layertypes_df['density'].unique()
@@ -83,6 +99,10 @@ def plotter(args, plot_dict):
         for layertype in layertypes:
             # get the data for this layer type
             layertype_df = layertypes_df[layertypes_df['layertype'] == layertype]
+
+            # get percentage
+            layertype_df['total'] = layertype_df.apply(lambda x: totals_df.loc[x['scenario']], axis=1)
+            layertype_df['percentage'] = layertype_df.apply(lambda x: x['count']/x['total']*100, axis=1)
             
             plot_title = f'los/layertype_{layertype}'
             # plot the data
@@ -92,6 +112,9 @@ def plotter(args, plot_dict):
         for density in densities:
             #get the data for this density
             density_df = layertypes_df[layertypes_df['density'] == density]
+
+            density_df['total'] = density_df.apply(lambda x: totals_df.loc[x['scenario']], axis=1)
+            density_df['percentage'] = density_df.apply(lambda x: x['count']/x['total']*100, axis=1)
 
             plot_title = f'los/density_{density}_ltypes'
             
@@ -111,7 +134,8 @@ def plotter(args, plot_dict):
         for altbin in altbins:
             # get the data for this layer type
             altbin_df = alt_df[alt_df['altitudebins'] == altbin]
-            
+            altbin_df['total'] = altbin_df.apply(lambda x: totals_df.loc[x['scenario']], axis=1)
+            altbin_df['percentage'] = altbin_df.apply(lambda x: x['count']/x['total']*100, axis=1)        
             plot_title = f'los/altitudebin_{altbin}'
             # plot the data
             sea_plotter(df=altbin_df, df_col='density', xlabels=densities, title=plot_title)
@@ -120,7 +144,8 @@ def plotter(args, plot_dict):
         for density in densities:
             #get the data for this density
             density_df = alt_df[alt_df['density'] == density]
-
+            density_df['total'] = density_df.apply(lambda x: totals_df.loc[x['scenario']], axis=1)
+            density_df['percentage'] = density_df.apply(lambda x: x['count']/x['total']*100, axis=1)    
             plot_title = f'los/density_{density}_altbins'
             
             # plot the data
@@ -145,21 +170,23 @@ def sea_plotter(df: pd.DataFrame, df_col: str, xlabels: np.array, title:str):
 
     concepts_colours=sns.color_palette("hls", 2)
 
-    fig, axes = plt.subplots(ncols=1, sharey=True)
+    fig=plt.figure()
 
     ax = (
         df.pipe((sns.boxplot, 'data'), 
                 x=df_col, 
-                y='count',
+                y='percentage',
                 hue='concept', 
                 order=xlabels, 
                 palette=concepts_colours,
-                # estimator=lambda x: sum(x==0)*100.0/len(x)
                 )  
     )
-    sns.despine(trim=True)
+
+    # sns.despine(trim=True)
     plt.legend(loc='upper left')
     adjust_box_widths(fig, 0.5)
+    plt.yticks(np.arange(0, 101, 10))
+    plt.ylim(-5, 105)
     plt.savefig(f'images/{title}.png')
     plt.close()
 

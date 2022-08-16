@@ -18,6 +18,6 @@ if 'dfs' in args['create']:
         # now plot
         plotp.plotter(args, plot_dict)
 
-    if 'conftime':
+    if 'conftime' in args['create']:
         # now plot
         plotp.conftime(args, plot_dict)

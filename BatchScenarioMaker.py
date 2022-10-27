@@ -8,13 +8,7 @@ Created on Thu Jun  3 11:47:30 2021
 import os
 
 # set the location of the vanilla scenarios
-scenario_folders = ['M2_scenarios/', 
-                    'airspace_structure_study/1_to_1_scenarios/',
-                    'heading_layer_allocation_study/head_alloc_scenarios/',
-                    'heading_layer_allocation_study/heading_alloc_scenarios_no_flow/',
-                    'heading_based_cr/hdg_cr_scenarios/',
-                    'baseline_scenarios/',
-                    'flow_control/grid_sector_scenarios'
+scenario_folders = ['speed_heterogeneity/', 
                     ]
 
 

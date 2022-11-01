@@ -109,7 +109,7 @@ print("Grid sectors mean leght", grid_flows_dataframe["Length"].mean())
 print("#################")
 
 gridlarge_flows_dataframe = pd.DataFrame.from_dict(gridlarge_flows)
-gridlarge_flows_dataframe["Flow"]="Grid Large"
+gridlarge_flows_dataframe["Flow"]="Grid2"
 
 print("Grid large sectors has # flow grousp", gridlarge_flows_dataframe.shape[0])
 
@@ -148,7 +148,7 @@ print("Grid sectors max leght", orig_flows_dataframe["Length"].max())
 print("Grid sectors min leght", orig_flows_dataframe["Length"].min())
 print("Grid sectors mean leght", orig_flows_dataframe["Length"].mean())
 
-frames=[orig_flows_dataframe,grid_flows_dataframe,cluster_flows_dataframe,cluster2_flows_dataframe, gridlarge_flows_dataframe]
+frames=[orig_flows_dataframe,grid_flows_dataframe, gridlarge_flows_dataframe,cluster_flows_dataframe,cluster2_flows_dataframe]
 
 flows_df=pd.concat(frames)
 

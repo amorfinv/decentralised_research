@@ -42,6 +42,12 @@ with open('clusters_5/flows.json', 'r') as filename:
     
 with open('clusters_5/flow_length.json', 'r') as filename:
     cluster2_flows_lengths= json.load(filename)
+
+with open('grid_large/flows.json', 'r') as filename:
+    gridlarge_flows_dict = json.load(filename)
+    
+with open('grid_large/flow_length.json', 'r') as filename:
+    gridlarge_flows_lengths= json.load(filename)
     
 grid_flows={}
 grid_flows["Strokes"]=[] 
@@ -51,7 +57,15 @@ for k in grid_flows_dict.keys():
     grid_flows["Group"].append(k)
     grid_flows["Strokes"].append(len(grid_flows_dict[k]))
     grid_flows["Length"].append(grid_flows_lengths[k])
-    
+
+gridlarge_flows={}
+gridlarge_flows["Strokes"]=[] 
+gridlarge_flows["Length"]=[] 
+gridlarge_flows["Group"]=[] 
+for k in gridlarge_flows_dict.keys():
+    gridlarge_flows["Group"].append(k)
+    gridlarge_flows["Strokes"].append(len(gridlarge_flows_dict[k]))
+    gridlarge_flows["Length"].append(gridlarge_flows_lengths[k])    
 
 cluster_flows={}
 cluster_flows["Strokes"]=[] 
@@ -94,6 +108,17 @@ print("Grid sectors mean leght", grid_flows_dataframe["Length"].mean())
 
 print("#################")
 
+gridlarge_flows_dataframe = pd.DataFrame.from_dict(gridlarge_flows)
+gridlarge_flows_dataframe["Flow"]="Grid Large"
+
+print("Grid large sectors has # flow grousp", gridlarge_flows_dataframe.shape[0])
+
+print("Grid large sectors max leght", gridlarge_flows_dataframe["Length"].max())
+print("Grid large sectors min leght", gridlarge_flows_dataframe["Length"].min())
+print("Grid large sectors mean leght", gridlarge_flows_dataframe["Length"].mean())
+
+print("#################")
+
 cluster_flows_dataframe = pd.DataFrame.from_dict(cluster_flows)
 cluster_flows_dataframe["Flow"]="Clusters1"
 
@@ -123,7 +148,7 @@ print("Grid sectors max leght", orig_flows_dataframe["Length"].max())
 print("Grid sectors min leght", orig_flows_dataframe["Length"].min())
 print("Grid sectors mean leght", orig_flows_dataframe["Length"].mean())
 
-frames=[orig_flows_dataframe,grid_flows_dataframe,cluster_flows_dataframe,cluster2_flows_dataframe]
+frames=[orig_flows_dataframe,grid_flows_dataframe,cluster_flows_dataframe,cluster2_flows_dataframe, gridlarge_flows_dataframe]
 
 flows_df=pd.concat(frames)
 

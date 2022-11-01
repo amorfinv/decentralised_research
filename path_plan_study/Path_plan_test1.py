@@ -13,7 +13,6 @@ import plugins.streets.agent_path_planning as pp
 import plugins.streets.agent_path_planning_geometric as ppg
 import plugins.streets.agent_path_planning_small_cells as ppsc
 from plugins.streets.open_airspace_grid import Cell, open_airspace
-from origin_destination import PreGeneratedPaths,scenario_dills
 import math
 import dill
 from pyproj import  Transformer
@@ -23,19 +22,12 @@ import shapely.geometry
 import geopandas as gpd
 
 
-# Step 1: Import the graph we will be using
-G = ox.io.load_graphml('whole_vienna/gis/finalized_graph.graphml')
 
-edges = ox.graph_to_gdfs(G)[1]
-gdf=ox.graph_to_gdfs(G, nodes=False, fill_edge_geometry=True)
-print('Graph loaded!')
-
-#Load the open airspace grid
-input_file=open("smaller_cells_open_airspace_grid.dill", 'rb')
-grid_smaller_cells=dill.load(input_file)
 
 input_file=open("open_airspace_final.dill", 'rb')
 grid_orig=dill.load(input_file)
+
+print(dgbfds)
 
 # load the geofence gdfs
 geo_gdf = gpd.read_file('geofences.gpkg', driver='GPKG')

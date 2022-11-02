@@ -17,18 +17,17 @@ import colorsys
 import math
 import numpy as np
 
-
-with open('grid_sectors/flows.json', 'r') as filename:
+with open('graph_data/grid_sectors_small/flows.json', 'r') as filename:
     grid_flows_dict = json.load(filename)
     
-with open('grid_sectors/flow_length.json', 'r') as filename:
+with open('graph_data/grid_sectors_small/flow_length.json', 'r') as filename:
     grid_flows_lengths= json.load(filename)
     
     
-with open('cluster_sectors/flows.json', 'r') as filename:
+with open('graph_data/cluster_sectors_1/flows.json', 'r') as filename:
     cluster_flows_dict = json.load(filename)
     
-with open('cluster_sectors/flow_length.json', 'r') as filename:
+with open('graph_data/cluster_sectors_1/flow_length.json', 'r') as filename:
     cluster_flows_lengths= json.load(filename)
     
 with open('airspace_design/flows.json', 'r') as filename:
@@ -37,16 +36,16 @@ with open('airspace_design/flows.json', 'r') as filename:
 with open('airspace_design/flow_length.json', 'r') as filename:
     orig_flows_lengths= json.load(filename)
     
-with open('clusters_5/flows.json', 'r') as filename:
+with open('graph_data/cluster_sectors_2/flows.json', 'r') as filename:
     cluster2_flows_dict = json.load(filename)
     
-with open('clusters_5/flow_length.json', 'r') as filename:
+with open('graph_data/cluster_sectors_2/flow_length.json', 'r') as filename:
     cluster2_flows_lengths= json.load(filename)
 
-with open('grid_large/flows.json', 'r') as filename:
+with open('graph_data/grid_sectors_large/flows.json', 'r') as filename:
     gridlarge_flows_dict = json.load(filename)
     
-with open('grid_large/flow_length.json', 'r') as filename:
+with open('graph_data/grid_sectors_large/flow_length.json', 'r') as filename:
     gridlarge_flows_lengths= json.load(filename)
     
 grid_flows={}

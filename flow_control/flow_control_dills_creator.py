@@ -32,7 +32,7 @@ print('Graph loaded!')
 
 
 #Load the open airspace grid
-input_file=open("open_airspace_final.dill", 'rb')
+input_file=open("airspace_design/open_airspace_final.dill", 'rb')
 #input_file=open("open_airspace_grid_updated.dill", 'rb')##for 3d path planning
 grid=dill.load(input_file)
 

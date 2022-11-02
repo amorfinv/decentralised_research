@@ -51,32 +51,32 @@ Contains the scenarios of each different case
 
 This contains all the geogrpahical data, graphml files and QGIS files.
 
-### "ConvertDill2GPKG.py"
+## "ConvertDill2GPKG.py"
 
 This converts the cluster_center_dills into a geopackage file for analysis.
 
-### "CreateClusterSectors.py"
+## "CreateClusterSectors.py"
 
 This creates the cluster sectors based on a conflog file. The voronoi cells are then created via QGIS.
 There is some manual modification at the borders to ensure that all edges are contained within one voronoi cell.
 
-### "Edges2FlowGroupsAssignment.py"
+## "Edges2FlowGroupsAssignment.py"
 
 This code takes "finalized_graph" (M2_baseline graph) and a sector grid to assign new flow groups to the graph based on the new grid.
 
-### "flow_control_dills_creator.py"
+## "flow_control_dills_creator.py"
 
 Creates a flow control dill for each case.
 
-### "flow_groups_graphs.py"
+## "flow_groups_graphs.py"
 
 Creates a graph of flow groups.
 
-### "prepare_jsons.py"
+## "prepare_jsons.py"
 
 This code takes a graph and generates some jsons for BlueSky simulation.
 
-### "flow_manage.cfg"
+## "flow_manage.cfg"
 
 This is a settings file for generating the grid for grid_sectors_small and grid_sectors_large.
 https://github.com/amorfinv/flowmanage

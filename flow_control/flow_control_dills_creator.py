@@ -21,6 +21,10 @@ import math
 from shapely.geometry import LineString
 import shapely.geometry
 from pyproj import  Transformer
+from os import path
+
+# set folder where dill will be saved
+dill_folder = 'graph_data/M2_baseline'
 
 # Step 1: Import the graph we will be using
 G = ox.io.load_graphml('whole_vienna/gis/finalized_graph.graphml')

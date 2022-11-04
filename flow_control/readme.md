@@ -41,7 +41,7 @@ The dill is created with a prepared graph and "flow_control_dills_creator.py".
 
 ## "plugins/streets"
 
-....
+This contains the flow_control and agent_path_planning python codes, to be loaded as plugins on BlueSky. One flow control code is included for each flow control variation.
 
 ## "scenarios/"
 

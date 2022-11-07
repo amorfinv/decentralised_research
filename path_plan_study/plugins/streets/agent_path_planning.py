@@ -889,6 +889,11 @@ class PathPlanning:
                 self.start_point=Point(tuple((self.lon_start_actual,self.lat_start_actual)))
             if self.ousideOfCellsDestination:
                 self.goal_point=Point(tuple((self.lon_dest_actual,self.lat_dest_actual)))
+
+            del self.flow_control_graph #empty these, we do not need it any more
+            del self.gdf
+            del self.open_airspace_grid
+ 
             return 
         
         

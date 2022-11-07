@@ -7,10 +7,11 @@ Created on Tue Oct 12 10:51:03 2021
 
 #experimetn number
 #1 for baseline eucledean and manhattan with turning cost =9.144/av_speed_vertical
-#2 for eucledean with turning cost =9.144/av_speed_vertical
-#3 for  manhattan with turning cost =9.144/av_speed_vertical
-# 4 for eucledean and manhattan with turning cost =0.01 , almost 0
-#5 for eucledean and manhattan with turning cost =150 for mp30 and 67 for mp20
+#2 for manhattan with turning cost =9.144/av_speed_vertical
+#3 for  eucledean with turning cost =9.144/av_speed_vertical
+# 4 for eucledean and manhattan with turning cost =0.01 , almost 0 changed tunring cost to 1
+#5 for  eucledean and manhattan with turning cost =150 for mp30 and 67 for mp20
+#6 for  eucledean with turning cost =150 for mp30 and 67 for mp20
 experiment_number=1
 
 
@@ -501,7 +502,7 @@ def heuristic(current, goal,speed,flow_graph,graph):
     
         if graph.groups_list[current]!=graph.groups_list[goal]:
             h=h+9.144/av_speed_vertical
-    elif experiment_number==3:#only eucledean
+    elif experiment_number==3 :#only eucledean
         av_speed_vertical=5.0
         h=eucledean_distance(cc, gg)/speed
     
@@ -515,7 +516,7 @@ def heuristic(current, goal,speed,flow_graph,graph):
             h=(abs(cc.x_cartesian-gg.x_cartesian)+abs(cc.y_cartesian-gg.y_cartesian))/speed
     
         if graph.groups_list[current]!=graph.groups_list[goal]:
-            h=h+0.01
+            h=h+1#0.01
     elif experiment_number==5:
         av_speed_vertical=5.0
         if cc.open_airspace or gg.open_airspace:
@@ -528,7 +529,15 @@ def heuristic(current, goal,speed,flow_graph,graph):
                 h=h+6.7
             else:
                 h=h+9.75
-                     
+    elif experiment_number==6:#only eucledean
+        av_speed_vertical=5.0
+        h=eucledean_distance(cc, gg)/speed
+    
+        if graph.groups_list[current]!=graph.groups_list[goal]:
+           if speed==10.29:
+                h=h+6.7
+           else:
+                h=h+9.75                   
     return h
 
 
@@ -568,8 +577,8 @@ def compute_c(current,neigh,edges_speed,flow_graph,speed,graph):
             if experiment_number in [1,2,3]:
                 g=9.144/av_speed_vertical
             elif experiment_number==4:
-                g=0.01
-            elif experiment_number==5:
+                g=1#0.01
+            elif experiment_number==5 or experiment_number==6:
                 if speed==10.29:
                     g=6.7
                 else:
@@ -808,7 +817,7 @@ class PathPlanning:
                         self.start_index_previous=u
                     else:
                         self.start_index,index=find_closest_cell(self.open_airspace_grid.grid,p)
-                        self.start_index_previous=6000
+                        self.start_index_previous=5000
                         self.ousideOfCellsOrigin=True
                         self.lon_start_actual=lon_start
                         self.lat_start_actual=lat_start
@@ -820,7 +829,7 @@ class PathPlanning:
                 else:
                     open_start=winner[1]
                     self.start_index=self.open_airspace_grid.grid[open_start].key_index
-                    self.start_index_previous=6000
+                    self.start_index_previous=5000
                     
 
 
@@ -846,7 +855,7 @@ class PathPlanning:
                         self.goal_index_next=v
                     else:
                         self.goal_index,index=find_closest_cell(self.open_airspace_grid.grid,p)
-                        self.goal_index_next=6000
+                        self.goal_index_next=5000
                         self.ousideOfCellsDestination=True
                         self.lon_dest_actual=lon_dest
                         self.lat_dest_actual=lat_dest
@@ -857,7 +866,7 @@ class PathPlanning:
                 else:
                     open_goal=winner[1]
                     self.goal_index=self.open_airspace_grid.grid[open_goal].key_index
-                    self.goal_index_next=6000
+                    self.goal_index_next=5000
                     
 
         del self.open_airspace_cells
@@ -872,7 +881,7 @@ class PathPlanning:
             #print("same goal to start index")
             self.init_succesful=False
             return 
-        if self.goal_index_next==6000 and self.start_index_previous==6000 and self.start_index==self.goal_index:
+        if self.goal_index_next==5000 and self.start_index_previous==5000 and self.start_index==self.goal_index:
             #Start and destination in the same cell
             #print("same cell")
             self.in_same_cell=True
@@ -880,10 +889,6 @@ class PathPlanning:
                 self.start_point=Point(tuple((self.lon_start_actual,self.lat_start_actual)))
             if self.ousideOfCellsDestination:
                 self.goal_point=Point(tuple((self.lon_dest_actual,self.lat_dest_actual)))
-
-            del self.flow_control_graph #empty these, we do not need it any more
-            del self.gdf
-            del self.open_airspace_grid
             return 
         
         
@@ -1272,7 +1277,7 @@ class PathPlanning:
         
         result = np.where(self.os_keys2_indices ==self.start_index)
         rr=np.where(result[1] ==0)
-        if self.start_index_previous==6000:
+        if self.start_index_previous==5000:
             start_id=self.os_keys2_indices[result[0][rr]][0][1]
         else:
             for ii in self.os_keys2_indices[result[0][rr]][0][1:]:
@@ -1288,7 +1293,7 @@ class PathPlanning:
                     break
         result = np.where(self.os_keys2_indices ==self.goal_index)
         rr=np.where(result[1] ==0)
-        if self.goal_index_next==6000:
+        if self.goal_index_next==5000:
             goal_id=self.os_keys2_indices[result[0][rr]][0][1]
         else:
             for ii in self.os_keys2_indices[result[0][rr]][0][1:]:
@@ -1322,18 +1327,18 @@ class PathPlanning:
         indices_nodes=[]
         #turn_indices=[]
         if path_found:
-            route,turns,indices_nodes,turn_coord,groups,in_constrained,turn_speed,init_groups=self.get_path(self.path,self.graph,self.flow_graph.edges_init_speed,self.flow_graph.edges_graph)
+            route,nodes,turns,indices_nodes,turn_coord,groups,in_constrained,turn_speed,init_groups=self.get_path(self.path,self.graph,self.flow_graph.edges_init_speed,self.flow_graph.edges_graph)
 
             if route==None:
-                print("NO path found")
                 #No path was found
+                print("No path found")
                 return [],[],[],[],[],[],[],[]
             
             os_id1=self.start_index_previous
 
             os_id2=indices_nodes[0]
                 
-            if 2000 not in init_groups and self.start_index_previous==6000:
+            if 2000 not in init_groups and self.start_index_previous==5000:
                     edges_list.append((os_id1,os_id2))
 
                     nodes_index=0
@@ -1370,7 +1375,7 @@ class PathPlanning:
     
                         if init_groups[nodes_index]==2000 and init_groups[nodes_index+1]==2000:
                             nodes_index=nodes_index+1
-                            os_id1=6000
+                            os_id1=5000
                             os_id2=indices_nodes[nodes_index]
     
                         else:
@@ -1423,7 +1428,7 @@ class PathPlanning:
         self.in_constrained=np.array(in_constrained,dtype=np.bool8)
         self.turn_speed=np.array(turn_speed,dtype=np.uint16())
         
-        return route,turns,edges_list,next_turn_point,groups,in_constrained,turn_speed ,repetition_cnt
+        return route,nodes,turns,edges_list,next_turn_point,groups,in_constrained,turn_speed ,repetition_cnt
     
     ##Function to export the route based on the D* search graph
     ##Retruns: route,turns,next_node_index,turn_coord,groups
@@ -2234,7 +2239,7 @@ class PathPlanning:
 
 
 
-        return route,turns,next_node_index,turn_coords,group_numbers,in_constrained,turn_speed,init_groups
+        return route,route_centers,turns,next_node_index,turn_coords,group_numbers,in_constrained,turn_speed,init_groups
  
     def update_changed_vertices(self,path,graph,edges_speed,edges,edges_old,change=True,change_list=[]):
         
@@ -2353,8 +2358,8 @@ class PathPlanning:
         
         self.start_index=next_node_index
         self.start_index_previous=prev_node_osmnx_id
-        if prev_node_osmnx_id>4480 and prev_node_osmnx_id!=6000:
-            prev_node_osmnx_id=6000
+        if prev_node_osmnx_id>4480 and prev_node_osmnx_id!=5000:
+            prev_node_osmnx_id=5000
             self.start_index=self.start_index_previous
             next_node_index=self.start_index_previous
             self.start_index_previous=prev_node_osmnx_id
@@ -2365,7 +2370,7 @@ class PathPlanning:
         p=transformer.transform(lat,lon)
         self.graph.start_point=Point(tuple((p[0],p[1])))
 
-        if self.start_index_previous==6000:
+        if self.start_index_previous==5000:
             self.graph.start_ind=self.start_index
         else:
             self.graph.start_ind=-1
@@ -2435,7 +2440,7 @@ class PathPlanning:
             start_id=None
             result = np.where(self.os_keys2_indices ==self.start_index)
             rr=np.where(result[1] ==0)
-            if self.start_index_previous==6000:
+            if self.start_index_previous==5000:
                 start_id=self.os_keys2_indices[result[0][rr]][0][1]
             else:
                 for ii in self.os_keys2_indices[result[0][rr]][0][1:]:
@@ -2471,7 +2476,7 @@ class PathPlanning:
                 os_id2=indices_nodes[0]
 
                 
-                if 2000 not in init_groups and self.start_index_previous==6000:
+                if 2000 not in init_groups and self.start_index_previous==5000:
                     edges_list.append((os_id1,os_id2))
 
                     nodes_index=0
@@ -2509,7 +2514,7 @@ class PathPlanning:
     
                         if init_groups[nodes_index]==2000 and init_groups[nodes_index+1]==2000:
                             nodes_index=nodes_index+1
-                            os_id1=6000
+                            os_id1=5000
                             os_id2=indices_nodes[nodes_index]
     
                         else:
@@ -2716,7 +2721,7 @@ class PathPlanning:
                     p=transformer.transform(lat,lon)
                     self.graph.start_point=Point(tuple((p[0],p[1])))
             
-                    if self.start_index_previous==6000:
+                    if self.start_index_previous==5000:
                         self.graph.start_ind=self.start_index
                     else:
                         self.graph.start_ind=-1
@@ -2742,7 +2747,7 @@ class PathPlanning:
                         start_id=None
                         result = np.where(self.os_keys2_indices ==self.start_index)
                         rr=np.where(result[1] ==0)
-                        if self.start_index_previous==6000:
+                        if self.start_index_previous==5000:
                             start_id=self.os_keys2_indices[result[0][rr]][0][1]
                         else:
                             for ii in self.os_keys2_indices[result[0][rr]][0][1:]:
@@ -2778,7 +2783,7 @@ class PathPlanning:
                             os_id2=indices_nodes[0]
             
                             
-                            if 2000 not in init_groups and self.start_index_previous==6000:
+                            if 2000 not in init_groups and self.start_index_previous==5000:
                                 edges_list.append((os_id1,os_id2))
             
                                 nodes_index=0
@@ -2816,7 +2821,7 @@ class PathPlanning:
                 
                                     if init_groups[nodes_index]==2000 and init_groups[nodes_index+1]==2000:
                                         nodes_index=nodes_index+1
-                                        os_id1=6000
+                                        os_id1=5000
                                         os_id2=indices_nodes[nodes_index]
                 
                                     else:
@@ -2956,7 +2961,7 @@ class PathPlanning:
             start_id=None
             result = np.where(self.os_keys2_indices ==self.start_index)
             rr=np.where(result[1] ==0)
-            if self.start_index_previous==6000:
+            if self.start_index_previous==5000:
                 start_id=self.os_keys2_indices[result[0][rr]][0][1]
             else:
                 for ii in self.os_keys2_indices[result[0][rr]][0][1:]:
@@ -2989,7 +2994,7 @@ class PathPlanning:
                 os_id2=indices_nodes[0]
             
                 
-                if 2000 not in init_groups and self.start_index_previous==6000:
+                if 2000 not in init_groups and self.start_index_previous==5000:
                     edges_list.append((os_id1,os_id2))
 
                     nodes_index=0
@@ -3027,7 +3032,7 @@ class PathPlanning:
     
                         if init_groups[nodes_index]==2000 and init_groups[nodes_index+1]==2000:
                             nodes_index=nodes_index+1
-                            os_id1=6000
+                            os_id1=5000
                             os_id2=indices_nodes[nodes_index]
     
                         else:

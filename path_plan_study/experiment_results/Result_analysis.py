@@ -72,52 +72,52 @@ def lighten_color(color, amount=0.5):
 ##Load teh result dictionaries and convert them to pandas datafarmes
 input_file=open("experiment_results/experiment_results/Path_plan_results_experiment1.dill", 'rb')
 exp1=dill.load(input_file) #original
-#del exp1["geobreach"]
+del exp1["geobreach"]
 exp1_dataframe = pd.DataFrame.from_dict(exp1)
 exp1_dataframe["Experiment"]="Original"
 
 input_file=open("experiment_results/experiment_results/Path_plan_results_experiment2.dill", 'rb')
 exp2=dill.load(input_file) 
-#del exp2["geobreach"]
+del exp2["geobreach"]
 exp2_dataframe = pd.DataFrame.from_dict(exp2)
 exp2_dataframe["Experiment"]="Exp1"
 
 input_file=open("experiment_results/experiment_results/Path_plan_results_experiment3.dill", 'rb')
 exp3=dill.load(input_file)
-#del exp3["geobreach"]
+del exp3["geobreach"]
 exp3_dataframe = pd.DataFrame.from_dict(exp3)
 exp3_dataframe["Experiment"]="Exp2"
 
 input_file=open("experiment_results/experiment_results/Path_plan_results_experiment4.dill", 'rb')
 exp4=dill.load(input_file)
-#del exp4["geobreach"]
+del exp4["geobreach"]
 exp4_dataframe = pd.DataFrame.from_dict(exp4)
 exp4_dataframe["Experiment"]="Exp3"
 
 input_file=open("experiment_results/experiment_results/Path_plan_results_experiment5.dill", 'rb')
 exp5=dill.load(input_file) 
-#del exp5["geobreach"]
+del exp5["geobreach"]
 exp5_dataframe = pd.DataFrame.from_dict(exp5)
 exp5_dataframe["Experiment"]="Exp4"
 
 input_file=open("experiment_results/experiment_results/Path_plan_results_experiment6.dill", 'rb')
 exp6=dill.load(input_file) 
-#del exp6["geobreach"]
+del exp6["geobreach"]
 exp6_dataframe = pd.DataFrame.from_dict(exp6)
 exp6_dataframe["Experiment"]="Exp5"
 
 input_file=open("experiment_results/experiment_results/Path_plan_results_smaller_cells.dill", 'rb')
 exp7=dill.load(input_file) 
-#del exp7["geobreach"]
+del exp7["geobreach"]
 exp7_dataframe = pd.DataFrame.from_dict(exp7)
-exp7_dataframe["Experiment"]="Exp6"#"Denser \n open graph"
+exp7_dataframe["Experiment"]="Denser \n open graph"
 
 
 input_file=open("experiment_results/experiment_results/Path_plan_results_geom.dill", 'rb')
 exp8=dill.load(input_file) 
-#del exp8["geobreach"]
+del exp8["geobreach"]
 exp8_dataframe = pd.DataFrame.from_dict(exp8)
-exp8_dataframe["Experiment"]="Exp7"#"Geometric \n approach"
+exp8_dataframe["Experiment"]="Geometric \n approach"
 
 
 frames=[exp1_dataframe,exp2_dataframe,exp3_dataframe,exp4_dataframe,exp5_dataframe,exp6_dataframe,exp7_dataframe,exp8_dataframe]
@@ -126,35 +126,22 @@ results_df=pd.concat(frames)
 
 
 fig=plt.figure()
-sns.boxplot(y="lens", x='Experiment', data=results_df).set(title="Route length",ylabel="Route length (m)")
+sns.boxplot(y="lens", x='Experiment', data=results_df).set(title="Title")
 adjust_box_widths(fig, 0.9)
 
 #plt.ylim(0, 40000)
 plt.show()
 
 fig=plt.figure()
-sns.boxplot(y="flight_durations", x='Experiment', data=results_df).set(title="Flight duration",ylabel="Flight duration (sec)")
+sns.boxplot(y="flight_durations", x='Experiment', data=results_df).set(title="Title")
 adjust_box_widths(fig, 0.9)
 
 plt.ylim(0, 5000)
 plt.show()
 
 fig=plt.figure()
-sns.boxplot(y="computation_time", x='Experiment', data=results_df).set(title="Computation time",ylabel="Computation time (sec)")
+sns.boxplot(y="computation_time", x='Experiment', data=results_df).set(title="Title")
 adjust_box_widths(fig, 0.9)
-
-plt.show()
-
-fig=plt.figure()
-sns.boxplot(y="memory_size", x='Experiment', data=results_df).set(title="Memory size",ylabel="Memory size")
-adjust_box_widths(fig, 0.9)
-
-plt.show()
-
-fig=plt.figure()
-sns.boxplot(y="memory_size", x='Experiment', data=results_df).set(title="Memory size",ylabel="Memory size")
-adjust_box_widths(fig, 0.9)
-plt.ylim(0, 2000000)
 
 plt.show()
 
@@ -178,10 +165,8 @@ for i,df in enumerate([exp1_dataframe,exp2_dataframe,exp3_dataframe,exp4_datafra
     avg_flight_time=ddf["flight_durations"].mean() 
     avg_lens=ddf["lens"].mean()  
     avg_turn_numbers=ddf["turn_numbers"].mean()  
-    avg_size=ddf["memory_size"].mean()  
-    geobreaches=ddf["geobreach"].sum()  
     
-    print("For ",i+1,":", avg_computation_time,avg_dstart_rep,avg_geom_rep,avg_flight_time,avg_lens,avg_turn_numbers,avg_size,geobreaches)
+    print("For ",i+1,":", avg_computation_time,avg_dstart_rep,avg_geom_rep,avg_flight_time,avg_lens,avg_turn_numbers)
     
     ddf=mp20_df
     avg_computation_time=ddf["computation_time"].mean()
@@ -190,10 +175,8 @@ for i,df in enumerate([exp1_dataframe,exp2_dataframe,exp3_dataframe,exp4_datafra
     avg_flight_time=ddf["flight_durations"].mean() 
     avg_lens=ddf["lens"].mean()  
     avg_turn_numbers=ddf["turn_numbers"].mean()  
-    avg_size=ddf["memory_size"].mean()  
-    geobreaches=ddf["geobreach"].sum()  
     
-    print("For ",i+1," mp20:", avg_computation_time,avg_dstart_rep,avg_geom_rep,avg_flight_time,avg_lens,avg_turn_numbers,avg_size,geobreaches)
+    print("For ",i+1," mp20:", avg_computation_time,avg_dstart_rep,avg_geom_rep,avg_flight_time,avg_lens,avg_turn_numbers)
     
     ddf=mp30_df
     avg_computation_time=ddf["computation_time"].mean()
@@ -202,10 +185,8 @@ for i,df in enumerate([exp1_dataframe,exp2_dataframe,exp3_dataframe,exp4_datafra
     avg_flight_time=ddf["flight_durations"].mean() 
     avg_lens=ddf["lens"].mean()  
     avg_turn_numbers=ddf["turn_numbers"].mean()  
-    avg_size=ddf["memory_size"].mean()  
-    geobreaches=ddf["geobreach"].sum()  
     
-    print("For ",i+1," mp30:", avg_computation_time,avg_dstart_rep,avg_geom_rep,avg_flight_time,avg_lens,avg_turn_numbers,avg_size,geobreaches)
+    print("For ",i+1," mp30:", avg_computation_time,avg_dstart_rep,avg_geom_rep,avg_flight_time,avg_lens,avg_turn_numbers)
     
     ddf=constrained_df
     avg_computation_time=ddf["computation_time"].mean()
@@ -213,11 +194,9 @@ for i,df in enumerate([exp1_dataframe,exp2_dataframe,exp3_dataframe,exp4_datafra
     avg_geom_rep=ddf["geom_repetitions"].mean() 
     avg_flight_time=ddf["flight_durations"].mean() 
     avg_lens=ddf["lens"].mean()  
-    avg_turn_numbers=ddf["turn_numbers"].mean() 
-    avg_size=ddf["memory_size"].mean()  
-    geobreaches=ddf["geobreach"].sum()  
+    avg_turn_numbers=ddf["turn_numbers"].mean()  
     
-    print("For ",i+1," constrained:", avg_computation_time,avg_dstart_rep,avg_geom_rep,avg_flight_time,avg_lens,avg_turn_numbers,avg_size,geobreaches)
+    print("For ",i+1," constrained:", avg_computation_time,avg_dstart_rep,avg_geom_rep,avg_flight_time,avg_lens,avg_turn_numbers)
     
     ddf=open_df
     avg_computation_time=ddf["computation_time"].mean()
@@ -226,10 +205,8 @@ for i,df in enumerate([exp1_dataframe,exp2_dataframe,exp3_dataframe,exp4_datafra
     avg_flight_time=ddf["flight_durations"].mean() 
     avg_lens=ddf["lens"].mean()  
     avg_turn_numbers=ddf["turn_numbers"].mean()  
-    avg_size=ddf["memory_size"].mean()  
-    geobreaches=ddf["geobreach"].sum()  
     
-    print("For ",i+1," open:", avg_computation_time,avg_dstart_rep,avg_geom_rep,avg_flight_time,avg_lens,avg_turn_numbers,avg_size,geobreaches)
+    print("For ",i+1," open:", avg_computation_time,avg_dstart_rep,avg_geom_rep,avg_flight_time,avg_lens,avg_turn_numbers)
     
     ddf=mixed_df
     avg_computation_time=ddf["computation_time"].mean()
@@ -238,9 +215,7 @@ for i,df in enumerate([exp1_dataframe,exp2_dataframe,exp3_dataframe,exp4_datafra
     avg_flight_time=ddf["flight_durations"].mean() 
     avg_lens=ddf["lens"].mean()  
     avg_turn_numbers=ddf["turn_numbers"].mean()  
-    avg_size=ddf["memory_size"].mean()  
-    geobreaches=ddf["geobreach"].sum()  
     
-    print("For ",i+1," mixed:", avg_computation_time,avg_dstart_rep,avg_geom_rep,avg_flight_time,avg_lens,avg_turn_numbers,avg_size,geobreaches)
+    print("For ",i+1," mixed:", avg_computation_time,avg_dstart_rep,avg_geom_rep,avg_flight_time,avg_lens,avg_turn_numbers)
     
     print("#####################################")

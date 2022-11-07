@@ -21,6 +21,8 @@ import time
 import copy
 import shapely.geometry
 import geopandas as gpd
+import sys
+from pympler import asizeof
 
 
 # Step 1: Import the graph we will be using
@@ -71,6 +73,7 @@ graph_geom=fcg.street_graph(G,edges)
 
 lens=[]
 turn_numbers=[]
+intersection_numbers=[]
 airspace_type=[] # 0 for only constrained, 1 for only open, 2 for both
 dstar_repetitions=[]
 geom_repetitions=[]
@@ -78,10 +81,15 @@ flight_durations=[]
 computation_time=[]
 aircraft_types=[]
 geobreach=[] #1 for geofence intersections
+memory_size=[]
+node_points=[]
 
-
+cnt=0
 pair=[16.3695248087,48.1500879358,16.3565153618,48.2062880537] ## only used for testing
+file2 = open("reglog_geom.txt","a")
 for pair in path_plan_pairs: ##commented out for testing
+    print(cnt)
+    cnt+=1
     for aircraft_type in [1,2]:
         if aircraft_type==1:
             speed_max=10.29 ##20 knots
@@ -99,6 +107,11 @@ for pair in path_plan_pairs: ##commented out for testing
         end=time.time()
         
         computation_time.append(end-start)
+        
+        del plan.flow_graph
+        
+        ss= asizeof.asizeof(plan)
+        memory_size.append(ss)
         if route==[]:
             lens.append(-1)
             turn_numbers.append(-1)
@@ -108,6 +121,8 @@ for pair in path_plan_pairs: ##commented out for testing
             flight_durations.append(-1)
             geobreach.append(-1) 
             continue
+
+        node_points+=route
         
         linestring = shapely.geometry.LineString(route)
     
@@ -117,8 +132,10 @@ for pair in path_plan_pairs: ##commented out for testing
             # check if the linestring intersects with the geofence
             if linestring.intersects(geofence):
                 geo=1
+                print(pair)
             
         geobreach.append(geo) 
+
         route_cart=[]
         leng=0
         transformer = Transformer.from_crs('epsg:4326','epsg:32633')
@@ -131,20 +148,28 @@ for pair in path_plan_pairs: ##commented out for testing
         lens.append(leng)
         
         
-        turns[-1]=False
-        constr_turns=np.logical_and(turns,in_constrained) # only count turns in constrained
-        turns_cnt=np.sum(constr_turns)  
-        turn_numbers.append(turns_cnt)
+        if 1:
+            turns[-1]=False
+            constr_turns=np.logical_and(turns,in_constrained) # only count turns in constrained
+            turns_cnt=np.sum(constr_turns)  
+            intersection_numbers.append(turns_cnt)
+            turns_cnt=np.sum(turns)  
+            turn_numbers.append(turns_cnt)
+            for j in range(len(route)):
+                if turns[j]:
+                    tt=str(route[j][0])+"-"+str(route[j][1])+"\n"
+                    file2.write(tt)
         
         
         airtype=np.sum(in_constrained)
         if airtype==len(in_constrained):
             airtype=0
-        elif airtype==0:
+        elif airtype==0 or airtype==1:
             airtype=1
         else:
             airtype=2
         airspace_type.append(airtype)
+        
         
         dstar_repetitions.append(repetition_cnt)
         geom_repetitions.append(geom_repetition)
@@ -155,6 +180,7 @@ for pair in path_plan_pairs: ##commented out for testing
 geom_dict={}
 geom_dict["lens"]=lens
 geom_dict["turn_numbers"]=turn_numbers
+geom_dict["intersection_numbers"]=intersection_numbers
 geom_dict["airspace_type"]=airspace_type
 geom_dict["dstar_repetitions"]=dstar_repetitions
 geom_dict["geom_repetitions"]=geom_repetitions
@@ -162,10 +188,16 @@ geom_dict["flight_durations"]=flight_durations
 geom_dict["computation_time"]=computation_time
 geom_dict["aircraft_types"]=aircraft_types
 geom_dict["geobreach"]=geobreach
+geom_dict["memory_size"]=memory_size
 
 
 
+output_file=open(f"Path_points_geom.dill", 'wb')
+dill.dump(node_points,output_file)
+output_file.close()
 
 output_file=open(f"Path_plan_results_geom.dill", 'wb')
 dill.dump(geom_dict,output_file)
 output_file.close()
+
+file2.close()

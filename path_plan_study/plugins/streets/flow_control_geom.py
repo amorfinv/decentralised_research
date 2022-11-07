@@ -315,9 +315,16 @@ class street_graph:
         self.create_tree(G)
         self.G=G
         
+        #input_file=open("airspace_design/constrained_poly.dill", 'rb')
+        input_file=open("airspace_design/constrained_poly_buffered.dill", 'rb')
+        constrained_poly=dill.load(input_file)
+        self.constrained_poly_buff=shapely.geometry.Polygon(constrained_poly)
+
+
         input_file=open("airspace_design/constrained_poly.dill", 'rb')
         constrained_poly=dill.load(input_file)
         self.constrained_poly=shapely.geometry.Polygon(constrained_poly)
+
 
         input_file=open("airspace_design/geovector_geometry.dill", 'rb')
         constrained_poly=dill.load(input_file)

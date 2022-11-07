@@ -13,6 +13,7 @@ import plugins.streets.agent_path_planning as pp
 import plugins.streets.agent_path_planning_geometric as ppg
 import plugins.streets.agent_path_planning_small_cells as ppsc
 from plugins.streets.open_airspace_grid import Cell, open_airspace
+from origin_destination import PreGeneratedPaths,scenario_dills
 import math
 import dill
 from pyproj import  Transformer
@@ -20,14 +21,23 @@ import time
 import copy
 import shapely.geometry
 import geopandas as gpd
+import sys
+from pympler import asizeof
 
 
+# Step 1: Import the graph we will be using
+G = ox.io.load_graphml('whole_vienna/gis/finalized_graph.graphml')
 
+edges = ox.graph_to_gdfs(G)[1]
+gdf=ox.graph_to_gdfs(G, nodes=False, fill_edge_geometry=True)
+print('Graph loaded!')
+
+#Load the open airspace grid
+input_file=open("smaller_cells_open_airspace_grid.dill", 'rb')
+grid_smaller_cells=dill.load(input_file)
 
 input_file=open("open_airspace_final.dill", 'rb')
 grid_orig=dill.load(input_file)
-
-print(dgbfds)
 
 # load the geofence gdfs
 geo_gdf = gpd.read_file('geofences.gpkg', driver='GPKG')
@@ -58,12 +68,14 @@ results_dict={}
 ##Original and heuristic tests
 graph=fc.street_graph(copy.deepcopy(G),copy.deepcopy(edges),grid_orig) 
 
-experiment=1
+experiment=5
+file1 = open("Turns_test5.txt","a")
 
 if 1:
     pp.experiment_number=experiment
     lens=[]
     turn_numbers=[]
+    intersection_numbers=[]
     airspace_type=[] # 0 for only constrained, 1 for only open, 2 for both
     dstar_repetitions=[]
     geom_repetitions=[]
@@ -71,6 +83,8 @@ if 1:
     computation_time=[]
     aircraft_types=[]
     geobreach=[] #1 for geofence intersections
+    memory_size=[]
+    node_points=[] 
     for pair in path_plan_pairs:
         for aircraft_type in [1,2]:
             if aircraft_type==1:
@@ -85,10 +99,11 @@ if 1:
             plan = pp.PathPlanning(aircraft_type,grid_orig,graph,gdf,pair[0], pair[1], pair[2], pair[3],0.05)
             route,turns,edges,next_turn,groups,in_constrained,turn_speed,repetition_cnt=plan.plan()
             end=time.time()
-
-
             
             computation_time.append(end-start)
+            del plan.flow_graph
+            ss=asizeof.asizeof(plan)
+            memory_size.append(ss)
             if route==[]:
                 lens.append(-1)
                 turn_numbers.append(-1)
@@ -98,7 +113,7 @@ if 1:
                 flight_durations.append(-1)
                 geobreach.append(-1) 
                 continue
-            
+            node_points+=route
             linestring = shapely.geometry.LineString(route)
         
             # loop through the geofence gdfs
@@ -108,7 +123,7 @@ if 1:
                 if linestring.intersects(geofence):
                     geo=1
                 
-            geobreach.append(geo) 
+            geobreach.append(geo)  
             
             route_cart=[]
             leng=0
@@ -125,13 +140,19 @@ if 1:
             turns[-1]=False
             constr_turns=np.logical_and(turns,in_constrained) # only count turns in constrained
             turns_cnt=np.sum(constr_turns)  
+            intersection_numbers.append(turns_cnt)
+            turns_cnt=np.sum(turns)  
             turn_numbers.append(turns_cnt)
+            for j in range(len(turns)):
+                if turns[j]:
+                    tt=str(route[j][0])+"-"+str(route[j][1])+"\n"
+                    file1.write(tt)
             
             
             airtype=np.sum(in_constrained)
             if airtype==len(in_constrained):
                 airtype=0
-            elif airtype==0:
+            elif airtype==0 or airtype==1:
                 airtype=1
             else:
                 airtype=2
@@ -146,17 +167,24 @@ if 1:
     orig_dict={}
     orig_dict["lens"]=lens
     orig_dict["turn_numbers"]=turn_numbers
+    orig_dict["intersection_numbers"]=intersection_numbers
     orig_dict["airspace_type"]=airspace_type
     orig_dict["dstar_repetitions"]=dstar_repetitions
     orig_dict["geom_repetitions"]=geom_repetitions
     orig_dict["flight_durations"]=flight_durations
     orig_dict["computation_time"]=computation_time
     orig_dict["aircraft_types"]=aircraft_types
-    orig_dict["geobreach"]=geobreach
+    orig_dict["geobreach"]=geobreach    
+    orig_dict["memory_size"]=memory_size
+
+output_file=open(f"Path_points_exp5.dill", 'wb')
+dill.dump(node_points,output_file)
+output_file.close()
 
 
 
-
-output_file=open(f"Path_plan_results_experiment1.dill", 'wb')
+output_file=open(f"Path_plan_results_experiment5.dill", 'wb')
 dill.dump(orig_dict,output_file)
 output_file.close()
+
+file1.close()

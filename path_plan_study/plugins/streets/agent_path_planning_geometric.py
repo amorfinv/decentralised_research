@@ -520,18 +520,21 @@ class PathPlanning:
         transformer = Transformer.from_crs('epsg:4326','epsg:32633')  
         p=transformer.transform(lat_start,lon_start)
         point_s = Point(p[0],p[1])
-        if flow_control_graph.constrained_poly.contains(point_s):
+        if flow_control_graph.constrained_poly_buff.contains(point_s):
             self.start_in_open=False
         p=p=transformer.transform(lat_dest,lon_dest)
         point_d = Point(p[0],p[1])
-        if flow_control_graph.constrained_poly.contains(point_d):
+        if flow_control_graph.constrained_poly_buff.contains(point_d):
             self.dest_in_open=False
+
             
         if self.start_in_open or self.dest_in_open:
             line = [(point_s.x,point_s.y), (point_d.x, point_d.y)]
             shapely_line = LineString(line)
+   
             intersection_line=flow_control_graph.constrained_poly.intersection(shapely_line)
-            if intersection_line.is_empty:
+
+            if intersection_line.is_empty :
                 self.only_in_open=True
             else:
                 self.only_in_open=False
@@ -561,47 +564,53 @@ class PathPlanning:
                 #coords = list(intersection_line.coords)
                 transformer = Transformer.from_crs('epsg:32633','epsg:4326') 
                 if self.start_in_open and self.dest_in_open:
-                    p1=coords[0]
-                    p2=coords[1]
-                    d1=(p1[0]-point_s.x)*(p1[0]-point_s.x)+(p1[1]-point_s.y)*(p1[1]-point_s.y)
-                    d2=(p2[0]-point_s.x)*(p2[0]-point_s.x)+(p2[1]-point_s.y)*(p2[1]-point_s.y)
-                    if d1<d2:
-                        pp=transformer.transform(p1[0],p1[1])
-                        self.start_point=Point(tuple((pp[1],pp[0])))
-                        pp=transformer.transform(p2[0],p2[1])
-                        self.goal_point=Point(tuple((pp[1],pp[0])))
-                    else:
-                        pp=transformer.transform(p1[0],p1[1])
-                        self.goal_point=Point(tuple((pp[1],pp[0])))
-                        pp=transformer.transform(p2[0],p2[1])
-                        self.start_point=Point(tuple((pp[1],pp[0])))  
+                    ds1=float("inf")
+                    ps_index=-1
+                    dd1=float("inf")
+                    pd_index=-1
+                    for i in range(len(coords)):
+                        ds2=(coords[i][0]-point_s.x)*(coords[i][0]-point_s.x)+(coords[i][1]-point_s.y)*(coords[i][1]-point_s.y) 
+                        dd2=(coords[i][0]-point_d.x)*(coords[i][0]-point_d.x)+(coords[i][1]-point_d.y)*(coords[i][1]-point_d.y) 
+                        if ds2<ds1:
+                            ps_index=i
+                            ds1=ds2
+                        if dd2<dd1:
+                            pd_index=i
+                            dd1=dd2
+                    pp=transformer.transform(coords[pd_index][0],coords[pd_index][1])
+                    self.goal_point=Point(tuple((pp[1],pp[0]))) 
+
+                    pp=transformer.transform(coords[ps_index][0],coords[ps_index][1])
+                    self.start_point=Point(tuple((pp[1],pp[0])))  
+            
                 elif self.start_in_open:
-                    p1=coords[0]
-                    p2=coords[1]
-                    d1=(p1[0]-point_s.x)*(p1[0]-point_s.x)+(p1[1]-point_s.y)*(p1[1]-point_s.y)
-                    d2=(p2[0]-point_s.x)*(p2[0]-point_s.x)+(p2[1]-point_s.y)*(p2[1]-point_s.y)
-                    if d1<d2:
-                        pp=transformer.transform(p1[0],p1[1])
-                        self.start_point=Point(tuple((pp[1],pp[0])))
-                    else:
-                        pp=transformer.transform(p2[0],p2[1])
-                        self.start_point=Point(tuple((pp[1],pp[0])))                     
+                    d1=float("inf")
+                    p_index=-1
+                    for i in range(len(coords)):
+                        d2=(coords[i][0]-point_s.x)*(coords[i][0]-point_s.x)+(coords[i][1]-point_s.y)*(coords[i][1]-point_s.y) 
+                        if d2<d1:
+                            p_index=i
+                            d1=d2
+                    pp=transformer.transform(coords[p_index][0],coords[p_index][1])
+                    self.start_point=Point(tuple((pp[1],pp[0])))                    
                 elif self.dest_in_open:
-                    p1=coords[0]
-                    p2=coords[1]
-                    d1=(p1[0]-point_s.x)*(p1[0]-point_s.x)+(p1[1]-point_s.y)*(p1[1]-point_s.y)
-                    d2=(p2[0]-point_s.x)*(p2[0]-point_s.x)+(p2[1]-point_s.y)*(p2[1]-point_s.y)
-                    if d1<d2:
-                        pp=transformer.transform(p1[0],p1[1])
-                        self.goal_point=Point(tuple((pp[1],pp[0])))
-                    else:
-                        pp=transformer.transform(p2[0],p2[1])
-                        self.goal_point=Point(tuple((pp[1],pp[0]))) 
+                    d1=float("inf")
+                    p_index=-1
+                    for i in range(len(coords)):
+                        d2=(coords[i][0]-point_d.x)*(coords[i][0]-point_d.x)+(coords[i][1]-point_d.y)*(coords[i][1]-point_d.y) 
+                        if d2<d1:
+                            p_index=i
+                            d1=d2
+
+                    pp=transformer.transform(coords[p_index][0],coords[p_index][1])
+                    self.goal_point=Point(tuple((pp[1],pp[0]))) 
                 
         else:
             self.only_in_open=False
             
         if self.only_in_open:
+            del self.flow_control_graph #empty these, we do not need it any more
+            del self.gdf
             return
             
         ##Find the index of the start and dest in teh constrained graph    
@@ -620,11 +629,13 @@ class PathPlanning:
             self.start_index=v
             self.start_index_previous=u
         if self.dest_in_open:
+
             point=Point(self.goal_point.y,self.goal_point.x)
             u,v=get_nearest_exit_node(self.flow_graph, point)
             self.goal_index_next=v
             self.goal_index=u
             self.goal_point=Point(tuple((self.flow_graph.nodes_graph[self.goal_index].lon,self.flow_graph.nodes_graph[self.goal_index].lat)))
+
         else:
             point=(self.goal_point.y,self.goal_point.x)
             geometry, u, v,distance=get_nearest_edge(self.gdf, point)
@@ -858,7 +869,6 @@ class PathPlanning:
         geom_rep=0
         
         if self.only_in_open:
-
             route,turns,edges_list,groups,in_constrained,turn_speed,geom_rep=self.compute_open_path(self.start_point_orig, self.goal_point_orig,True)
 
             
@@ -866,6 +876,7 @@ class PathPlanning:
             if self.start_in_open and self.dest_in_open:
                 route_open,turns_open,edges_list_open,groups_open,in_constrained_open,turn_speed_open,geom_rep=self.compute_open_path(self.start_point_orig, self.flow_graph.entries_dict[self.start_index])
                 route_open_g,turns_open_g,edges_list_open_g,groups_open_g,in_constrained_open_g,turn_speed_open_g,geom_rep_d=self.compute_open_path(self.flow_graph.exits_dict[self.goal_index], self.goal_point_orig,False)
+
                 geom_rep+=geom_rep_d
             elif self.start_in_open :
                 #print(self.flow_graph.entries_dict[self.start_index])
@@ -967,12 +978,12 @@ class PathPlanning:
                 
             if self.start_in_open and self.dest_in_open:
 
-                route=route_open+route+route_open_g[::-1]
-                turns=turns_open+turns+turns_open_g[::-1]
+                route=route_open+route+route_open_g#[::-1]
+                turns=turns_open+turns+turns_open_g#[::-1]
                 edges_list=edges_list_open+edges_list+edges_list_open_g
                 groups=groups_open+groups+groups_open_g
                 in_constrained=in_constrained_open+in_constrained+in_constrained_open_g
-                turn_speed=turn_speed_open+turn_speed+turn_speed_open_g[::-1]
+                turn_speed=turn_speed_open+turn_speed+turn_speed_open_g#[::-1]
             elif self.start_in_open :
                 route=route_open+route
                 turns=turns_open+turns
@@ -981,12 +992,12 @@ class PathPlanning:
                 in_constrained=in_constrained_open+in_constrained
                 turn_speed=turn_speed_open+turn_speed
             elif self.dest_in_open:
-                route=route+route_open[::-1]
-                turns=turns+turns_open[::-1]
+                route=route+route_open#[::-1]
+                turns=turns+turns_open#[::-1]
                 edges_list=edges_list+edges_list_open
                 groups=groups+groups_open
                 in_constrained=in_constrained+in_constrained_open
-                turn_speed=turn_speed+turn_speed_open[::-1]
+                turn_speed=turn_speed+turn_speed_open#[::-1]
 
 
         self.route=np.array(route,dtype=np.float64)
@@ -1060,7 +1071,7 @@ class PathPlanning:
         if poly_indices==[]:
             #No intersection with nfzs
             route.append((p2.x,p2.y))
-            turns.append(True)
+            turns.append(False)
             edges_list.append((5999,6000))
             next_turn_point.append((-999,-999))
             groups.append(2000)
@@ -1068,40 +1079,75 @@ class PathPlanning:
             turn_speed.append(5)
         else:
             #Find the closest intersection point
+
+           
+            rep+=1
+
+            
+            ##Find the closest polygon point of teh extra augmented polygons to the closets intersection point and add it to route after converting it to geodetic 
+            
+            poly_indices_set=set(poly_indices)
+            #print(poly_indices_set)
+            
+            poly_intersection_points=[]
+            poly_indices=[]
+
+            for i in poly_indices_set:
+                p=self.flow_graph.nfz_augm_list[i]
+                intersection_line=p.intersection(shapely_line)
+                if intersection_line.is_empty or intersection_line.geom_type=='Point':
+                    continue
+                if intersection_line.geom_type=='GeometryCollection':
+                    intersection_line=intersection_line[0]
+                if intersection_line.geom_type=='MultiLineString':
+                    points=[]
+                    for l in intersection_line:
+                        for lp in list(l.coords):
+                            points.append(lp)
+                else:
+                    try:
+                        points=list(intersection_line.coords)
+                    except:
+                        print(intersection_line.geom_type)
+                for p_i in points:
+                    poly_intersection_points.append(p_i)
+                    poly_indices.append(i)
             distance_list=[]
+            
             for p in poly_intersection_points:
                 d=(p[0]-pp1.x)*(p[0]-pp1.x)+(p[1]-pp1.y)*(p[1]-pp1.y)
                 distance_list.append(d)
             min_d=min(distance_list)
             i=distance_list.index(min_d)
-            poly_index=poly_indices[i]#poly_index=math.floor(i/2)
-            
-            p_intermediate= Point(poly_intersection_points[i][0],poly_intersection_points[i][1])
-            rep+=1
+            poly_index=poly_indices[i]
+  
+            closest_intersection_point=poly_intersection_points[i]
+            #print(closest_intersection_point)
+            #print(poly_index)
 
-            
-            ##Find the closest polygon point of teh extra augmented polygons to the closets intersection point and add it to route after converting it to geodetic 
             poly=self.flow_graph.nfz_augm_list[poly_index]
             poly_direction={}
-            distance_list=[]
-            for poly_p in list(poly.exterior.coords)[:-1]:
-                d=(poly_p[0]-p_intermediate.x)*(poly_p[0]-p_intermediate.x)+(poly_p[1]-p_intermediate.y)*(poly_p[1]-p_intermediate.y)
-                distance_list.append(d)
-            min_d=min(distance_list)
-            i=distance_list.index(min_d)
-            
-            if list(poly.exterior.coords)[i][0]==pp1.x and list(poly.exterior.coords)[i][1]==pp1.y:
-                distance_list[i]=10000000
-                min_d=min(distance_list)
-                i=distance_list.index(min_d)
-            
-            poly_direction[poly_index]=[[i],0]
-            pp1=Point(list(poly.exterior.coords)[i][0],list(poly.exterior.coords)[i][1])
-            
-            
-
             
             transformer = Transformer.from_crs('epsg:32633','epsg:4326')  
+
+            p_tmp=transformer.transform(closest_intersection_point[0],closest_intersection_point[1])
+            
+            route.append((p_tmp[1],p_tmp[0]))
+            turns.append(False)
+            edges_list.append((5999,6000))
+            next_turn_point.append((-999,-999))
+            groups.append(2000)
+            in_constrained.append(False)
+            turn_speed.append(5)
+
+            i,direction=get_neighbouring_poly_vertice_and_direction(poly,closest_intersection_point,pp2)
+            
+            
+            pp_tmp1=Point(list(poly.exterior.coords)[i][0],list(poly.exterior.coords)[i][1])
+
+            pp1=pp_tmp1
+            poly_direction[poly_index]=[[i],direction]
+
             p_tmp=transformer.transform(pp1.x,pp1.y)
             p_intermediate= Point(p[1],p[0])
             route.append((p_tmp[1],p_tmp[0]))
@@ -1126,6 +1172,7 @@ class PathPlanning:
                     intersection_line=p.intersection(shapely_line)
                     if intersection_line.is_empty or intersection_line.geom_type=='Point':
                         continue
+                 
                     if intersection_line.geom_type=='GeometryCollection':
                         intersection_line=intersection_line[0]
                     if intersection_line.geom_type=='MultiLineString':
@@ -1146,6 +1193,7 @@ class PathPlanning:
                 if poly_indices==[]:
                     intersection=False
                 while intersection:
+                    #print(poly_indices)
                     #Find the closest intersection point
                     distance_list=[]
                     for p in poly_intersection_points:
@@ -1193,20 +1241,81 @@ class PathPlanning:
                            
                     else:
                         poly=self.flow_graph.nfz_augm_list[poly_index]
+                        #coords=list(poly.exterior.coords)[:-1]
+                        #distance_list=[]
+                        #for poly_p in coords:
+                        #    d=(poly_p[0]-p_intermediate.x)*(poly_p[0]-p_intermediate.x)+(poly_p[1]-p_intermediate.y)*(poly_p[1]-p_intermediate.y)
+  #                          distance_list.append(d)
+  #                      min_d=min(distance_list)
+  #                      i=distance_list.index(min_d)   
+  #                      poly_direction[poly_index]=[[i],0]  
+  #                      pp_tmp1=Point(list(poly.exterior.coords)[i][0],list(poly.exterior.coords)[i][1])
+
+                        poly_intersection_points=[]
+                     
+
+                        #for i,p in enumerate(self.flow_graph.nfz_augm_list):
+                        if 1:
+                            p=poly
+                            intersection_line=p.intersection(shapely_line)
+                            if intersection_line.is_empty or intersection_line.geom_type=='Point':
+                                continue
+                           
+                            if intersection_line.geom_type=='GeometryCollection':
+                                intersection_line=intersection_line[0]
+                            if intersection_line.geom_type=='MultiLineString':
+                                points=[]
+                                for l in intersection_line:
+                                    for lp in list(l.coords):
+                                        points.append(lp)
+                            else:
+                                try:
+                                    points=list(intersection_line.coords)
+                                except:
+                                    print(intersection_line.geom_type)
+                                for p_i in points:
+                                    poly_intersection_points.append(p_i)
                         distance_list=[]
-                        for poly_p in coords:
-                            d=(poly_p[0]-p_intermediate.x)*(poly_p[0]-p_intermediate.x)+(poly_p[1]-p_intermediate.y)*(poly_p[1]-p_intermediate.y)
+            
+                        for p in poly_intersection_points:
+                            d=(p[0]-pp1.x)*(p[0]-pp1.x)+(p[1]-pp1.y)*(p[1]-pp1.y)
+                           
+                            if d<0.5:
+                                d=float("inf")
                             distance_list.append(d)
                         min_d=min(distance_list)
-                        i=distance_list.index(min_d)   
-                        poly_direction[poly_index]=[[i],0]  
-                        pp1=Point(list(poly.exterior.coords)[i][0],list(poly.exterior.coords)[i][1])
+                      
+                        i=distance_list.index(min_d)
+
+                        closest_intersection_point=poly_intersection_points[i]
+                       # print(closest_intersection_point)
+              
+
+            
+                        transformer = Transformer.from_crs('epsg:32633','epsg:4326')  
+
+                        p_tmp=transformer.transform(closest_intersection_point[0],closest_intersection_point[1])
+            
+                        route.append((p_tmp[1],p_tmp[0]))
+                        turns.append(False)
+                        edges_list.append((5999,6000))
+                        next_turn_point.append((-999,-999))
+                        groups.append(2000)
+                        in_constrained.append(False)
+                        turn_speed.append(5)
+
+                      
+                       
+                        i,direction=get_neighbouring_poly_vertice_and_direction(poly,closest_intersection_point,pp2)
                         
 
-                        ##TODO :fix that, it gets stuck between two poitns, maybe i should check fo rteh used points, r copy the self.flow_graph.nfz_augm_list and delet the used points
-                    
-                   
-                    
+                        pp_tmp1=Point(list(poly.exterior.coords)[i][0],list(poly.exterior.coords)[i][1])
+                        
+                        poly_direction[poly_index]=[[i],direction] 
+
+                        pp1=pp_tmp1
+                        
+
        
                     
                     transformer = Transformer.from_crs('epsg:32633','epsg:4326')  
@@ -1233,6 +1342,7 @@ class PathPlanning:
                         intersection_line=p.intersection(shapely_line)
                         if intersection_line.is_empty or intersection_line.geom_type=='Point':
                             continue
+                     
                         if intersection_line.geom_type=='GeometryCollection':
                             intersection_line=intersection_line[0]  ##TODO: the new border nodes, still seem to intersect with the constrained, taht is a work around
                         if intersection_line.geom_type=='MultiLineString':
@@ -1257,7 +1367,7 @@ class PathPlanning:
                 edges_list.append((5999,6000))
                 next_turn_point.append((-999,-999))
                 groups.append(2000)
-                in_constrained.append(True)
+                in_constrained.append(False)
                 turn_speed.append(5)
 
                     
@@ -1530,5 +1640,129 @@ class PathPlanning:
         init_groups=copy.deepcopy(group_numbers)
         return route,turns,next_node_index,turn_coords,group_numbers,in_constrained,turn_speed,init_groups
  
+def point2linesegmentDistance(x1, y1, x2, y2, x3, y3): # x3,y3 is the point
+    px = x2-x1
+    py = y2-y1
+
+    norm = px*px + py*py
+
+    u =  ((x3 - x1) * px + (y3 - y1) * py) / float(norm)
+
+    if u > 1:
+        u = 1
+    elif u < 0:
+        u = 0
+
+    x = x1 + u * px
+    y = y1 + u * py
+
+    dx = x - x3
+    dy = y - y3
+
+    dist = dx*dx + dy*dy
+
+    return dist
+
+def get_neighbouring_poly_vertice(poly,point):
+    
+    coords=list(poly.exterior.coords)[:-1]
+    min_i=-1
+    d=float("inf")
+    for i in range(len(coords)):
+        p1=coords[i]
+        p2=coords[(i+1)%(len(coords))]
+        dd=point2linesegmentDistance(p1[0],p1[1],p2[0],p2[1],point[0],point[1])
+        if dd<d:
+            min_i=i 
+            d=dd
+    if d>20:
+        print("too large",d)
+        #print(list(poly.exterior.coords))
+    p1=coords[min_i]  
+    p2=coords[(min_i+1)%(len(coords))]
+    d1=(p1[0]-point[0])*(p1[0]-point[0])+(p1[1]-point[1])*(p1[1]-point[1])
+    d2=(p2[0]-point[0])*(p2[0]-point[0])+(p2[1]-point[1])*(p2[1]-point[1])
+
+    if d1<=d2:
+        return min_i
+    else:
+        return (min_i+1)%(len(coords))
+
+def get_neighbouring_poly_vertice_and_direction(poly,point,pp2):
+    
+    
+    coords=list(poly.exterior.coords)[:-1]
+    min_i=-1
+    pp2_i=-1
+    d_pp2=float("inf")
+    d=float("inf")
+    for i in range(len(coords)):
+        p1=coords[i]
+        p2=coords[(i+1)%(len(coords))]
+        dd=point2linesegmentDistance(p1[0],p1[1],p2[0],p2[1],point[0],point[1])
+    
+        if dd<d:
+            min_i=i 
+            d=dd
+        dd_pp2=(p1[0]-pp2.x)*(p1[0]-pp2.x)+(p1[1]-pp2.y)*(p1[1]-pp2.y)
+        if dd_pp2<d_pp2:
+            pp2_i=i 
+            d_pp2=dd_pp2
+
+
+    if d>20:
+        print("too large",d)
+        print(len(coords))
+    p1=coords[min_i]  
+    p2=coords[(min_i+1)%(len(coords))]
+    d1=(p1[0]-point[0])*(p1[0]-point[0])+(p1[1]-point[1])*(p1[1]-point[1])
+    d2=(p2[0]-point[0])*(p2[0]-point[0])+(p2[1]-point[1])*(p2[1]-point[1])
+
+   # if d1>d2:
+   #     min_i=(min_i+1)%(len(coords)-1)
+
+    direction=0
+    d1=0
+    d2=0
+    d3=0
+    d4=0
+    ii=min_i
+    #print(ii,pp2_i,len(coords))
+    while ii%(len(coords)) !=pp2_i:
+        p1=coords[ii%(len(coords))]  
+        p2=coords[(ii+1)%(len(coords))]
+        d1+=(p1[0]-p2[0])*(p1[0]-p2[0])+(p1[1]-p2[1])*(p1[1]-p2[1])
+        ii+=1
+
+    ii=(min_i+1)%(len(coords))
+    while ii%(len(coords)) !=pp2_i:
+        p1=coords[ii%(len(coords))]  
+        p2=coords[(ii+1)%(len(coords))]
+        d2+=(p1[0]-p2[0])*(p1[0]-p2[0])+(p1[1]-p2[1])*(p1[1]-p2[1])
+        ii+=1
+    ii=min_i
+    while (ii+len(coords)-1)%(len(coords)) !=pp2_i:
+        p1=coords[(ii+len(coords)-1)%(len(coords))]  
+        p2=coords[(ii+1)%(len(coords))]
+        d3+=(p1[0]-p2[0])*(p1[0]-p2[0])+(p1[1]-p2[1])*(p1[1]-p2[1])
+        ii-=1
+
+    ii=(min_i+1)%(len(coords))
+    while (ii+len(coords)-1)%(len(coords)) !=pp2_i:
+        p1=coords[(ii+len(coords)-1)%(len(coords))]  
+        p2=coords[(ii+1)%(len(coords))]
+        d4+=(p1[0]-p2[0])*(p1[0]-p2[0])+(p1[1]-p2[1])*(p1[1]-p2[1])
+        ii-=1
+    if d1<=d2 and d1<=d3 and d1<=d4:
+        direction=1
+    elif d2<d1 and d2<=d3 and d2<=d4:
+        min_i=(min_i+1)%(len(coords))
+        direction=1
+    elif d3<d1 and d3<d2 and d3<=d4:
+        direction=-1
+    else:
+        min_i=(min_i+1)%(len(coords))
+        direction=-1
+    return min_i,direction
   
 

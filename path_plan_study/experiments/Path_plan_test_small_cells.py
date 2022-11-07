@@ -21,6 +21,8 @@ import time
 import copy
 import shapely.geometry
 import geopandas as gpd
+import sys
+from pympler import asizeof
 
 
 # Step 1: Import the graph we will be using
@@ -68,6 +70,7 @@ graph_smaller_cells=fc.street_graph(copy.deepcopy(G),copy.deepcopy(edges),grid_s
 ##Smaller cells
 lens=[]
 turn_numbers=[]
+intersection_numbers=[]
 airspace_type=[] # 0 for only constrained, 1 for only open, 2 for both
 dstar_repetitions=[]
 geom_repetitions=[]
@@ -75,6 +78,10 @@ flight_durations=[]
 computation_time=[]
 aircraft_types=[]
 geobreach=[] #1 for geofence intersections
+memory_size=[]
+node_points=[]
+
+file2 = open("Reglog_small_cells.txt","a")
 
 for pair in path_plan_pairs:
     for aircraft_type in [1,2]:
@@ -92,6 +99,9 @@ for pair in path_plan_pairs:
         end=time.time()
         
         computation_time.append(end-start)
+        del plan.flow_graph
+        ss=asizeof.asizeof(plan)
+        memory_size.append(ss)
         if route==[]:
             lens.append(-1)
             turn_numbers.append(-1)
@@ -101,7 +111,7 @@ for pair in path_plan_pairs:
             flight_durations.append(-1)
             geobreach.append(-1) 
             continue
-        
+        node_points+=route
         linestring = shapely.geometry.LineString(route)
     
         # loop through the geofence gdfs
@@ -125,16 +135,23 @@ for pair in path_plan_pairs:
         lens.append(leng)
         
         
-        turns[-1]=False
-        constr_turns=np.logical_and(turns,in_constrained) # only count turns in constrained
-        turns_cnt=np.sum(constr_turns)  
-        turn_numbers.append(turns_cnt)
+        if 1:
+            turns[-1]=False
+            constr_turns=np.logical_and(turns,in_constrained) # only count turns in constrained
+            turns_cnt=np.sum(constr_turns)  
+            intersection_numbers.append(turns_cnt)
+            turns_cnt=np.sum(turns)  
+            turn_numbers.append(turns_cnt)
+            for j in range(len(route)):
+                if turns[j]:
+                    tt=str(route[j][0])+"-"+str(route[j][1])+"\n"
+                    file2.write(tt)
         
         
         airtype=np.sum(in_constrained)
         if airtype==len(in_constrained):
             airtype=0
-        elif airtype==0:
+        elif airtype==0 or airtype==1:
             airtype=1
         else:
             airtype=2
@@ -149,6 +166,7 @@ for pair in path_plan_pairs:
 smaller_cells_dict={}
 smaller_cells_dict["lens"]=lens
 smaller_cells_dict["turn_numbers"]=turn_numbers
+smaller_cells_dict["intersection_numbers"]=intersection_numbers
 smaller_cells_dict["airspace_type"]=airspace_type
 smaller_cells_dict["dstar_repetitions"]=dstar_repetitions
 smaller_cells_dict["geom_repetitions"]=geom_repetitions
@@ -156,7 +174,14 @@ smaller_cells_dict["flight_durations"]=flight_durations
 smaller_cells_dict["computation_time"]=computation_time
 smaller_cells_dict["aircraft_types"]=aircraft_types
 smaller_cells_dict["geobreach"]=geobreach
+smaller_cells_dict["memory_size"]=memory_size
+
+output_file=open(f"Path_points_smaller_cells.dill", 'wb')
+dill.dump(node_points,output_file)
+output_file.close()
 
 output_file=open(f"Path_plan_results_smaller_cells.dill", 'wb')
 dill.dump(smaller_cells_dict,output_file)
 output_file.close()
+
+file2.close()

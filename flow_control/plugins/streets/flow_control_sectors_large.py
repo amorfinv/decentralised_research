@@ -320,10 +320,10 @@ class street_graph:
 
         
         # Open strokes.JSON as a dictionary
-        with open('grid_large/flows.json', 'r') as filename:
+        with open('graph_data/grid_sectors_large/flows.json', 'r') as filename:
             self.flows_dict = json.load(filename)
             
-        with open('grid_large/flow_length.json', 'r') as filename:
+        with open('graph_data/grid_sectors_large/flow_length.json', 'r') as filename:
             self.flows_lengths= json.load(filename)
             
         #del self.flows_dict["0"]

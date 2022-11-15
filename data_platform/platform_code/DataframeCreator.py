@@ -36,7 +36,8 @@ def calc_flst_mission_completed_col(row):
  
     
 
-concept_names=["1to1","headalloc","baseline","headallocnoflow","gridsectors","noflow","headingcr","clustersectors1","clustersectors2","manualflow","projectionCD"]        
+#concept_names=["1to1","headalloc","baseline","headallocnoflow","gridsectors","noflow","headingcr","clustersectors1","clustersectors2","manualflow","projectionCD"]        
+concept_names=["baseline","gridsectors","gridsectorslarge","noflow","clustersectors1","clustersectors2","manualflow"]        
 
 class DataframeCreator():
 
@@ -62,6 +63,7 @@ class DataframeCreator():
         self.create_env_metrics_dataframe()
         self.create_density_dataframe()
         self.create_density_constrained_dataframe()
+        self.create_flow_metrics_dataframe()
         self.create_metrics_dataframe()
         
         
@@ -71,6 +73,7 @@ class DataframeCreator():
         self.flight_intention_names=os.listdir(path_to_logs+"Flight_intentions")
         self.log_names=os.listdir(path_to_logs+"Logs")
      
+ 
         
 
     ##LOSLOG dataframe
@@ -503,8 +506,136 @@ class DataframeCreator():
         dill.dump(flstlog_data_frame,output_file)
         output_file.close()
           
-    
-    
+    ##FlowLOG dataframe
+    def read_flowlog(self, log_file):
+        reglog_file = open(log_file, "r")
+ 
+        number_of_replans=0
+        number_of_attempted_replans=0
+        number_update_graph_no_replan=0
+        number_high_traffic_no_replan=0
+        number_last_point_no_replan=0
+        
+
+
+        cnt_modulo = 0
+        cnt = 0
+        for line in reglog_file:
+            cnt = cnt + 1
+            if cnt < 10:
+                continue
+
+            if cnt_modulo % 12 == 5:
+                l=line[:-2]
+                airspace_type=l.split(",")
+              
+            elif cnt_modulo % 12 == 6:
+                l=line[:-2]
+                k=l.split(",")
+                for r in k[1:]:
+                    if int(r)==1:
+                        number_of_replans=number_of_replans+1
+                
+              
+            elif cnt_modulo % 12 == 7:
+                l=line[:-2]
+                k=l.split(",")
+                for r in k[1:]:
+                    if int(r)==1:
+                        number_of_attempted_replans=number_of_attempted_replans+1
+            elif cnt_modulo % 12 == 8:
+                l=line[:-2]
+                k=l.split(",")
+                for r in k[1:]:
+                    if int(r)==1:
+                        number_update_graph_no_replan=number_update_graph_no_replan+1
+            elif cnt_modulo % 12 == 9:
+                l=line[:-2]
+                k=l.split(",")
+                for r in k[1:]:
+                    if int(r)==1:
+                        number_high_traffic_no_replan=number_high_traffic_no_replan+1
+            elif cnt_modulo % 12 == 10:
+                l=line[:-2]
+                k=l.split(",")
+                for r in k[1:]:
+                    if int(r)==1:
+                        number_last_point_no_replan=number_last_point_no_replan+1             
+                
+            cnt_modulo = cnt_modulo + 1
+
+        return number_of_replans, number_of_attempted_replans, number_update_graph_no_replan, number_high_traffic_no_replan, number_last_point_no_replan 
+
+
+   
+                        
+    def cflowthread(self,x):
+        file_name = x[1]
+        tmp_list=[] 
+        log_file=path_to_logs+"Logs/"+file_name
+            
+        file_name=file_name.split(".")[0]
+        scenario_var = file_name.split("_")
+        if scenario_var[3]=="very": 
+            density="very_low"
+            distribution=scenario_var[5]
+            repetition=scenario_var[6]
+            if len(scenario_var)==7:
+                concept="baseline"
+            else:
+                concept=scenario_var[7]
+                if not concept in concept_names:
+                    concept="baseline"
+
+        else:
+            density=scenario_var[3]
+            distribution=scenario_var[4]
+            repetition=scenario_var[5]
+            if len(scenario_var)==6:
+                concept="baseline"
+            else:
+                concept=scenario_var[6]    
+                if not concept in concept_names:                
+                    concept="baseline"
+
+        
+        scenario_name=concept+"_"+density+"_"+distribution+"_"+repetition+"_"
+        #print(scenario_name)
+        
+        
+
+        number_of_replans, number_of_attempted_replans, number_update_graph_no_replan, number_high_traffic_no_replan, number_last_point_no_replan = self.read_flowlog(log_file)
+
+
+        tmp_list = [ scenario_name,number_of_replans, number_of_attempted_replans, number_update_graph_no_replan, number_high_traffic_no_replan, number_last_point_no_replan]
+        return tmp_list          
+
+    def create_flow_metrics_dataframe(self):
+        
+        col_list = ["Scenario_name","Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan"]
+        
+        flow_mertics_list = list()
+        maplist=[]        
+        ##Read REGLOGs
+        for ii,file_name in enumerate(self.log_names):
+ 
+            log_type = file_name.split("_")[0]
+            if log_type=="FLOWLOG":
+                maplist.append([ii,file_name]) 
+        pool = Pool(processes=self.threads) 
+        env_mertics_list=pool.map(self.cflowthread, maplist)
+        pool.close()
+        pool.join()    
+        flow_metrics_data_frame = pd.DataFrame(env_mertics_list, columns=col_list)
+
+        print("FLOW_MERTICS Dataframe created!")
+        
+        output_file=open("dills/flow_metrics_dataframe.dill", 'wb')
+        dill.dump(flow_metrics_data_frame,output_file)
+        output_file.close()
+        
+        return
+     
 
     ####
 

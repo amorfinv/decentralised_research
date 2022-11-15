@@ -86,10 +86,10 @@ def lighten_color(color, amount=0.5):
 #If you do not want to graph for all three concepts, you may delete the unwanted concept from the variables  concepts and concept_names and concepts_colours
 
 ################The concepts list is teh only thing you need to change depending on which types of cocnepts you want to plot
-concepts=["1to1_","headalloc_","baseline_","headallocnoflow_","gridsectors_","noflow_","headingcr_"] 
+#concepts=["1to1_","headalloc_","baseline_","headallocnoflow_","gridsectors_","noflow_","headingcr_"] 
 
-#concepts=["1to1_","headalloc_","baseline_","headallocnoflow_","gridsectors_","noflow_","headingcr_","clustersectors1_","clustersectors2_","manual_flow_","projectionCD_"]        
-concept_names=["1to1","headalloc","baseline","headallocnoflow","gridsectors","noflow","headingcr","clustersectors1","clustersectors2","manualflow","projectionCD"]        
+concepts=["baseline_","gridsectorssmall_","gridsectorslarge_","noflow_","clustersectors1_","clustersectors2_","manual_flow_"]        
+concept_names=["baseline","gridsectorssmall","gridsectorslarge","noflow","clustersectorslarge","clustersectorssmall","manualflow"]        
 #concepts_colours=['r','g','b']
 concepts_colours=sns.color_palette("hls", len(concepts))
 
@@ -118,7 +118,7 @@ uncertainties_names=["No uncertainty"]
 percentage_metrics=["EFF1","EFF2","EFF3","EFF4","EFF5","SAF3"]    
 metrics_units=[""," (%)",""," (%)"," (sec)"," (sec)",""," (%)"," (sec)",""," (%)"," (%)"," (%)"," (%)"," (%)"," (sec)"," (sec)",\
                        " (m)","","","","","","","","","","",""," (%)"," (m)"," (sec)"," (sec)","","","","","","","",\
-                           ""," (sec)"," (m)"," (sec)",""," (sec)"," (m)"," (sec) "] 
+                           ""," (sec)"," (m)"," (sec)",""," (sec)"," (m)"," (sec) ","","","","",""] 
         
 metrics_title=["Number of cancelled demands","Percentage of cancelled demands","Number of inoperative trajectories","Percentage of inoperative trajectories"\
                        ,"Demand delay dispersion","The worst demand delay","Number of inequitable delayed demands","Percentage of inequitable delayed demands",\
@@ -131,15 +131,16 @@ metrics_title=["Number of cancelled demands","Percentage of cancelled demands","
                                    ,"Number of severe building violations ","Number of severe loitering NFZ violations \n with origin/destination in NFZ",\
                            "Number of severe loitering NFZ violations \n within 3 minutes of the NFZ activation","Weighted mission duration","Weighted mission track length",\
                                "Additional demand delay","Additional number of intrusions",\
-                               "Average mission duration per priority level","Average mission track length per priority level","Total delay per priority level"]    
+                               "Average mission duration per priority level","Average mission track length per priority level","Total delay per priority level",\
+                                   "Number of replans","Number of attempted replans","Number of graph updates","Number of inability to replan due to traffic","Number of inability to replan due to last point"]    
             
 boxplot_metrics=["AEQ1","AEQ1_1","AEQ2","AEQ2_1","AEQ3","AEQ4","AEQ5","AEQ5_1","CAP1","CAP2","EFF1","EFF2","EFF3","EFF4","EFF5","EFF6","ENV1",\
                          "ENV2","ENV3_1","ENV3_2","ENV4","SAF1","SAF1_2","SAF1_3","SAF1_4","SAF2","SAF2_1","SAF2_2","SAF2_3","SAF3","SAF4","SAF5","SAF5_1","SAF6","SAF6_1","SAF6_2","SAF6_3","SAF6_4","SAF6_5",\
-                             "SAF6_6","SAF6_7","PRI1","PRI2"]
+                             "SAF6_6","SAF6_7","PRI1","PRI2","Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan"]
     
 metrics_names=["AEQ1","AEQ1.1","AEQ2","AEQ2.1","AEQ3","AEQ4","AEQ5","AEQ5.1","CAP1","CAP2","EFF1","EFF2","EFF3","EFF4","EFF5","EFF6","ENV1",\
                          "ENV2","ENV3.1","ENV3.2","ENV4","SAF1","SAF1.2","SAF1.3","SAF1.4","SAF2","SAF2.1","SAF2.2","SAF2.3","SAF3","SAF4","SAF5","SAF5.1","SAF6","SAF6.1","SAF6.2","SAF6.3","SAF6.4","SAF6.5",\
-                             "SAF6.6","SAF6.7","PRI1","PRI2","CAP3","CAP4","PRI3","PRI4","PRI5"]
+                             "SAF6.6","SAF6.7","PRI1","PRI2","CAP3","CAP4","PRI3","PRI4","PRI5","Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan"]
 
 
 class GraphCreator():
@@ -171,6 +172,36 @@ class GraphCreator():
             self.metrics_names_dict[m]=metrics_names[i]
             i+=1
 
+
+    def flow_metric_boxplots(self,metric,dataframe):
+        vals=[]
+        for density in densities:
+            for t_mix in traffic_mix:
+                for conc in concepts:
+                    for rep in repetitions:   
+                        scenario_name=conc+density+t_mix+rep
+                        try:
+                            metric_value=dataframe[dataframe["Scenario_name"]==scenario_name][metric].values[0]
+                            tmp=[self.concept_names_dict[conc],self.density_names_dict[density],self.traffic_mix_names_dict[t_mix],rep,metric_value]
+                            vals.append(tmp)
+                        except:
+                            #metric_value=240+random.randint(-5,5)
+                            print("No value for scenario baseline",scenario_name,metric)
+                        
+        metric_pandas_df=pd.DataFrame(vals,columns=["Concept","Density","Traffic mix","repetition",metric])
+        
+        ##Create one graph for every traffic mix
+        for t_mix in traffic_mix_names:
+            df1=metric_pandas_df[metric_pandas_df["Traffic mix"]==t_mix]
+            fig=plt.figure()
+            sns.boxplot(y=metric, x='Density', data=df1, palette=concepts_colours,hue='Concept').set(title=self.metrics_titles_dict[metric]+" for "+t_mix+" traffic mix",ylabel = self.metrics_names_dict[metric]+self.metrics_units_dict[metric])
+            plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+            adjust_box_widths(fig, 0.5)
+            if metric in percentage_metrics and scale_y:
+                plt.ylim(-5, 105)
+            plt.savefig(diagrams_path+"boxplots/by_traffic_mix/"+metric+"_"+t_mix,bbox_inches='tight')
+            plt.savefig(diagrams_path+"pdfs/boxplots/by_traffic_mix/"+metric+"_"+t_mix+".pdf",bbox_inches='tight')
+            plt.clf()
 
     def metric_boxplots_baseline(self,metric,dataframe):
         vals=[]
@@ -374,6 +405,9 @@ class GraphCreator():
         scenario_metrics_df=dill.load(input_file)
         input_file.close()
         
+        print(scenario_metrics_df["Scenario_name"].values)
+        
+        return
    
         input_file=open(dills_path+"densitylog_dataframe.dill", 'rb')
         density_metrics_dataframe=dill.load(input_file)
@@ -383,10 +417,14 @@ class GraphCreator():
         density_constr_metrics_dataframe=dill.load(input_file)
         input_file.close()
         
+        input_file=open(dills_path+"flow_metrics_dataframe.dill", 'rb')
+        flow_metrics_dataframe=dill.load(input_file)
+        input_file.close()
+        
         
 
         ## Create the graphs
-        boxplot_metrics=["AEQ3","EFF1","EFF2","EFF3","EFF4","EFF5","ENV4","SAF1","SAF1_2","SAF1_3","SAF1_4","SAF2","SAF2_1","SAF2_2","SAF2_3","SAF3","SAF4","SAF5","SAF5_1"]
+        boxplot_metrics=["CAP1","AEQ3","EFF1","EFF2","EFF3","EFF4","EFF5","ENV4","SAF1","SAF1_2","SAF1_3","SAF1_4","SAF2","SAF2_1","SAF2_2","SAF2_3","SAF3","SAF4","SAF5","SAF5_1"]
         
 
         
@@ -404,16 +442,11 @@ class GraphCreator():
              self.density_constr_graph(dens, t_mix,rep,density_constr_metrics_dataframe)           
 
 
+        flow_metrics=["Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan"]
+        for metric in flow_metrics:
+            self.flow_metric_boxplots(metric,flow_metrics_dataframe)
 
-        t_mix="40_"
-        rep="0_"
-        for dens in densities:
-            self.density_graph(dens, t_mix,rep,density_metrics_dataframe)
-            
-        t_mix="40_"
-        rep="0_"
-        for dens in densities:
-             self.density_constr_graph(dens, t_mix,rep,density_constr_metrics_dataframe)    
+
 
          
 

@@ -37,7 +37,7 @@ def calc_flst_mission_completed_col(row):
     
 
 #concept_names=["1to1","headalloc","baseline","headallocnoflow","gridsectors","noflow","headingcr","clustersectors1","clustersectors2","manualflow","projectionCD"]        
-concept_names=["baseline","gridsectors","gridsectorslarge","noflow","clustersectors1","clustersectors2","manualflow"]        
+concept_names=["baseline","gridsectorssmall","gridsectorslarge","clustersectors1","clustersectors2"]        
 
 class DataframeCreator():
 

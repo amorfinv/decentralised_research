@@ -88,8 +88,8 @@ def lighten_color(color, amount=0.5):
 ################The concepts list is teh only thing you need to change depending on which types of cocnepts you want to plot
 #concepts=["1to1_","headalloc_","baseline_","headallocnoflow_","gridsectors_","noflow_","headingcr_"] 
 
-concepts=["baseline_","gridsectorssmall_","gridsectorslarge_","noflow_","clustersectors1_","clustersectors2_","manual_flow_"]        
-concept_names=["baseline","gridsectorssmall","gridsectorslarge","noflow","clustersectorslarge","clustersectorssmall","manualflow"]        
+concepts=["baseline_","gridsectorssmall_","gridsectorslarge_","clustersectors1_","clustersectors2_"]        
+concept_names=["baseline","gridsectorssmall","gridsectorslarge","clustersectorslarge","clustersectorssmall"]        
 #concepts_colours=['r','g','b']
 concepts_colours=sns.color_palette("hls", len(concepts))
 

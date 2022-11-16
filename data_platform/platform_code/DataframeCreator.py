@@ -533,7 +533,7 @@ class DataframeCreator():
                 l=line[:-2]
                 k=l.split(",")
                 for r in k[1:]:
-                    if int(r)==1:
+                    if int(float(r))==1:
                         number_of_replans=number_of_replans+1
                 
               
@@ -541,25 +541,25 @@ class DataframeCreator():
                 l=line[:-2]
                 k=l.split(",")
                 for r in k[1:]:
-                    if int(r)==1:
+                    if int(float(r))==1:
                         number_of_attempted_replans=number_of_attempted_replans+1
             elif cnt_modulo % 12 == 8:
                 l=line[:-2]
                 k=l.split(",")
                 for r in k[1:]:
-                    if int(r)==1:
+                    if int(float(r))==1:
                         number_update_graph_no_replan=number_update_graph_no_replan+1
             elif cnt_modulo % 12 == 9:
                 l=line[:-2]
                 k=l.split(",")
                 for r in k[1:]:
-                    if int(r)==1:
+                    if int(float(r))==1:
                         number_high_traffic_no_replan=number_high_traffic_no_replan+1
             elif cnt_modulo % 12 == 10:
                 l=line[:-2]
                 k=l.split(",")
                 for r in k[1:]:
-                    if int(r)==1:
+                    if int(float(r))==1:
                         number_last_point_no_replan=number_last_point_no_replan+1             
                 
             cnt_modulo = cnt_modulo + 1

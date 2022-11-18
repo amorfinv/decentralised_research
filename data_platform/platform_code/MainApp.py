@@ -4,7 +4,7 @@ Created on Fri Feb 11 16:33:17 2022
 @author: nipat
 """
 import os
-import pandas as pd2
+import pandas as pd
 
 from datetime import datetime
 import DataframeCreator

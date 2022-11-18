@@ -734,9 +734,9 @@ class DataframeCreator():
         
         log_type = file_name.split("_")[0]
             
-        if log_type=="REGLOG" :
+        if log_type=="FLOWLOG" :
             acid_lines_list, alt_lines_list, lon_lines_list, lat_lines_list = self.read_flowlog_as_reglog(log_file)
-        elif log_type=="FLOWLOG":
+        elif log_type=="REGLOG":
             acid_lines_list, alt_lines_list, lon_lines_list, lat_lines_list = self.read_reglog(log_file)
         acid_reg_dict={}
 
@@ -813,7 +813,9 @@ class DataframeCreator():
         for ii,file_name in enumerate(self.log_names):
  
             log_type = file_name.split("_")[0]
+            
             if log_type=="REGLOG" or log_type=="FLOWLOG":
+                maplist.append([ii,file_name]) 
                 file_name=file_name.split(".")[0]
                 scenario_var = file_name.split("_")
                 if scenario_var[3]=="very": 
@@ -844,7 +846,7 @@ class DataframeCreator():
                     print("Both REG and FLOW for ",scenario_name )
                 check_scn_names.append(scenario_name)
                 
-                maplist.append([ii,file_name]) 
+                
         pool = Pool(processes=self.threads) 
         env_mertics_list=pool.map(self.cemthread, maplist)
         pool.close()

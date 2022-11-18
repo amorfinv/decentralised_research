@@ -669,7 +669,33 @@ class DataframeCreator():
         return acid_lines_list, alt_lines_list, lon_lines_list, lat_lines_list
 
    
-        
+    def read_flowlog_as_reglog(self, log_file):
+         reglog_file = open(log_file, "r")
+
+         acid_lines_list = []
+         alt_lines_list = []
+         lon_lines_list = []
+         lat_lines_list = []
+
+         cnt_modulo = 0
+         cnt = 0
+         for line in reglog_file:
+             cnt = cnt + 1
+             if cnt < 10:
+                 continue
+
+             if cnt_modulo % 12 == 0:
+                 acid_lines_list.append(line[:-2])
+             elif cnt_modulo % 12 == 1:
+                 alt_lines_list.append(line[:-2])
+             elif cnt_modulo % 12 == 2:
+                 lat_lines_list.append(line[:-2])
+             elif cnt_modulo % 12 == 3:
+
+                 lon_lines_list.append(line[:-2])
+             cnt_modulo = cnt_modulo + 1
+
+         return acid_lines_list, alt_lines_list, lon_lines_list, lat_lines_list       
 
    
                         
@@ -706,9 +732,12 @@ class DataframeCreator():
         scenario_name=concept+"_"+density+"_"+distribution+"_"+repetition+"_"
         #print(scenario_name)
         
-        
-
-        acid_lines_list, alt_lines_list, lon_lines_list, lat_lines_list = self.read_reglog(log_file)
+        log_type = file_name.split("_")[0]
+            
+        if log_type=="REGLOG" :
+            acid_lines_list, alt_lines_list, lon_lines_list, lat_lines_list = self.read_flowlog_as_reglog(log_file)
+        elif log_type=="FLOWLOG":
+            acid_lines_list, alt_lines_list, lon_lines_list, lat_lines_list = self.read_reglog(log_file)
         acid_reg_dict={}
 
 
@@ -778,11 +807,43 @@ class DataframeCreator():
         
         env_mertics_list = list()
         maplist=[]        
+        
+        check_scn_names=[]
         ##Read REGLOGs
         for ii,file_name in enumerate(self.log_names):
  
             log_type = file_name.split("_")[0]
-            if log_type=="REGLOG":
+            if log_type=="REGLOG" or log_type=="FLOWLOG":
+                file_name=file_name.split(".")[0]
+                scenario_var = file_name.split("_")
+                if scenario_var[3]=="very": 
+                    density="very_low"
+                    distribution=scenario_var[5]
+                    repetition=scenario_var[6]
+                    if len(scenario_var)==7:
+                        concept="baseline"
+                    else:
+                        concept=scenario_var[7]
+                        if not concept in concept_names:
+                            concept="baseline"
+
+                else:
+                    density=scenario_var[3]
+                    distribution=scenario_var[4]
+                    repetition=scenario_var[5]
+                    if len(scenario_var)==6:
+                        concept="baseline"
+                    else:
+                        concept=scenario_var[6]    
+                        if not concept in concept_names:                
+                            concept="baseline"
+
+                
+                scenario_name=concept+"_"+density+"_"+distribution+"_"+repetition+"_"
+                if scenario_name in check_scn_names:
+                    print("Both REG and FLOW for ",scenario_name )
+                check_scn_names.append(scenario_name)
+                
                 maplist.append([ii,file_name]) 
         pool = Pool(processes=self.threads) 
         env_mertics_list=pool.map(self.cemthread, maplist)

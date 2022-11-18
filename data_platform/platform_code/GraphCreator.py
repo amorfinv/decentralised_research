@@ -166,7 +166,7 @@ class GraphCreator():
         self.metrics_units_dict={}
         self.metrics_names_dict={}
         i=0
-        for m in boxplot_metrics:
+        for m in metrics_names: #for m in boxplot_metrics:
             self.metrics_titles_dict[m]=metrics_title[i]
             self.metrics_units_dict[m]=metrics_units[i]
             self.metrics_names_dict[m]=metrics_names[i]
@@ -405,9 +405,7 @@ class GraphCreator():
         scenario_metrics_df=dill.load(input_file)
         input_file.close()
         
-        print(scenario_metrics_df["Scenario_name"].values)
-        
-        return
+
    
         input_file=open(dills_path+"densitylog_dataframe.dill", 'rb')
         density_metrics_dataframe=dill.load(input_file)
@@ -427,19 +425,21 @@ class GraphCreator():
         boxplot_metrics=["CAP1","AEQ3","EFF1","EFF2","EFF3","EFF4","EFF5","ENV4","SAF1","SAF1_2","SAF1_3","SAF1_4","SAF2","SAF2_1","SAF2_2","SAF2_3","SAF3","SAF4","SAF5","SAF5_1"]
         
 
-        
-        for metric in boxplot_metrics:
-             self.metric_boxplots_baseline(metric,scenario_metrics_df)
-   
-        t_mix="40_"
-        rep="0_"
-        for dens in densities:
-            self.density_graph(dens, t_mix,rep,density_metrics_dataframe)
-            
-        t_mix="40_"
-        rep="0_"
-        for dens in densities:
-             self.density_constr_graph(dens, t_mix,rep,density_constr_metrics_dataframe)           
+# =============================================================================
+#         
+#         for metric in boxplot_metrics:
+#              self.metric_boxplots_baseline(metric,scenario_metrics_df)
+#    
+#         t_mix="40_"
+#         rep="0_"
+#         for dens in densities:
+#             self.density_graph(dens, t_mix,rep,density_metrics_dataframe)
+#             
+#         t_mix="40_"
+#         rep="0_"
+#         for dens in densities:
+#              self.density_constr_graph(dens, t_mix,rep,density_constr_metrics_dataframe)           
+# =============================================================================
 
 
         flow_metrics=["Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan"]

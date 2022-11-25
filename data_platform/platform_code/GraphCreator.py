@@ -88,8 +88,8 @@ def lighten_color(color, amount=0.5):
 ################The concepts list is teh only thing you need to change depending on which types of cocnepts you want to plot
 #concepts=["1to1_","headalloc_","baseline_","headallocnoflow_","gridsectors_","noflow_","headingcr_"] 
 
-concepts=["baseline_","gridsectorssmall_","gridsectorslarge_","clustersectors1_","clustersectors2_"]        
-concept_names=["baseline","grid sectors small","grid sectors large","cluster sectors large","cluster sectors small"]        
+concepts=["baseline_","gridsectorssmall_","gridsectorslarge_","clustersectors1_","clustersectors2_","noflow_"]        
+concept_names=["baseline","grid sectors small","grid sectors large","cluster sectors large","cluster sectors small","no flow control"]        
 #concepts_colours=['r','g','b']
 concepts_colours=sns.color_palette("hls", len(concepts))
 
@@ -446,7 +446,7 @@ class GraphCreator():
              self.density_constr_graph(dens, t_mix,rep,density_constr_metrics_dataframe)           
 
 
-        flow_metrics=["Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan"]
+        flow_metrics=["Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan"]
         for metric in flow_metrics:
             self.flow_metric_boxplots(metric,flow_metrics_dataframe)
 

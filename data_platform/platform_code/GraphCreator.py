@@ -166,7 +166,7 @@ class GraphCreator():
         self.metrics_units_dict={}
         self.metrics_names_dict={}
         i=0
-        for m in metrics_names: #for m in boxplot_metrics:
+        for m in boxplot_metrics:
             self.metrics_titles_dict[m]=metrics_title[i]
             self.metrics_units_dict[m]=metrics_units[i]
             self.metrics_names_dict[m]=metrics_names[i]

@@ -89,7 +89,7 @@ def lighten_color(color, amount=0.5):
 #concepts=["1to1_","headalloc_","baseline_","headallocnoflow_","gridsectors_","noflow_","headingcr_"] 
 
 concepts=["baseline_","gridsectorssmall_","gridsectorslarge_","clustersectors1_","clustersectors2_"]        
-concept_names=["baseline","gridsectorssmall","gridsectorslarge","clustersectorslarge","clustersectorssmall"]        
+concept_names=["baseline","grid sectors small","grid sectors large","cluster sectors large","cluster sectors small"]        
 #concepts_colours=['r','g','b']
 concepts_colours=sns.color_palette("hls", len(concepts))
 
@@ -425,21 +425,19 @@ class GraphCreator():
         boxplot_metrics=["CAP1","AEQ3","EFF1","EFF2","EFF3","EFF4","EFF5","ENV4","SAF1","SAF1_2","SAF1_3","SAF1_4","SAF2","SAF2_1","SAF2_2","SAF2_3","SAF3","SAF4","SAF5","SAF5_1"]
         
 
-# =============================================================================
-#         
-#         for metric in boxplot_metrics:
-#              self.metric_boxplots_baseline(metric,scenario_metrics_df)
-#    
-#         t_mix="40_"
-#         rep="0_"
-#         for dens in densities:
-#             self.density_graph(dens, t_mix,rep,density_metrics_dataframe)
-#             
-#         t_mix="40_"
-#         rep="0_"
-#         for dens in densities:
-#              self.density_constr_graph(dens, t_mix,rep,density_constr_metrics_dataframe)           
-# =============================================================================
+        
+        for metric in boxplot_metrics:
+             self.metric_boxplots_baseline(metric,scenario_metrics_df)
+   
+        t_mix="40_"
+        rep="0_"
+        for dens in densities:
+            self.density_graph(dens, t_mix,rep,density_metrics_dataframe)
+            
+        t_mix="40_"
+        rep="0_"
+        for dens in densities:
+             self.density_constr_graph(dens, t_mix,rep,density_constr_metrics_dataframe)           
 
 
         flow_metrics=["Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan"]

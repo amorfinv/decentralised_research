@@ -898,7 +898,12 @@ class DataframeCreator():
 
         scenario_name=concept+"_"+density+"_"+distribution+"_"+repetition+"_"
         
-        acid_lines_list, alt_lines_list, lon_lines_list, lat_lines_list = self.read_reglog(log_file)
+        log_type = file_name.split("_")[0]
+            
+        if log_type=="FLOWLOG" :
+            acid_lines_list, alt_lines_list, lon_lines_list, lat_lines_list = self.read_flowlog_as_reglog(log_file)
+        elif log_type=="REGLOG":
+            acid_lines_list, alt_lines_list, lon_lines_list, lat_lines_list = self.read_reglog(log_file)
 
     
 
@@ -936,13 +941,43 @@ class DataframeCreator():
         col_list = [ "scenario_name", "Time_stamp", "Density_constrained"]
         
         densitylog_list = list()
+        check_scn_names=[]
         
         ##Read REGLOGs
         for ii,file_name in enumerate(self.log_names):
  
             log_type = file_name.split("_")[0]
-            if log_type=="REGLOG":
-                maplist.append([ii,file_name])
+            if log_type=="REGLOG" or log_type=="FLOWLOG":
+                maplist.append([ii,file_name]) 
+                file_name=file_name.split(".")[0]
+                scenario_var = file_name.split("_")
+                if scenario_var[3]=="very": 
+                    density="very_low"
+                    distribution=scenario_var[5]
+                    repetition=scenario_var[6]
+                    if len(scenario_var)==7:
+                        concept="baseline"
+                    else:
+                        concept=scenario_var[7]
+                        if not concept in concept_names:
+                            concept="baseline"
+
+                else:
+                    density=scenario_var[3]
+                    distribution=scenario_var[4]
+                    repetition=scenario_var[5]
+                    if len(scenario_var)==6:
+                        concept="baseline"
+                    else:
+                        concept=scenario_var[6]    
+                        if not concept in concept_names:                
+                            concept="baseline"
+
+                
+                scenario_name=concept+"_"+density+"_"+distribution+"_"+repetition+"_"
+                if scenario_name in check_scn_names:
+                    print("Both REG and FLOW for ",scenario_name )
+                check_scn_names.append(scenario_name)
         pool = Pool(processes=self.threads)   
         densitylog_list = list()
         densitylog_list=pool.map(self.cdcthread, maplist)
@@ -991,7 +1026,14 @@ class DataframeCreator():
      
         scenario_name=concept+"_"+density+"_"+distribution+"_"+repetition+"_"
         
-        acid_lines_list, alt_lines_list, lon_lines_list, lat_lines_list = self.read_reglog(log_file)
+        log_type = file_name.split("_")[0]
+            
+        if log_type=="FLOWLOG" :
+            acid_lines_list, alt_lines_list, lon_lines_list, lat_lines_list = self.read_flowlog_as_reglog(log_file)
+        elif log_type=="REGLOG":
+            acid_lines_list, alt_lines_list, lon_lines_list, lat_lines_list = self.read_reglog(log_file)
+            
+            
         for i, line in enumerate(acid_lines_list):
             acid_line_list = line.split(",")
              
@@ -1004,12 +1046,13 @@ class DataframeCreator():
         col_list = [ "scenario_name", "Time_stamp", "Density"]
         
         densitylog_list = list()
-        maplist=[]       
+        maplist=[]    
+
         ##Read REGLOGs
         for ii,file_name in enumerate(self.log_names):
  
             log_type = file_name.split("_")[0]
-            if log_type=="REGLOG":
+            if log_type=="REGLOG" or log_type=="FLOWLOG":
                 maplist.append([ii,file_name])        
         pool = Pool(processes=self.threads) 
         densitylog_list=pool.map(self.cdthread, maplist)

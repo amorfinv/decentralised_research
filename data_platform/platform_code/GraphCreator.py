@@ -140,9 +140,9 @@ metrics_title=["Number of cancelled demands","Percentage of cancelled demands","
 #                              "SAF6_6","SAF6_7","PRI1","PRI2","Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan"]
 # =============================================================================
   
-boxplot_metrics=[["AEQ1","AEQ1_1","AEQ2","AEQ2_1","AEQ3","AEQ4","AEQ5","AEQ5_1","CAP1","CAP2","EFF1","EFF2","EFF3","EFF4","EFF5","EFF6","ENV1",\
+boxplot_metrics=["AEQ1","AEQ1_1","AEQ2","AEQ2_1","AEQ3","AEQ4","AEQ5","AEQ5_1","CAP1","CAP2","EFF1","EFF2","EFF3","EFF4","EFF5","EFF6","ENV1",\
                          "ENV2","ENV3_1","ENV3_2","ENV4","SAF1","SAF1_2","SAF1_3","SAF1_4","SAF2","SAF2_1","SAF2_2","SAF2_3","SAF3","SAF4","SAF5","SAF5_1","SAF6","SAF6_1","SAF6_2","SAF6_3","SAF6_4","SAF6_5",\
-                             "SAF6_6","SAF6_7","PRI1","PRI2","CAP3","CAP4","PRI3","PRI4","PRI5","Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan"]]
+                             "SAF6_6","SAF6_7","PRI1","PRI2","CAP3","CAP4","PRI3","PRI4","PRI5","Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan"]
   
 metrics_names=["AEQ1","AEQ1.1","AEQ2","AEQ2.1","AEQ3","AEQ4","AEQ5","AEQ5.1","CAP1","CAP2","EFF1","EFF2","EFF3","EFF4","EFF5","EFF6","ENV1",\
                          "ENV2","ENV3.1","ENV3.2","ENV4","SAF1","SAF1.2","SAF1.3","SAF1.4","SAF2","SAF2.1","SAF2.2","SAF2.3","SAF3","SAF4","SAF5","SAF5.1","SAF6","SAF6.1","SAF6.2","SAF6.3","SAF6.4","SAF6.5",\

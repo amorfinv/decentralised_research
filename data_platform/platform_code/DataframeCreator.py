@@ -9,6 +9,7 @@ import os
 import EFF_metrics
 import SAF_metrics
 import AEQ_metrics
+import CAP_metrics
 import ENV_metrics
 import util_functions
 import math
@@ -1158,7 +1159,7 @@ class DataframeCreator():
 
         
         
-        col_list = ["Scenario_name", "#Aircraft_number","#Succeful_aircraft_number","#Spawned_aircraft_number","AEQ3", "EFF1", "EFF2", "EFF3", "EFF4", "EFF5"]        
+        col_list = ["Scenario_name", "#Aircraft_number","#Succeful_aircraft_number","#Spawned_aircraft_number","AEQ3","CAP1", "EFF1", "EFF2", "EFF3", "EFF4", "EFF5"]        
         
         metrics_list = list()
               
@@ -1212,10 +1213,11 @@ class DataframeCreator():
                 eff3=EFF_metrics.compute_eff3(filtered_flst_dataframe) 
                 eff4=EFF_metrics.compute_eff4(filtered_flst_dataframe) 
                 eff5=EFF_metrics.compute_eff5(filtered_flst_dataframe) 
+                cap1=CAP_metrics.compute_cap1(filtered_flst_dataframe)
                
                 
 
-                tmp_list = [scenario_name, aircraft_number,aircraft_succesful_number,aircraft_spawned_number, aeq3,eff1,eff2,eff3,eff4,eff5]
+                tmp_list = [scenario_name, aircraft_number,aircraft_succesful_number,aircraft_spawned_number, aeq3,cap1,eff1,eff2,eff3,eff4,eff5]
         
                 metrics_list.append(tmp_list)
                 

@@ -15,7 +15,6 @@ from copy import deepcopy
 import warnings
 warnings.filterwarnings('ignore')
 
-
 def logparse(args):
     
     for i in track(range(len(args['combinations'])), description="Processing..."):
@@ -81,8 +80,10 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
     edge_gdf = ox.graph_to_gdfs(G, nodes=False)
     edge_gdf['edge_id'] = edge_gdf.index
     edge_geometry = nx.get_edge_attributes(G, "geometry")
-
+    entry = 0
+    
     try:
+
         for idx, filepath in enumerate(reglog_files):
             day = idx + 1
             date = datetime.strptime(f'2022-01-{day}',"%Y-%m-%d")
@@ -93,7 +94,7 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
                 
                 # loop through five lines at time
                 slice_size = 5
-                entry = 0
+
                 for acids, alts, lats, lons, edgeids in zip(*[iter(lines_gen)]*slice_size):
                     
                     time = float(acids.split(',')[0])
@@ -116,6 +117,7 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
                             'ALT': float(alts[acidx]),
                             'geometry': Point(float(lons[acidx]), float(lats[acidx])),
                             'edge_id': edgeids_float[acidx],
+                            'edge_id_str': edgeids[acidx],
                             'scenario': filepath[32:-4],
                             'edge_geometry': edge_geom[acidx]
                             }

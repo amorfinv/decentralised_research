@@ -62,7 +62,7 @@ There is some manual modification at the borders to ensure that all edges are co
 
 ## "Edges2FlowGroupsAssignment.py"
 
-This code takes "finalized_graph" (M2_baseline graph) and a sector grid to assign new flow groups to the graph based on the new grid.
+This code takes a copy of "finalized_graph" (M2_baseline graph) and a sector grid to assign new flow groups to the graph based on the new grid.
 
 ## "flow_control_dills_creator.py"
 

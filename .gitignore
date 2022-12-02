@@ -141,3 +141,5 @@ conflict_study/images/confs/*.png
 conflict_study/images/los/*.png
 conflict_study/images/*.png
 maps/gpkgs/*.gpkg
+data_analysis/density_per_layer_range/images/*
+data_analysis/density_per_layer_range/other_data/*

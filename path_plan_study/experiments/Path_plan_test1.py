@@ -90,10 +90,10 @@ if 1:
         for aircraft_type in [1,2]:
             if aircraft_type==1:
                 speed_max=10.29 ##20 knots
-                turn_cost=6.7
+                turn_cost=0.96
             elif aircraft_type==2:
                 speed_max=15.43 # 30 knots
-                turn_cost=9.75
+                turn_cost=2.75
                 
             aircraft_types.append(aircraft_type)  
             start=time.time()

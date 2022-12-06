@@ -10,8 +10,8 @@ Created on Tue Oct 12 10:51:03 2021
 #2 for manhattan with turning cost =9.144/av_speed_vertical
 #3 for  eucledean with turning cost =9.144/av_speed_vertical
 # 4 for eucledean and manhattan with turning cost =0.01 , almost 0 changed tunring cost to 1
-#5 for  eucledean and manhattan with turning cost =150 for mp30 and 67 for mp20
-#6 for  eucledean with turning cost =150 for mp30 and 67 for mp20
+#5 for  eucledean and manhattan with turning cost =9.75 for mp30 and 7.96 for mp20
+#6 for  eucledean with turning cost =9.75 for mp30 and 7.96 for mp20
 experiment_number=1
 
 
@@ -526,7 +526,7 @@ def heuristic(current, goal,speed,flow_graph,graph):
     
         if graph.groups_list[current]!=graph.groups_list[goal]:
             if speed==10.29:
-                h=h+6.7
+                h=h+7.96
             else:
                 h=h+9.75
     elif experiment_number==6:#only eucledean
@@ -535,7 +535,7 @@ def heuristic(current, goal,speed,flow_graph,graph):
     
         if graph.groups_list[current]!=graph.groups_list[goal]:
            if speed==10.29:
-                h=h+6.7
+                h=h+7.96
            else:
                 h=h+9.75                   
     return h
@@ -580,7 +580,7 @@ def compute_c(current,neigh,edges_speed,flow_graph,speed,graph):
                 g=1#0.01
             elif experiment_number==5 or experiment_number==6:
                 if speed==10.29:
-                    g=6.7
+                    g=7.96
                 else:
                     g=9.75           
         else:

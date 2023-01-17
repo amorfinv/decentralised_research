@@ -8,7 +8,7 @@ import traceback
 
 
 # There are three folders
-folders = ['projectedcd']
+folders = ['PBpbp']
 # folders = ['1to1']
 # folders = ['m2']
 
@@ -21,7 +21,7 @@ folders = ['projectedcd']
 
 # Get the files in each of these folders
 # regs_m2 = [x for x in os.listdir(folders[0]) if 'REGLOG' in x]
-regs_projectedcd = [x for x in os.listdir(folders[0]) if 'REGLOG' in x]
+regs_pbm2 = [x for x in os.listdir(folders[0]) if 'REGLOG' in x]
 # regs_1to1 = [x for x in os.listdir(folders[0]) if 'REGLOG' in x]
 
 
@@ -33,7 +33,7 @@ input_arr = []
 #for scen in decentr_regs:
 #    input_arr.append([folders[1], scen])
     
-for scen in regs_projectedcd:
+for scen in regs_pbm2:
     input_arr.append([folders[0], scen])
 
 

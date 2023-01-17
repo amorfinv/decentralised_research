@@ -271,14 +271,17 @@ def conftime(args, plot_dict):
     fig, ax = plt.subplots()
     # set the hls colour palette for matplotlib
     concepts_colours=sns.color_palette("hls", 2)
-    concept_list = ['m2', 'projectedcd']
+    concept_list = ['PBm2', 'PBpbp']
 
+    
+    concept_legend = {'PBm2': 'Baseline', 'PBpb': 'Projection-based', 'PBpbf': 'Projection-based\nfiltering', 'PBpbp': 'Projection-based\nand state-based'}
     for concept in concept_list:
-
-        if concept == 'm2':
-            concept1 = 'baseline'
-        elif concept == 'projectedcd':
-            concept1 = 'projectedcd'
+        
+        concept1 = concept_legend[concept]
+        #if concept == 'PBm2':
+        #    concept1 = 'baseline'
+        #elif concept == 'projectedcd':
+        #    concept1 = 'projectedcd'
        
         ax.hist(warningtimes[density][concept], bins=20, label=concept1, histtype='step', ls='dashed', lw=1.5, color=concepts_colours[concept_list.index(concept)])
     

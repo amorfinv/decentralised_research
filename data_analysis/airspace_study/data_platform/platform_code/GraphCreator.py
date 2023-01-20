@@ -88,8 +88,8 @@ def lighten_color(color, amount=0.5):
 ################The concepts list is teh only thing you need to change depending on which types of cocnepts you want to plot
 #concepts=["1to1_","headalloc_","baseline_","headallocnoflow_","gridsectors_","noflow_","headingcr_"] 
 
-concepts=["baseline_","gridsectorssmall_","gridsectorslarge_","clustersectors1_","clustersectors2_","noflow_"]        
-concept_names=["baseline","grid sectors small","grid sectors large","cluster sectors large","cluster sectors small","no flow control"]        
+concepts=["noflow","noflowfulldenalloc","noflowrandomalloc","noflowdistalloc"]           
+concept_names=["Baseline","Density Allocation","Random Allocation","Flight Distance Allocation"]        
 #concepts_colours=['r','g','b']
 concepts_colours=sns.color_palette("hls", len(concepts))
 
@@ -142,11 +142,16 @@ metrics_title=["Number of cancelled demands","Percentage of cancelled demands","
   
 boxplot_metrics=["AEQ1","AEQ1_1","AEQ2","AEQ2_1","AEQ3","AEQ4","AEQ5","AEQ5_1","CAP1","CAP2","EFF1","EFF2","EFF3","EFF4","EFF5","EFF6","ENV1",\
                          "ENV2","ENV3_1","ENV3_2","ENV4","SAF1","SAF1_2","SAF1_3","SAF1_4","SAF2","SAF2_1","SAF2_2","SAF2_3","SAF3","SAF4","SAF5","SAF5_1","SAF6","SAF6_1","SAF6_2","SAF6_3","SAF6_4","SAF6_5",\
-                             "SAF6_6","SAF6_7","PRI1","PRI2","CAP3","CAP4","PRI3","PRI4","PRI5","Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan"]
+                             "SAF6_6","SAF6_7","PRI1","PRI2","CAP3","CAP4","PRI3","PRI4","PRI5","Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan",\
+                                 "Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt"\
+                  "Trans_per_mtr","Turn_trans_per_mtr","Crs_trans_per_mtr","Tk-off_trans_per_mtr","Dscn_trans_per_mtr","Ascncr_trans_per_mtr","Ascnhop_trans_per_mtr"]
   
 metrics_names=["AEQ1","AEQ1.1","AEQ2","AEQ2.1","AEQ3","AEQ4","AEQ5","AEQ5.1","CAP1","CAP2","EFF1","EFF2","EFF3","EFF4","EFF5","EFF6","ENV1",\
                          "ENV2","ENV3.1","ENV3.2","ENV4","SAF1","SAF1.2","SAF1.3","SAF1.4","SAF2","SAF2.1","SAF2.2","SAF2.3","SAF3","SAF4","SAF5","SAF5.1","SAF6","SAF6.1","SAF6.2","SAF6.3","SAF6.4","SAF6.5",\
-                             "SAF6.6","SAF6.7","PRI1","PRI2","CAP3","CAP4","PRI3","PRI4","PRI5","Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan"]
+                             "SAF6.6","SAF6.7","PRI1","PRI2","CAP3","CAP4","PRI3","PRI4","PRI5","Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan",\
+                                 "Transitions per flight","Turn transitions per flight  ","Cruise transitions per flight","Takeoff transitions per flight","Hopping descents per flight",\
+                                     "Resolution transitions per flight","Hopping ascents per flight","Transitions per metre","Turn transitions per metre  ","Cruise transitions per metre",\
+                                         "Takeoff transitions per metre","Hopping descents per metre","Resolution transitions per metre","Hopping ascents per metre"]
 
 
 class GraphCreator():
@@ -200,7 +205,7 @@ class GraphCreator():
         for t_mix in traffic_mix_names:
             df1=metric_pandas_df[metric_pandas_df["Traffic mix"]==t_mix]
             fig=plt.figure()
-            sns.boxplot(y=metric, x='Density', data=df1, palette=concepts_colours,hue='Concept').set(title=self.metrics_titles_dict[metric]+" for "+t_mix+" traffic mix",ylabel = self.metrics_names_dict[metric]+self.metrics_units_dict[metric])
+            sns.boxplot(y=metric, x='Density', data=df1, palette=concepts_colours,hue='Concept').set(ylabel = self.metrics_names_dict[metric])
             plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
             adjust_box_widths(fig, 0.5)
             if metric in percentage_metrics and scale_y:
@@ -421,8 +426,8 @@ class GraphCreator():
         density_constr_metrics_dataframe=dill.load(input_file)
         input_file.close()
         
-        input_file=open(dills_path+"flow_metrics_dataframe.dill", 'rb')
-        flow_metrics_dataframe=dill.load(input_file)
+        input_file=open(dills_path+"transition_metrics_dataframe.dill", 'rb')
+        transition_metrics_dataframe=dill.load(input_file)
         input_file.close()
         
         
@@ -446,9 +451,10 @@ class GraphCreator():
              self.density_constr_graph(dens, t_mix,rep,density_constr_metrics_dataframe)           
 
 
-        flow_metrics=["Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan"]
-        for metric in flow_metrics:
-            self.flow_metric_boxplots(metric,flow_metrics_dataframe)
+        transition_metrics=["Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt"\
+                  "Trans_per_mtr","Turn_trans_per_mtr","Crs_trans_per_mtr","Tk-off_trans_per_mtr","Dscn_trans_per_mtr","Ascncr_trans_per_mtr","Ascnhop_trans_per_mtr"]
+        for metric in transition_metrics:
+            self.flow_metric_boxplots(metric,transition_metrics_dataframe)
 
 
 

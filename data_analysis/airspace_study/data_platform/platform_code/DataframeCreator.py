@@ -44,8 +44,11 @@ def update_transition_type(row):
          return row["Transition_type"]
      
 
-#concept_names=["1to1","headalloc","baseline","headallocnoflow","gridsectors","noflow","headingcr","clustersectors1","clustersectors2","manualflow","projectionCD"]        
-concept_names=["baseline","noflow"]        
+#concept_names=["noflow","noflowfulldenalloc","noflowrandomalloc","noflowdistalloc"]        
+
+##Keep one concept only for testing
+concept_names=["noflow"]
+
 
 class DataframeCreator():
 
@@ -65,14 +68,14 @@ class DataframeCreator():
     
     def create_dataframes(self):
 
-        #self.create_flstlog_dataframe() 
-        #self.create_loslog_dataframe() 
-        #self.create_conflog_dataframe() 
-        #self.create_env_metrics_dataframe()
-        #self.create_density_dataframe()
-        #self.create_density_constrained_dataframe()
+        self.create_flstlog_dataframe() 
+        self.create_loslog_dataframe() 
+        self.create_conflog_dataframe() 
+        self.create_env_metrics_dataframe()
+        self.create_density_dataframe()
+        self.create_density_constrained_dataframe()
         self.create_layer_transitions_dataframe()
-        #self.create_metrics_dataframe()
+        self.create_metrics_dataframe()
         
         
         return
@@ -1193,11 +1196,25 @@ class DataframeCreator():
         flst_log_dataframe=dill.load(input_file)
         input_file.close()  
         
-        tranistion_data_frame=pd.merge(tranistion_data_frame,flst_log_dataframe[["ACID","scenario_name","SPAWN_time"]],on=["ACID","scenario_name"],how="left")
+        tranistion_data_frame=pd.merge(tranistion_data_frame,flst_log_dataframe[["ACID","scenario_name","SPAWN_time", "Origin_LAT","Origin_LON", "Dest_LAT","Dest_LON","cruising_speed"]],on=["ACID","scenario_name"],how="left")
         tranistion_data_frame['Transition_type'] =tranistion_data_frame.apply(update_transition_type,axis=1)
+        
+        
+        
+        #Load the constrained length dataframe
+        input_file=open("data/constrained_length.dill", 'rb')
+        constr_len_dataframe=dill.load(input_file)
+        input_file.close() 
 
+
+        #Add the length of the constarine path as a column for every transistion event logged
+        tranistion_data_frame=pd.merge(tranistion_data_frame,constr_len_dataframe,on=[ "Origin_LAT","Origin_LON", "Dest_LAT","Dest_LON","cruising_speed"],how="left")
+
+        
         ##Compute the metrics per scenario
-        col_list=["Scenario_name","Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt"]
+        #col_list=["Scenario_name","Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt"]
+        col_list=["Scenario_name","Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt",\
+                  "Trans_per_mtr","Turn_trans_per_mtr","Crs_trans_per_mtr","Tk-off_trans_per_mtr","Dscn_trans_per_mtr","Ascncr_trans_per_mtr","Ascnhop_trans_per_mtr"]
                 
         trans_metrics_list=[]
         scenarios=tranistion_data_frame["scenario_name"].unique()
@@ -1205,6 +1222,8 @@ class DataframeCreator():
         for scn in scenarios:
             df=tranistion_data_frame[tranistion_data_frame["scenario_name"]==scn]
             acid_number=df["ACID"].unique().shape[0]
+            ddf=df.drop_duplicates(subset = ["ACID"])
+            length_sum=ddf["Constrained_length"].sum()*1000
             tmp_list=[scn]
             
             tmp_list.append(df.shape[0]/acid_number)
@@ -1215,8 +1234,17 @@ class DataframeCreator():
             tmp_list.append(df[df["Transition_type"]==3].shape[0]/acid_number)
             tmp_list.append(df[df["Transition_type"]==4].shape[0]/acid_number)
             
+            tmp_list.append(df.shape[0]/length_sum)
+            tmp_list.append(df[df["Transition_type"]==0].shape[0]/length_sum)
+            tmp_list.append(df[df["Transition_type"]==1].shape[0]/length_sum)
+            tmp_list.append(df[df["Transition_type"]==5].shape[0]/length_sum)
+            tmp_list.append(df[df["Transition_type"]==2].shape[0]/length_sum)
+            tmp_list.append(df[df["Transition_type"]==3].shape[0]/length_sum)
+            tmp_list.append(df[df["Transition_type"]==4].shape[0]/length_sum)
+            
             trans_metrics_list.append(tmp_list)
             
+ 
         trans_metrics_data_frame = pd.DataFrame(trans_metrics_list, columns=col_list)
 
         print("Transition Dataframe created!")

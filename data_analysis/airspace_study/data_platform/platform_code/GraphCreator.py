@@ -118,7 +118,8 @@ uncertainties_names=["No uncertainty"]
 percentage_metrics=["EFF1","EFF2","EFF3","EFF4","EFF5","SAF3"]    
 metrics_units=[""," (%)",""," (%)"," (sec)"," (sec)",""," (%)"," (sec)",""," (%)"," (%)"," (%)"," (%)"," (%)"," (sec)"," (sec)",\
                        " (m)","","","","","","","","","","",""," (%)"," (m)"," (sec)"," (sec)","","","","","","","",\
-                           ""," (sec)"," (m)"," (sec)",""," (sec)"," (m)"," (sec) ","","","","",""] 
+                           ""," (sec)"," (m)"," (sec)",""," (sec)"," (m)"," (sec) ","","","","","",\
+                               "","","","","","","","","","","","","",""] 
         
 metrics_title=["Number of cancelled demands","Percentage of cancelled demands","Number of inoperative trajectories","Percentage of inoperative trajectories"\
                        ,"Demand delay dispersion","The worst demand delay","Number of inequitable delayed demands","Percentage of inequitable delayed demands",\
@@ -132,7 +133,10 @@ metrics_title=["Number of cancelled demands","Percentage of cancelled demands","
                            "Number of severe loitering NFZ violations \n within 3 minutes of the NFZ activation","Weighted mission duration","Weighted mission track length",\
                                "Additional demand delay","Additional number of intrusions",\
                                "Average mission duration per priority level","Average mission track length per priority level","Total delay per priority level",\
-                                   "Number of replans","Number of attempted replans","Number of graph updates","Number of inability to replan due to traffic","Number of inability to replan due to last point"]    
+                                   "Number of replans","Number of attempted replans","Number of graph updates","Number of inability to replan due to traffic","Number of inability to replan due to last point",\
+                                       "Transitions per flight","Turn transitions per flight  ","Cruise transitions per flight","Takeoff transitions per flight","Hopping descents per flight",\
+                                           "Resolution transitions per flight","Hopping ascents per flight","Transitions per metre","Turn transitions per metre  ","Cruise transitions per metre",\
+                                               "Takeoff transitions per metre","Hopping descents per metre","Resolution transitions per metre","Hopping ascents per metre"]    
             
 # =============================================================================
 # boxplot_metrics=["AEQ1","AEQ1_1","AEQ2","AEQ2_1","AEQ3","AEQ4","AEQ5","AEQ5_1","CAP1","CAP2","EFF1","EFF2","EFF3","EFF4","EFF5","EFF6","ENV1",\
@@ -412,19 +416,21 @@ class GraphCreator():
     def createGraphs(self):       
 
         ##Load the metrics
-        input_file=open(dills_path+"metrics_dataframe.dill", 'rb')
-        scenario_metrics_df=dill.load(input_file)
-        input_file.close()
-        
-
-   
-        input_file=open(dills_path+"densitylog_dataframe.dill", 'rb')
-        density_metrics_dataframe=dill.load(input_file)
-        input_file.close()
-        
-        input_file=open(dills_path+"density_constrained_dataframe.dill", 'rb')
-        density_constr_metrics_dataframe=dill.load(input_file)
-        input_file.close()
+# =============================================================================
+#         input_file=open(dills_path+"metrics_dataframe.dill", 'rb')
+#         scenario_metrics_df=dill.load(input_file)
+#         input_file.close()
+#         
+# 
+#    
+#         input_file=open(dills_path+"densitylog_dataframe.dill", 'rb')
+#         density_metrics_dataframe=dill.load(input_file)
+#         input_file.close()
+#         
+#         input_file=open(dills_path+"density_constrained_dataframe.dill", 'rb')
+#         density_constr_metrics_dataframe=dill.load(input_file)
+#         input_file.close()
+# =============================================================================
         
         input_file=open(dills_path+"transition_metrics_dataframe.dill", 'rb')
         transition_metrics_dataframe=dill.load(input_file)
@@ -437,18 +443,20 @@ class GraphCreator():
         
 
         
-        for metric in boxplot_metrics:
-             self.metric_boxplots_baseline(metric,scenario_metrics_df)
-   
-        t_mix="40_"
-        rep="0_"
-        for dens in densities:
-            self.density_graph(dens, t_mix,rep,density_metrics_dataframe)
-            
-        t_mix="40_"
-        rep="0_"
-        for dens in densities:
-             self.density_constr_graph(dens, t_mix,rep,density_constr_metrics_dataframe)           
+# =============================================================================
+#         for metric in boxplot_metrics:
+#              self.metric_boxplots_baseline(metric,scenario_metrics_df)
+#    
+#         t_mix="40_"
+#         rep="0_"
+#         for dens in densities:
+#             self.density_graph(dens, t_mix,rep,density_metrics_dataframe)
+#             
+#         t_mix="40_"
+#         rep="0_"
+#         for dens in densities:
+#              self.density_constr_graph(dens, t_mix,rep,density_constr_metrics_dataframe)           
+# =============================================================================
 
 
         transition_metrics=["Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt"\

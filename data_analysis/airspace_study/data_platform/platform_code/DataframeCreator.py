@@ -666,13 +666,13 @@ class DataframeCreator():
             if cnt < 10:
                 continue
 
-            if cnt_modulo % 5 == 0:
+            if cnt_modulo % 7 == 0:
                 acid_lines_list.append(line[:-2])
-            elif cnt_modulo % 5 == 1:
+            elif cnt_modulo % 7 == 1:
                 alt_lines_list.append(line[:-2])
-            elif cnt_modulo % 5 == 2:
+            elif cnt_modulo % 7 == 2:
                 lat_lines_list.append(line[:-2])
-            elif cnt_modulo % 5 == 3:
+            elif cnt_modulo % 7 == 3:
 
                 lon_lines_list.append(line[:-2])
             cnt_modulo = cnt_modulo + 1
@@ -1223,7 +1223,7 @@ class DataframeCreator():
             df=tranistion_data_frame[tranistion_data_frame["scenario_name"]==scn]
             acid_number=df["ACID"].unique().shape[0]
             ddf=df.drop_duplicates(subset = ["ACID"])
-            length_sum=ddf["Constrained_length"].sum()*1000
+            length_sum=ddf["Constrained_length"].sum()/1000
             tmp_list=[scn]
             
             tmp_list.append(df.shape[0]/acid_number)

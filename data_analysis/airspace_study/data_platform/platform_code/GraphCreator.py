@@ -147,7 +147,7 @@ metrics_title=["Number of cancelled demands","Percentage of cancelled demands","
 boxplot_metrics=["AEQ1","AEQ1_1","AEQ2","AEQ2_1","AEQ3","AEQ4","AEQ5","AEQ5_1","CAP1","CAP2","EFF1","EFF2","EFF3","EFF4","EFF5","EFF6","ENV1",\
                          "ENV2","ENV3_1","ENV3_2","ENV4","SAF1","SAF1_2","SAF1_3","SAF1_4","SAF2","SAF2_1","SAF2_2","SAF2_3","SAF3","SAF4","SAF5","SAF5_1","SAF6","SAF6_1","SAF6_2","SAF6_3","SAF6_4","SAF6_5",\
                              "SAF6_6","SAF6_7","PRI1","PRI2","CAP3","CAP4","PRI3","PRI4","PRI5","Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan",\
-                                 "Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt"\
+                                 "Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt",\
                   "Trans_per_mtr","Turn_trans_per_mtr","Crs_trans_per_mtr","Tk-off_trans_per_mtr","Dscn_trans_per_mtr","Ascncr_trans_per_mtr","Ascnhop_trans_per_mtr"]
   
 metrics_names=["AEQ1","AEQ1.1","AEQ2","AEQ2.1","AEQ3","AEQ4","AEQ5","AEQ5.1","CAP1","CAP2","EFF1","EFF2","EFF3","EFF4","EFF5","EFF6","ENV1",\
@@ -195,6 +195,8 @@ class GraphCreator():
                 for conc in concepts:
                     for rep in repetitions:   
                         scenario_name=conc+density+t_mix+rep
+                        df=dataframe[dataframe["Scenario_name"]==scenario_name]
+                        mm=df[metric].values[0]
                         try:
                             metric_value=dataframe[dataframe["Scenario_name"]==scenario_name][metric].values[0]
                             tmp=[self.concept_names_dict[conc],self.density_names_dict[density],self.traffic_mix_names_dict[t_mix],rep,metric_value]
@@ -459,8 +461,11 @@ class GraphCreator():
 # =============================================================================
 
 
-        transition_metrics=["Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt"\
+
+        transition_metrics=["Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt",\
                   "Trans_per_mtr","Turn_trans_per_mtr","Crs_trans_per_mtr","Tk-off_trans_per_mtr","Dscn_trans_per_mtr","Ascncr_trans_per_mtr","Ascnhop_trans_per_mtr"]
+            
+        
         for metric in transition_metrics:
             self.flow_metric_boxplots(metric,transition_metrics_dataframe)
 

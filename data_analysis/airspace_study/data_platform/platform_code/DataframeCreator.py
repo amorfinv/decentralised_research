@@ -35,14 +35,12 @@ def calc_flst_mission_completed_col(row):
     else:
         return True
  
-    
-def update_transition_type(row):
-     if (row["Time_stamp"]-row["SPAWN_time"] <5) and (row["Transition_type"]==1): 
-         #if the tranistion occured within 5 seconds of the aircraft spawning, it should be flaged as a take off transition
-         return 5
+def check_transition_type_coherence(row):
+
+     if row[ "Transition_type"]!=row[ "Int_transition_type"] and row[ "Transition_type"]!=1 :
+         return 1
      else:
-         return row["Transition_type"]
-     
+         return 0   
 
 #concept_names=["noflow","noflowfulldenalloc","noflowrandomalloc","noflowdistalloc"]        
 
@@ -1118,59 +1116,26 @@ class DataframeCreator():
         translog_file = open(log_file, "r")
         
         cnt = 0
-        cnt_trans_lines=9
-        acids=[]
-        dist=[]
         for line in translog_file:
             cnt = cnt + 1
             if cnt < 10:
                 continue
-            if cnt_trans_lines==9:
-                cnt_trans_lines=0
-            else:
-                cnt_trans_lines=cnt_trans_lines+1
-                
             line_list = line.split(",")
-            if len(line_list)==1:
-                continue
-            elif cnt_trans_lines%2==0:
-                acids=line_list[1:-1]
-                acids.append(line_list[-1][:-1])
-                
-                if cnt_trans_lines==0:
-                    trans_type=0
-                elif cnt_trans_lines==2:
-                    trans_type=1
-                elif cnt_trans_lines==4:
-                    trans_type=2
-                elif cnt_trans_lines==6:
-                    trans_type=3
-                elif cnt_trans_lines==8:
-                    trans_type=4
-            else:
-                dist=line_list[1:-1]
-                dist.append(line_list[-1][:-1])
-
-                
+            end_time=float(line_list[0])
+            start_time=float(line_list[1])
+            acid=line_list[2]
+            trans_type=int(line_list[3])
+            if trans_type==12:
+                continue #If the transition type is 12, ignore the transition
+            int_trans_type=int(line_list[4])
+            tmp2_list.append([scenario_name,acid,end_time,start_time,trans_type,int_trans_type])
             
-                
-            
-                time_stamp=float(line_list[0])
-                for i in range(len(acids)):
-                    tmp_list = [scenario_name,acids[i],time_stamp,trans_type,float(dist[i])]
-                    tmp2_list.append(tmp_list)
         
         return tmp2_list
 
     def create_layer_transitions_dataframe(self):
-        col_list = ["Transition_id","scenario_name","ACID", "Time_stamp", "Transition_type", "Transition_distance"] 
-        ##Transistion types: 
-        # turn=0
-        #cruise=1
-        # descend=2
-        #ascendcr=3
-        #ascendhop=4
-        #take-off=5
+        col_list = ["Transition_id","scenario_name","ACID","End_time", "Start_time", "Transition_type", "Int_transition_type"] 
+
         
         transition_list = list()
         maplist=[]        
@@ -1190,15 +1155,20 @@ class DataframeCreator():
 
         tranistion_data_frame = pd.DataFrame(transition_list, columns=col_list)
         
+        ##Check intend type matches trans type 
+        ddf=tranistion_data_frame[tranistion_data_frame["Transition_type"]!=1]
+        ddf['Type_coher'] =ddf.apply(check_transition_type_coherence,axis=1)
+        dif_types_cnt=ddf['Type_coher'].sum()
+        if dif_types_cnt>0:
+            print("Number of interrrupted transitions with transition type !=1 is ",dif_types_cnt)
+        
         
         ##Filter teh cruise transitions to detect take off
         input_file=open("dills/flstlog_dataframe.dill", 'rb')
         flst_log_dataframe=dill.load(input_file)
         input_file.close()  
         
-        tranistion_data_frame=pd.merge(tranistion_data_frame,flst_log_dataframe[["ACID","scenario_name","SPAWN_time", "Origin_LAT","Origin_LON", "Dest_LAT","Dest_LON","cruising_speed"]],on=["ACID","scenario_name"],how="left")
-        tranistion_data_frame['Transition_type'] =tranistion_data_frame.apply(update_transition_type,axis=1)
-        
+        tranistion_data_frame=pd.merge(tranistion_data_frame,flst_log_dataframe[["ACID","scenario_name", "Origin_LAT","Origin_LON", "Dest_LAT","Dest_LON","cruising_speed"]],on=["ACID","scenario_name"],how="left")        
         
         
         #Load the constrained length dataframe
@@ -1212,9 +1182,10 @@ class DataframeCreator():
 
         
         ##Compute the metrics per scenario
-        #col_list=["Scenario_name","Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt"]
-        col_list=["Scenario_name","Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt",\
-                  "Trans_per_mtr","Turn_trans_per_mtr","Crs_trans_per_mtr","Tk-off_trans_per_mtr","Dscn_trans_per_mtr","Ascncr_trans_per_mtr","Ascnhop_trans_per_mtr"]
+        col_list=["Scenario_name","Trans_per_flight","Inter_trans_per_flgt","Recov_trans_per_flgt","Cr_trans_per_flgt","Ascnhop_trans_per_flgt",\
+                  "Dscnhop_trans_per_flgt","Cruise_trans_per_flgt","Turn_trans_per_flgt","Tk-off_trans_per_flgt","Free_trans_per_flgt","Missed_trans_per_flgt",\
+                  "Trans_per_km","Inter_trans_per_km","Recov_trans_per_km","Cr_trans_per_km","Ascnhop_trans_per_km",\
+                            "Dscnhop_trans_per_km","Cruise_trans_per_km","Turn_trans_per_km","Tk-off_trans_per_km","Free_trans_per_km","Missed_trans_per_km"]
                 
         trans_metrics_list=[]
         scenarios=tranistion_data_frame["scenario_name"].unique()
@@ -1227,25 +1198,58 @@ class DataframeCreator():
             tmp_list=[scn]
             
             tmp_list.append(df.shape[0]/acid_number)
-            tmp_list.append(df[df["Transition_type"]==0].shape[0]/acid_number)
             tmp_list.append(df[df["Transition_type"]==1].shape[0]/acid_number)
-            tmp_list.append(df[df["Transition_type"]==5].shape[0]/acid_number)
             tmp_list.append(df[df["Transition_type"]==2].shape[0]/acid_number)
-            tmp_list.append(df[df["Transition_type"]==3].shape[0]/acid_number)
-            tmp_list.append(df[df["Transition_type"]==4].shape[0]/acid_number)
+            tmp_list.append(df[(df["Transition_type"]==3)or (df["Transition_type"]==4)].shape[0]/acid_number)
+            tmp_list.append(df[df["Transition_type"]==5].shape[0]/acid_number)
+            tmp_list.append(df[df["Transition_type"]==6].shape[0]/acid_number)
+            tmp_list.append(df[df["Transition_type"]==7].shape[0]/acid_number)
+            tmp_list.append(df[df["Transition_type"]==8].shape[0]/acid_number)
+            tmp_list.append(df[df["Transition_type"]==9].shape[0]/acid_number)
+            tmp_list.append(df[df["Transition_type"]==10].shape[0]/acid_number)
+            tmp_list.append(df[df["Transition_type"]==11].shape[0]/acid_number)
             
             tmp_list.append(df.shape[0]/length_sum)
-            tmp_list.append(df[df["Transition_type"]==0].shape[0]/length_sum)
             tmp_list.append(df[df["Transition_type"]==1].shape[0]/length_sum)
-            tmp_list.append(df[df["Transition_type"]==5].shape[0]/length_sum)
             tmp_list.append(df[df["Transition_type"]==2].shape[0]/length_sum)
-            tmp_list.append(df[df["Transition_type"]==3].shape[0]/length_sum)
-            tmp_list.append(df[df["Transition_type"]==4].shape[0]/length_sum)
+            tmp_list.append(df[(df["Transition_type"]==3)or (df["Transition_type"]==4)].shape[0]/length_sum)
+            tmp_list.append(df[df["Transition_type"]==5].shape[0]/length_sum)
+            tmp_list.append(df[df["Transition_type"]==6].shape[0]/length_sum)
+            tmp_list.append(df[df["Transition_type"]==7].shape[0]/length_sum)
+            tmp_list.append(df[df["Transition_type"]==8].shape[0]/length_sum)
+            tmp_list.append(df[df["Transition_type"]==9].shape[0]/length_sum)
+            tmp_list.append(df[df["Transition_type"]==10].shape[0]/length_sum)
+            tmp_list.append(df[df["Transition_type"]==11].shape[0]/length_sum)
+
+
+
             
             trans_metrics_list.append(tmp_list)
             
  
         trans_metrics_data_frame = pd.DataFrame(trans_metrics_list, columns=col_list)
+        
+        
+        inter_trans_df=tranistion_data_frame[tranistion_data_frame["Transition_type"]==1]
+        col_list=["Scenario_name","Recov","CR","Ascnhop","Dscnhop","Cruise","Turn","Tk-off","Free","Missed"]
+        inter_trans_metrics_list=[]
+        for scn in scenarios:
+            df=inter_trans_df[inter_trans_df["scenario_name"][:-1]==scn[:-1]]
+            tmp_list=[scn[:-1]]
+            tmp_list.append(df[df["Int_transition_type"]==2].sum())
+            tmp_list.append(df[(df["Int_transition_type"]==3)or (df["Int_transition_type"]==4)].sum())
+            tmp_list.append(df[df["Int_transition_type"]==5].sum())
+            tmp_list.append(df[df["Int_transition_type"]==6].sum())
+            tmp_list.append(df[df["Int_transition_type"]==7].sum())
+            tmp_list.append(df[df["Int_transition_type"]==8].sum())
+            tmp_list.append(df[df["Int_transition_type"]==9].sum())
+            tmp_list.append(df[df["Int_transition_type"]==10].sum())
+            tmp_list.append(df[df["Int_transition_type"]==11].sum())
+
+            inter_trans_metrics_list.append(tmp_list)
+
+        inter_trans_dataframe= pd.DataFrame(inter_trans_metrics_list, columns=col_list)
+
 
         print("Transition Dataframe created!")
         
@@ -1256,6 +1260,10 @@ class DataframeCreator():
         
         output_file=open("dills/transition_metrics_dataframe.dill", 'wb')
         dill.dump(trans_metrics_data_frame,output_file)
+        output_file.close()
+        
+        output_file=open("dills/interrupted_transition_metrics_dataframe.dill", 'wb')
+        dill.dump(inter_trans_dataframe,output_file)
         output_file.close()
                 
 

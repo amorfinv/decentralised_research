@@ -119,7 +119,7 @@ percentage_metrics=["EFF1","EFF2","EFF3","EFF4","EFF5","SAF3"]
 metrics_units=[""," (%)",""," (%)"," (sec)"," (sec)",""," (%)"," (sec)",""," (%)"," (%)"," (%)"," (%)"," (%)"," (sec)"," (sec)",\
                        " (m)","","","","","","","","","","",""," (%)"," (m)"," (sec)"," (sec)","","","","","","","",\
                            ""," (sec)"," (m)"," (sec)",""," (sec)"," (m)"," (sec) ","","","","","",\
-                               "","","","","","","","","","","","","",""] 
+                               "","","","","","","","","","","","","","","","","","","","","",""] 
         
 metrics_title=["Number of cancelled demands","Percentage of cancelled demands","Number of inoperative trajectories","Percentage of inoperative trajectories"\
                        ,"Demand delay dispersion","The worst demand delay","Number of inequitable delayed demands","Percentage of inequitable delayed demands",\
@@ -134,9 +134,12 @@ metrics_title=["Number of cancelled demands","Percentage of cancelled demands","
                                "Additional demand delay","Additional number of intrusions",\
                                "Average mission duration per priority level","Average mission track length per priority level","Total delay per priority level",\
                                    "Number of replans","Number of attempted replans","Number of graph updates","Number of inability to replan due to traffic","Number of inability to replan due to last point",\
-                                       "Transitions per flight","Turn transitions per flight  ","Cruise transitions per flight","Takeoff transitions per flight","Hopping descents per flight",\
-                                           "Resolution transitions per flight","Hopping ascents per flight","Transitions per metre","Turn transitions per metre  ","Cruise transitions per metre",\
-                                               "Takeoff transitions per metre","Hopping descents per metre","Resolution transitions per metre","Hopping ascents per metre"]    
+                                       "Transitions per flight","Interrupted transitions per flight","Recover transitions per flight","Conflict resolustion transitions per flight","Ascent Hop transitions per flight",\
+                              "Descent Hop transitions per flight","Cruise transitions per flight","Turn transitions per flight","Take-off transitions per flight","Free layer transitions per flight",\
+                              "Missed transitions per flight","Transitions per kilometre","Interrupted transitions per kilometre","Recover transitions per kilometre",\
+                          "Conflict resolustion transitions per kilometre","Ascent Hop transitions per kilometre",\
+                          "Descent Hop transitions per kilometre","Cruise transitions per kilometre","Turn transitions per kilometre","Take-off transitions per kilometre","Free layer transitions per kilometre",\
+                                                                   "Missed transitions per kilometre"]    
             
 # =============================================================================
 # boxplot_metrics=["AEQ1","AEQ1_1","AEQ2","AEQ2_1","AEQ3","AEQ4","AEQ5","AEQ5_1","CAP1","CAP2","EFF1","EFF2","EFF3","EFF4","EFF5","EFF6","ENV1",\
@@ -147,15 +150,20 @@ metrics_title=["Number of cancelled demands","Percentage of cancelled demands","
 boxplot_metrics=["AEQ1","AEQ1_1","AEQ2","AEQ2_1","AEQ3","AEQ4","AEQ5","AEQ5_1","CAP1","CAP2","EFF1","EFF2","EFF3","EFF4","EFF5","EFF6","ENV1",\
                          "ENV2","ENV3_1","ENV3_2","ENV4","SAF1","SAF1_2","SAF1_3","SAF1_4","SAF2","SAF2_1","SAF2_2","SAF2_3","SAF3","SAF4","SAF5","SAF5_1","SAF6","SAF6_1","SAF6_2","SAF6_3","SAF6_4","SAF6_5",\
                              "SAF6_6","SAF6_7","PRI1","PRI2","CAP3","CAP4","PRI3","PRI4","PRI5","Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan",\
-                                 "Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt",\
-                  "Trans_per_mtr","Turn_trans_per_mtr","Crs_trans_per_mtr","Tk-off_trans_per_mtr","Dscn_trans_per_mtr","Ascncr_trans_per_mtr","Ascnhop_trans_per_mtr"]
+                                 "Trans_per_flight","Inter_trans_per_flgt","Recov_trans_per_flgt","Cr_trans_per_flgt","Ascnhop_trans_per_flgt",\
+                                           "Dscnhop_trans_per_flgt","Cruise_trans_per_flgt","Turn_trans_per_flgt","Tk-off_trans_per_flgt","Free_trans_per_flgt","Missed_trans_per_flgt",\
+                                           "Trans_per_km","Inter_trans_per_km","Recov_trans_per_km","Cr_trans_per_km","Ascnhop_trans_per_km",\
+                                                     "Dscnhop_trans_per_km","Cruise_trans_per_km","Turn_trans_per_km","Tk-off_trans_per_km","Free_trans_per_km","Missed_trans_per_km"]
   
 metrics_names=["AEQ1","AEQ1.1","AEQ2","AEQ2.1","AEQ3","AEQ4","AEQ5","AEQ5.1","CAP1","CAP2","EFF1","EFF2","EFF3","EFF4","EFF5","EFF6","ENV1",\
                          "ENV2","ENV3.1","ENV3.2","ENV4","SAF1","SAF1.2","SAF1.3","SAF1.4","SAF2","SAF2.1","SAF2.2","SAF2.3","SAF3","SAF4","SAF5","SAF5.1","SAF6","SAF6.1","SAF6.2","SAF6.3","SAF6.4","SAF6.5",\
                              "SAF6.6","SAF6.7","PRI1","PRI2","CAP3","CAP4","PRI3","PRI4","PRI5","Replans","Attempted_replans","Update_graph_no_replan","High_traffic_no_replan","Last_point_no_replan",\
-                                 "Transitions per flight","Turn transitions per flight  ","Cruise transitions per flight","Takeoff transitions per flight","Hopping descents per flight",\
-                                     "Resolution transitions per flight","Hopping ascents per flight","Transitions per metre","Turn transitions per metre  ","Cruise transitions per metre",\
-                                         "Takeoff transitions per metre","Hopping descents per metre","Resolution transitions per metre","Hopping ascents per metre"]
+                                 "Transitions per flight","Interrupted transitions per flight","Recover transitions per flight","Conflict resolustion transitions per flight","Ascent Hop transitions per flight",\
+                        "Descent Hop transitions per flight","Cruise transitions per flight","Turn transitions per flight","Take-off transitions per flight","Free layer transitions per flight",\
+                        "Missed transitions per flight","Transitions per kilometre","Interrupted transitions per kilometre","Recover transitions per kilometre",\
+                    "Conflict resolustion transitions per kilometre","Ascent Hop transitions per kilometre",\
+                    "Descent Hop transitions per kilometre","Cruise transitions per kilometre","Turn transitions per kilometre","Take-off transitions per kilometre","Free layer transitions per kilometre",\
+                                                             "Missed transitions per kilometre"]
 
 
 class GraphCreator():
@@ -186,6 +194,45 @@ class GraphCreator():
             self.metrics_units_dict[m]=metrics_units[i]
             self.metrics_names_dict[m]=metrics_names[i]
             i+=1
+
+    def transition_metric_stacked_barplot(self,dataframe):
+        vals=[]
+        for density in densities:
+            for t_mix in traffic_mix:
+                for conc in concepts:
+                    tmp=[self.concept_names_dict[conc],self.density_names_dict[density],self.traffic_mix_names_dict[t_mix]]
+                    for metric in ["Recov","CR","Ascnhop","Dscnhop","Cruise","Turn","Tk-off","Free","Missed"]:
+                        scenario_name=conc+density+t_mix
+                        try:
+                            metric_value=dataframe[dataframe["Scenario_name"]==scenario_name][metric].values[0]
+                            tmp.append(metric_value)
+                            
+                        except:
+                            #metric_value=240+random.randint(-5,5)
+                            print("No value for scenario baseline",scenario_name,metric)
+                    vals.append(tmp)
+                    
+                        
+        titles=["Recover","Conflict Resolution","Ascent hop","Descent hop","Cruise","Turn","Take-off","Free layer","Missed"]  
+        metr_colours=sns.color_palette("hls", len(titles))          
+        metric_pandas_df=pd.DataFrame(vals,columns=["Concept","Density","Traffic mix","Recov","CR","Ascnhop","Dscnhop","Cruise","Turn","Tk-off","Free","Missed"])
+        
+        ##Create one graph for every traffic mix
+        for t_mix in traffic_mix_names:
+            for dns in densities:
+                df1=metric_pandas_df[(metric_pandas_df["Traffic mix"]==t_mix) and (metric_pandas_df["Density"]==dns)]
+                fig=plt.figure()
+                i=0
+                for metric in ["Recov","CR","Ascnhop","Dscnhop","Cruise","Turn","Tk-off","Free","Missed"]:
+                    plt1 = sns.barplot(x = 'Concept', y = metric, data = df1, label =titles[i], color = metr_colours[i])
+                    i+=1
+                    
+                plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+                adjust_box_widths(fig, 0.5)
+    
+                plt.savefig(diagrams_path+"boxplots/by_traffic_mix/"+metric+"_"+t_mix+"_"+dns,bbox_inches='tight')
+                plt.savefig(diagrams_path+"pdfs/boxplots/by_traffic_mix/"+metric+"_"+t_mix+"_"+dns+".pdf",bbox_inches='tight')
+                plt.clf()
 
 
     def flow_metric_boxplots(self,metric,dataframe):
@@ -438,6 +485,10 @@ class GraphCreator():
         transition_metrics_dataframe=dill.load(input_file)
         input_file.close()
         
+        input_file=open(dills_path+"interrupted_transition_metrics_dataframe.dill", 'rb')
+        inter_trans_dataframe=dill.load(input_file)
+        input_file.close()
+        
         
 
         ## Create the graphs
@@ -462,13 +513,16 @@ class GraphCreator():
 
 
 
-        transition_metrics=["Trans_per_flight","Turn_trans_per_flgt","Crs_trans_per_flgt","Tk-off_trans_per_flgt","Dscn_trans_per_flgt","Ascncr_trans_per_flgt","Ascnhop_trans_per_flgt",\
-                  "Trans_per_mtr","Turn_trans_per_mtr","Crs_trans_per_mtr","Tk-off_trans_per_mtr","Dscn_trans_per_mtr","Ascncr_trans_per_mtr","Ascnhop_trans_per_mtr"]
+        transition_metrics=["Trans_per_flight","Inter_trans_per_flgt","Recov_trans_per_flgt","Cr_trans_per_flgt","Ascnhop_trans_per_flgt",\
+                  "Dscnhop_trans_per_flgt","Cruise_trans_per_flgt","Turn_trans_per_flgt","Tk-off_trans_per_flgt","Free_trans_per_flgt","Missed_trans_per_flgt",\
+                  "Trans_per_km","Inter_trans_per_km","Recov_trans_per_km","Cr_trans_per_km","Ascnhop_trans_per_km",\
+                            "Dscnhop_trans_per_km","Cruise_trans_per_km","Turn_trans_per_km","Tk-off_trans_per_km","Free_trans_per_km","Missed_trans_per_km"]
             
         
         for metric in transition_metrics:
             self.flow_metric_boxplots(metric,transition_metrics_dataframe)
 
+        self.transition_metric_stacked_barplot(inter_trans_dataframe)
 
 
          

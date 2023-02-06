@@ -88,7 +88,7 @@ def lighten_color(color, amount=0.5):
 ################The concepts list is teh only thing you need to change depending on which types of cocnepts you want to plot
 #concepts=["1to1_","headalloc_","baseline_","headallocnoflow_","gridsectors_","noflow_","headingcr_"] 
 
-concepts=["noflow","noflowfulldenalloc","noflowrandomalloc","noflowdistalloc"]           
+concepts=["noflow_","noflowMP20_"]   
 concept_names=["Baseline","Density Allocation","Random Allocation","Flight Distance Allocation"]        
 #concepts_colours=['r','g','b']
 concepts_colours=sns.color_palette("hls", len(concepts))
@@ -195,6 +195,7 @@ class GraphCreator():
             self.metrics_names_dict[m]=metrics_names[i]
             i+=1
 
+                
     def transition_metric_stacked_barplot(self,dataframe):
         vals=[]
         for density in densities:
@@ -219,7 +220,7 @@ class GraphCreator():
         
         ##Create one graph for every traffic mix
         for t_mix in traffic_mix_names:
-            for dns in densities:
+            for dns in density_names:
                 df1=metric_pandas_df[(metric_pandas_df["Traffic mix"]==t_mix) & (metric_pandas_df["Density"]==dns)]
                 fig=plt.figure()
                 i=0
@@ -233,6 +234,7 @@ class GraphCreator():
                 plt.savefig(diagrams_path+"boxplots/by_traffic_mix/"+metric+"_"+t_mix+"_"+dns,bbox_inches='tight')
                 plt.savefig(diagrams_path+"pdfs/boxplots/by_traffic_mix/"+metric+"_"+t_mix+"_"+dns+".pdf",bbox_inches='tight')
                 plt.clf()
+                
 
 
     def flow_metric_boxplots(self,metric,dataframe):
@@ -519,9 +521,7 @@ class GraphCreator():
                             "Dscnhop_trans_per_km","Cruise_trans_per_km","Turn_trans_per_km","Tk-off_trans_per_km","Free_trans_per_km","Missed_trans_per_km"]
             
         
-            
-        print(inter_trans_dataframe.shape[0])
-        print(inter_trans_dataframe["Scenario_name"].unique())
+        
         for metric in transition_metrics:
             self.flow_metric_boxplots(metric,transition_metrics_dataframe)
 

@@ -35,13 +35,12 @@ def calc_flst_mission_completed_col(row):
     else:
         return True
  
-def check_transition_type_coherence(row):
+def check_interrupt_transition(row):
 
-     if row[ "Transition_type"]!=row[ "Int_transition_type"] and row[ "Transition_type"]!=1 :
+     if row[ "Transition_type"]!=row[ "Int_transition_type"]  :
          return 1
      else:
          return 0   
-
 
 def update_scenario_name(row):
     return row["scenario_name"][:-2]
@@ -50,6 +49,7 @@ def update_scenario_name(row):
 
 ##Keep one concept only for testing
 concept_names=["noflow","noflowfulldenalloc","noflowrandomalloc","noflowdistalloc", "noflowMP20", "noflowdistallocMP20"]
+concept_names=["noflow","noflowMP20"]
 
 
 class DataframeCreator():
@@ -1158,13 +1158,16 @@ class DataframeCreator():
 
 
         tranistion_data_frame = pd.DataFrame(transition_list, columns=col_list)
+        tranistion_data_frame['Inter_trans']=tranistion_data_frame.apply(check_interrupt_transition,axis=1)
         
         ##Check intend type matches trans type 
         ddf=tranistion_data_frame[tranistion_data_frame["Transition_type"]!=1]
-        ddf['Type_coher'] =ddf.apply(check_transition_type_coherence,axis=1)
-        dif_types_cnt=ddf['Type_coher'].sum()
+        dif_types_cnt=ddf['Inter_trans'].sum()
         if dif_types_cnt>0:
             print("Number of interrrupted transitions with transition type !=1 is ",dif_types_cnt)
+            
+        
+       
         
         
         ##Filter teh cruise transitions to detect take off
@@ -1230,36 +1233,8 @@ class DataframeCreator():
             
             trans_metrics_list.append(tmp_list)
             
- 
         trans_metrics_data_frame = pd.DataFrame(trans_metrics_list, columns=col_list)
-        
-        
-        inter_trans_df=tranistion_data_frame[tranistion_data_frame["Transition_type"]==1]
-        col_list=["Scenario_name","Recov","CR","Ascnhop","Dscnhop","Cruise","Turn","Tk-off","Free","Missed"]
-        inter_trans_metrics_list=[]
-        inter_trans_df["Scenario_name"]=inter_trans_df.apply(update_scenario_name,axis=1)
-        scenarios=inter_trans_df["Scenario_name"].unique()
-        for scn in scenarios:
-            df=inter_trans_df[inter_trans_df["Scenario_name"]==scn]
-            tmp_list=[scn]
-            tmp_list.append(df[df["Int_transition_type"]==2].sum())
-            tmp_list.append(df[(df["Int_transition_type"]==3) | (df["Int_transition_type"]==4)].sum())
-            tmp_list.append(df[df["Int_transition_type"]==5].sum())
-            tmp_list.append(df[df["Int_transition_type"]==6].sum())
-            tmp_list.append(df[df["Int_transition_type"]==7].sum())
-            tmp_list.append(df[df["Int_transition_type"]==8].sum())
-            tmp_list.append(df[df["Int_transition_type"]==9].sum())
-            tmp_list.append(df[df["Int_transition_type"]==10].sum())
-            tmp_list.append(df[df["Int_transition_type"]==11].sum())
 
-            inter_trans_metrics_list.append(tmp_list)
-
-        inter_trans_dataframe= pd.DataFrame(inter_trans_metrics_list, columns=col_list)
-
-
-        print("Transition Dataframe created!")
-        
-        
         output_file=open("dills/transition_dataframe.dill", 'wb')
         dill.dump(tranistion_data_frame,output_file)
         output_file.close()
@@ -1267,6 +1242,39 @@ class DataframeCreator():
         output_file=open("dills/transition_metrics_dataframe.dill", 'wb')
         dill.dump(trans_metrics_data_frame,output_file)
         output_file.close()
+            
+ 
+       
+        
+        tranistion_data_frame["Scenario_name"]=tranistion_data_frame.apply(update_scenario_name,axis=1)
+        inter_trans_df=tranistion_data_frame[tranistion_data_frame["Transition_type"]==1]
+        
+        col_list=["Scenario_name","Recov","CR","Ascnhop","Dscnhop","Cruise","Turn","Tk-off","Free","Missed"]
+        inter_trans_metrics_list=[]
+        
+        scenarios=inter_trans_df["Scenario_name"].unique()
+        for scn in scenarios:
+            df=inter_trans_df[inter_trans_df["Scenario_name"]==scn]
+            tmp_list=[scn]
+            tmp_list.append(df[df["Int_transition_type"]==2]['Inter_trans'].sum())
+            tmp_list.append(df[(df["Int_transition_type"]==3) | (df["Int_transition_type"]==4)]['Inter_trans'].sum())
+            tmp_list.append(df[df["Int_transition_type"]==5]['Inter_trans'].sum())
+            tmp_list.append(df[df["Int_transition_type"]==6]['Inter_trans'].sum())
+            tmp_list.append(df[df["Int_transition_type"]==7]['Inter_trans'].sum())
+            tmp_list.append(df[df["Int_transition_type"]==8]['Inter_trans'].sum())
+            tmp_list.append(df[df["Int_transition_type"]==9]['Inter_trans'].sum())
+            tmp_list.append(df[df["Int_transition_type"]==10]['Inter_trans'].sum())
+            tmp_list.append(df[df["Int_transition_type"]==11]['Inter_trans'].sum())
+
+            inter_trans_metrics_list.append(tmp_list)
+ 
+
+        inter_trans_dataframe= pd.DataFrame(inter_trans_metrics_list, columns=col_list)
+
+
+        print("Transition Dataframe created!")
+        
+
         
         output_file=open("dills/interrupted_transition_metrics_dataframe.dill", 'wb')
         dill.dump(inter_trans_dataframe,output_file)

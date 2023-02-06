@@ -1241,7 +1241,7 @@ class DataframeCreator():
         scenarios=inter_trans_df["Scenario_name"].unique()
         for scn in scenarios:
             df=inter_trans_df[inter_trans_df["Scenario_name"]==scn]
-            tmp_list=[scn[:-1]]
+            tmp_list=[scn]
             tmp_list.append(df[df["Int_transition_type"]==2].sum())
             tmp_list.append(df[(df["Int_transition_type"]==3) | (df["Int_transition_type"]==4)].sum())
             tmp_list.append(df[df["Int_transition_type"]==5].sum())

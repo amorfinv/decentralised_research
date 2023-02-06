@@ -220,7 +220,7 @@ class GraphCreator():
         ##Create one graph for every traffic mix
         for t_mix in traffic_mix_names:
             for dns in densities:
-                df1=metric_pandas_df[(metric_pandas_df["Traffic mix"]==t_mix) and (metric_pandas_df["Density"]==dns)]
+                df1=metric_pandas_df[(metric_pandas_df["Traffic mix"]==t_mix) & (metric_pandas_df["Density"]==dns)]
                 fig=plt.figure()
                 i=0
                 for metric in ["Recov","CR","Ascnhop","Dscnhop","Cruise","Turn","Tk-off","Free","Missed"]:

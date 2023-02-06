@@ -42,10 +42,14 @@ def check_transition_type_coherence(row):
      else:
          return 0   
 
+
+def update_scenario_name(row):
+    return row["scenario_name"][:-1]
+
 #concept_names=["noflow","noflowfulldenalloc","noflowrandomalloc","noflowdistalloc"]        
 
 ##Keep one concept only for testing
-concept_names=["noflow"]
+concept_names=["noflow","noflowfulldenalloc","noflowrandomalloc","noflowdistalloc", "noflowMP20", "noflowdistallocMP20"]
 
 
 class DataframeCreator():
@@ -1200,7 +1204,7 @@ class DataframeCreator():
             tmp_list.append(df.shape[0]/acid_number)
             tmp_list.append(df[df["Transition_type"]==1].shape[0]/acid_number)
             tmp_list.append(df[df["Transition_type"]==2].shape[0]/acid_number)
-            tmp_list.append(df[(df["Transition_type"]==3)or (df["Transition_type"]==4)].shape[0]/acid_number)
+            tmp_list.append(df[(df["Transition_type"]==3) | (df["Transition_type"]==4)].shape[0]/acid_number)
             tmp_list.append(df[df["Transition_type"]==5].shape[0]/acid_number)
             tmp_list.append(df[df["Transition_type"]==6].shape[0]/acid_number)
             tmp_list.append(df[df["Transition_type"]==7].shape[0]/acid_number)
@@ -1212,7 +1216,7 @@ class DataframeCreator():
             tmp_list.append(df.shape[0]/length_sum)
             tmp_list.append(df[df["Transition_type"]==1].shape[0]/length_sum)
             tmp_list.append(df[df["Transition_type"]==2].shape[0]/length_sum)
-            tmp_list.append(df[(df["Transition_type"]==3)or (df["Transition_type"]==4)].shape[0]/length_sum)
+            tmp_list.append(df[(df["Transition_type"]==3) | (df["Transition_type"]==4)].shape[0]/length_sum)
             tmp_list.append(df[df["Transition_type"]==5].shape[0]/length_sum)
             tmp_list.append(df[df["Transition_type"]==6].shape[0]/length_sum)
             tmp_list.append(df[df["Transition_type"]==7].shape[0]/length_sum)
@@ -1233,8 +1237,10 @@ class DataframeCreator():
         inter_trans_df=tranistion_data_frame[tranistion_data_frame["Transition_type"]==1]
         col_list=["Scenario_name","Recov","CR","Ascnhop","Dscnhop","Cruise","Turn","Tk-off","Free","Missed"]
         inter_trans_metrics_list=[]
+        inter_trans_df["Scenario_name"]=inter_trans_df.apply(update_scenario_name,axis=1)
+        scenarios=inter_trans_df["Scenario_name"].unique()
         for scn in scenarios:
-            df=inter_trans_df[inter_trans_df["scenario_name"][:-1]==scn[:-1]]
+            df=inter_trans_df[inter_trans_df["Scenario_name"]==scn]
             tmp_list=[scn[:-1]]
             tmp_list.append(df[df["Int_transition_type"]==2].sum())
             tmp_list.append(df[(df["Int_transition_type"]==3)or (df["Int_transition_type"]==4)].sum())

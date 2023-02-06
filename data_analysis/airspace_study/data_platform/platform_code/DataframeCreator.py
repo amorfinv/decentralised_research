@@ -44,7 +44,7 @@ def check_transition_type_coherence(row):
 
 
 def update_scenario_name(row):
-    return row["scenario_name"][:-1]
+    return row["scenario_name"][:-2]
 
 #concept_names=["noflow","noflowfulldenalloc","noflowrandomalloc","noflowdistalloc"]        
 
@@ -70,14 +70,14 @@ class DataframeCreator():
     
     def create_dataframes(self):
 
-        self.create_flstlog_dataframe() 
-        self.create_loslog_dataframe() 
-        self.create_conflog_dataframe() 
-        self.create_env_metrics_dataframe()
-        self.create_density_dataframe()
-        self.create_density_constrained_dataframe()
+        #self.create_flstlog_dataframe() 
+       # self.create_loslog_dataframe() 
+       # self.create_conflog_dataframe() 
+       # self.create_env_metrics_dataframe()
+       # self.create_density_dataframe()
+       # self.create_density_constrained_dataframe()
         self.create_layer_transitions_dataframe()
-        self.create_metrics_dataframe()
+        #self.create_metrics_dataframe()
         
         
         return

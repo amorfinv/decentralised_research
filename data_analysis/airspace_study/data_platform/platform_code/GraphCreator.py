@@ -519,10 +519,14 @@ class GraphCreator():
                             "Dscnhop_trans_per_km","Cruise_trans_per_km","Turn_trans_per_km","Tk-off_trans_per_km","Free_trans_per_km","Missed_trans_per_km"]
             
         
+            
+        print(inter_trans_dataframe.shape[0])
+        print(inter_trans_dataframe["Scenario_name"].unique())
         for metric in transition_metrics:
             self.flow_metric_boxplots(metric,transition_metrics_dataframe)
 
         self.transition_metric_stacked_barplot(inter_trans_dataframe)
+        
 
 
          

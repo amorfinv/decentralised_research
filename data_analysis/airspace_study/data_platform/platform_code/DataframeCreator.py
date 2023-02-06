@@ -1243,7 +1243,7 @@ class DataframeCreator():
             df=inter_trans_df[inter_trans_df["Scenario_name"]==scn]
             tmp_list=[scn[:-1]]
             tmp_list.append(df[df["Int_transition_type"]==2].sum())
-            tmp_list.append(df[(df["Int_transition_type"]==3)or (df["Int_transition_type"]==4)].sum())
+            tmp_list.append(df[(df["Int_transition_type"]==3) | (df["Int_transition_type"]==4)].sum())
             tmp_list.append(df[df["Int_transition_type"]==5].sum())
             tmp_list.append(df[df["Int_transition_type"]==6].sum())
             tmp_list.append(df[df["Int_transition_type"]==7].sum())

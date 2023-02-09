@@ -3,12 +3,13 @@ import geopandas as gpd
 from shapely.geometry import Point
 import numpy as np
 # read the csv and classify the routes into five different bins
-list_intentions = os.listdir('Flight_intentions')
+density = ['high']
+list_intentions = os.listdir(f'Flight_intentions_{density[0]}')
 
 list_dist = []
 for flight_intention in list_intentions:
     # start by reading the file
-    with open('Flight_intentions/' + flight_intention, 'r') as f:
+    with open(f'Flight_intentions_{density[0]}/' + flight_intention, 'r') as f:
         lines = f.readlines()
     
     for line in lines:
@@ -31,7 +32,7 @@ for flight_intention in list_intentions:
 
 
 list_array = np.sort(np.array(list_dist))
-split_array = np.split(list_array, 5)
+split_array = np.array_split(list_array, 5)
 print(len(split_array))
 
 # get the splitting borders

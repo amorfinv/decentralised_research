@@ -136,10 +136,15 @@ turn_maps/*tif
 maps/geotif/*.tif
 maps/images/*.pdf
 *.gpkg-*
+data_analysis/conflict_study/Intentions/*.csv
 conflict_study/Intentions/*.csv
+data_analysis/conflict_study/images/confs/*.png
+data_analysis/conflict_study/images/los/*.png
+data_analysis/conflict_study/images/*.png
 conflict_study/images/confs/*.png
 conflict_study/images/los/*.png
 conflict_study/images/*.png
 maps/gpkgs/*.gpkg
 data_analysis/density_per_layer_range/images/*
 data_analysis/density_per_layer_range/other_data/*
+

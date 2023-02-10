@@ -202,8 +202,6 @@ for density in densities:
             conf_df = pd.concat([conf_df, df_conf_scn])
 
             # LOSLOG
-            # it doesn't make sense to divide Losses into vertical and horizontal
-            # TODO
             with open(f'{log_location}/LOSLOG_{scenario}') as f:
                 losses = f.readlines()[9:]
             

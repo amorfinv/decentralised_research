@@ -17,7 +17,8 @@ from constrained import constrained_airspace_gdf
 # ignore warnings with the way the gdf is created
 import warnings
 warnings.filterwarnings('ignore')
-gpkgs_loc = '/Users/andresmorfin/Desktop/PhD/decentralised_research/maps/gpkgs'
+gpkgs_loc = '/Users/localadmin/Desktop/andresmorfin/decentralised_research/maps/gpkgs'
+results_loc = 'results_airspace'
 
 def logparse(args):
 
@@ -105,8 +106,9 @@ def logparse(args):
                 renamed_alt = renaming_cols[(0, alt_range)]
                 scale_dict[renamed_alt] = scaled_sum
 
-                time_sorted_df[renamed_alt] = time_sorted_df[renamed_alt].div(scaled_sum/1000)
+                #time_sorted_df[renamed_alt] = time_sorted_df[renamed_alt].div(scaled_sum/1000)
                 
+                time_sorted_df[renamed_alt] = time_sorted_df[renamed_alt]
         
             
             # loop to create the five imagee
@@ -220,7 +222,7 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
 def conflog(scenario_list, gpkg_name, gpkg_args):
 
     # filter out any non reglog files
-    conflog_files = [os.path.join('results',f) for f in scenario_list if 'CONFLOG' in f]
+    conflog_files = [os.path.join(results_loc,f) for f in scenario_list if 'CONFLOG' in f]
 
     # read the files and skip the first 9 rows
     header_columns = ['time','ACID1','ACID2','LAT1','LON1','ALT1','LAT2','LON2','ALT2','CPALAT','CPALON', 'EDGEID1', 'EDGEID2']
@@ -253,7 +255,7 @@ def conflog(scenario_list, gpkg_name, gpkg_args):
 def loslog(scenario_list, gpkg_name, gpkg_args):
 
     # filter out any non reglog files
-    loslog_files = [os.path.join('results',f) for f in scenario_list if 'LOSLOG' in f]
+    loslog_files = [os.path.join(results_loc,f) for f in scenario_list if 'LOSLOG' in f]
 
     # read the files and skip the first 9 rows
     header_columns = ['exittime','starttime','timemindist','ACID1','ACID2','LAT1','LON1','ALT1','LAT2','LON2','ALT2','DIST']

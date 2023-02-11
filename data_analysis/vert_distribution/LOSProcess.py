@@ -51,10 +51,6 @@ for log in loslogs:
     for line in log_lines:
         if 'constrained,constrained' in line:
             # check to see the altitude difference so you only include horizontal
-            los = line.split(',')
-            alt_1 = float(los[7])
-            alt_2 = float(los[10])
-            alt_diff = abs(alt_1 - alt_2)
 
             if 'C,C' in line:
                 data_dict[case][density]['C-C'][iteration] += 1

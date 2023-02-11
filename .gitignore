@@ -148,3 +148,4 @@ maps/gpkgs/*.gpkg
 data_analysis/density_per_layer_range/images/*
 data_analysis/density_per_layer_range/other_data/*
 
+data_analysis/transition_conflict_study/images/*

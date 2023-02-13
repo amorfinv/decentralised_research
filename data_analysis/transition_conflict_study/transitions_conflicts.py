@@ -170,15 +170,15 @@ for density in densities:
             # total conflicts attributed to transitions
             # Note that two transitions may lead to one a conflict
             # this count gets a total count of how many transitions lead to one conflict
-            total_trans_confs = filled_df.drop_duplicates(subset=['conf_time', 'ACID1', 'ACID2']).shape[0]
+            unique_trans_confs = filled_df.drop_duplicates(subset=['conf_time', 'ACID1', 'ACID2']).shape[0]
 
-            # Drop duplicates
+            # Drop duplicates with complete row
             # Here you may get two transitions getting the same conflict
-            # so here we get more data
+            # so here we get more data but we get importance of transition
             filled_df.drop_duplicates(inplace=True)
             
             # Now start counting
-            trans_confs = filled_df.shape[0]
+            total_trans_confs = filled_df.shape[0]
             total_confs = conf_df.shape[0]
 
             # for i in range(1,12):
@@ -208,9 +208,9 @@ for density in densities:
                         concepts_dict[concept],
                         repetition,
                         total_confs,
+                        unique_trans_confs,
                         total_trans_confs,
-                        trans_confs,
-                        *[filled_df[filled_df['transition_type'] == i].shape[0]/trans_confs*100 for i in range(1,12)]
+                        *[filled_df[filled_df['transition_type'] == i].shape[0]/total_trans_confs*100 for i in range(1,12)]
                     ]
                 ],
                 columns=cols
@@ -218,6 +218,7 @@ for density in densities:
 
             # concat dataframes
             new_conf_df = pd.concat([new_conf_df, df_conf_scn])
+            print(density,concept,repetition)
             print(new_conf_df)
             print('------------------------')
             # cc

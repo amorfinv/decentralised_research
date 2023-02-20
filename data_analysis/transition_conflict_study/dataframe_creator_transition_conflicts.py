@@ -20,6 +20,15 @@ concepts = ['noflow', 'noflowfulldenalloc','noflowrandomalloc', 'noflowdistalloc
 densities = ['very_low', 'low', 'medium', 'high', 'ultra']
 repetitions = range(0,9)
 
+density_dict = {
+    'very_low': 'very low',
+    'low': 'low',
+    'medium': 'medium',
+    'high': 'high',
+    'ultra': 'ultra'
+}
+
+
 concepts_dict = {
     'noflow'                : 'Baseline',
     'noflowfulldenalloc'    : 'Density allocation',
@@ -82,8 +91,11 @@ transition_types = [
 
 cols = ['density', 'concept', 'repetition', 'Total Conflicts', 'Total Transitions', 'Unique transitions'] + transition_types
 new_conf_df = pd.DataFrame(columns=cols)
+percent_new_conf_df = pd.DataFrame(columns=cols)
+
 new_trans_cols = ['density', 'concept', 'repetition'] + transition_types[1:]
 new_trans_df = pd.DataFrame(columns=new_trans_cols)
+
 for density in densities:
 
     for concept in concepts:
@@ -180,55 +192,29 @@ for density in densities:
             total_trans_confs = filled_df.shape[0]
             total_confs = conf_df.shape[0]
 
-            # for i in range(1,12):
-            #     temp_df = filled_df[filled_df['transition_type'] == i]
-            #     num_type_transitions = temp_df.shape[0]
-            #     percent_transition = num_type_transitions/total_trans_confs * 100
 
-                # if i == 1:
-
-                #     for ii in  range(1,12):
-                #         num_inter_transitions = temp_df[temp_df['intended_transition_type'] == ii].shape[0]
-                #         percent_inter_transition = num_inter_transitions/num_type_transitions * 100
-                #         transition_type = transition_types[ii-1]
-                #         print(f'{transition_type}: {percent_inter_transition}')
-
-                #         # if ii == 7:
-                #         #     print(temp_df[temp_df['intended_transition_type'] == ii])
-
-                # print('percent of transitions type that create conflicts')
-                # transition_type = transition_types[i-1]
-                # print(f'{transition_type}: {percent_transition}')
-                
-                # # percent of transtions that cause conflicts
-
-                # num_transitions = trans_df[trans_df['transition_type'] == i].shape[0]
-                # print(num_type_transitions/num_transitions*100)
-                # print('-----------')
-            print(density, concept, repetition)
-            print(unique_trans_confs/total_confs*100)
-            print('-------------')
-            # # get conflict data in dataframe (percentages)
-            # df_conf_scn = pd.DataFrame(
-            #     [
-            #         [
-            #             density,
-            #             concepts_dict[concept],
-            #             repetition,
-            #             total_confs,
-            #             total_trans_confs/trans_df.shape[0],
-            #             unique_trans_confs/total_confs*100,
-            #             *[filled_df[filled_df['transition_type'] == i].shape[0]/total_trans_confs*100 for i in range(1,12)]
-            #         ]
-            #     ],
-            #     columns=cols
-            # )
+            # get conflict data in dataframe (percentages)
+            percent_df_conf_scn = pd.DataFrame(
+                [
+                    [
+                        density_dict[density],
+                        concepts_dict[concept],
+                        repetition,
+                        total_confs,
+                        total_trans_confs/trans_df.shape[0],
+                        unique_trans_confs/total_confs*100,
+                        *[filled_df[filled_df['transition_type'] == i].shape[0]/total_trans_confs*100 for i in range(1,12)]
+                    ]
+                ],
+                columns=cols
+            )
+            percent_new_conf_df = pd.concat([percent_new_conf_df, percent_df_conf_scn])
 
             # get conflict data in dataframe (no percentages)
             df_conf_scn = pd.DataFrame(
                 [
                     [
-                        density,
+                        density_dict[density],
                         concepts_dict[concept],
                         repetition,
                         total_confs,
@@ -253,7 +239,7 @@ for density in densities:
 
             df_trans_scn = pd.DataFrame([
                 [
-                        density,
+                        density_dict[density],
                         concepts_dict[concept],
                         repetition,
                         *interrupted_trans_data
@@ -267,172 +253,6 @@ for density in densities:
             
 
 # save new_conf_df as csv
-new_conf_df.to_csv('conflict_df')
-new_trans_df.to_csv('inter_trans_df')
-
-def adjust_box_widths(g, fac):
-    """
-    Adjust the withs of a seaborn-generated boxplot.
-    """
-    k=0
-
-    # iterating through Axes instances
-    for ax in g.axes:
-
-        # iterating through axes artists:
-        for c in ax.get_children():
-            # searching for PathPatches
-            if isinstance(c, PathPatch):
-                # getting current width of box:
-                p = c.get_path()
-                verts = p.vertices
-                verts_sub = verts[:-1]
-                xmin = np.min(verts_sub[:, 0])
-                xmax = np.max(verts_sub[:, 0])
-                xmid = 0.5*(xmin+xmax)
-                xhalf = 0.5*(xmax - xmin)
-
-                # setting new width of box
-                xmin_new = xmid-fac*xhalf
-                xmax_new = xmid+fac*xhalf
-                verts_sub[verts_sub[:, 0] == xmin, 0] = xmin_new
-                verts_sub[verts_sub[:, 0] == xmax, 0] = xmax_new
-                
-                # Set the linecolor on the artist to the facecolor, and set the facecolor to None
-                col = lighten_color(c.get_facecolor(), 1.3)
-                c.set_edgecolor(col) 
-
-                for j in range((k)*6,(k)*6+6):
-                   line = ax.lines[j]
-                   line.set_color(col)
-                   line.set_mfc(col)
-                   line.set_mec(col)
-                   line.set_linewidth(0.7)
-                    
-                for l in ax.lines:
-                    if np.all(l.get_xdata() == [xmin, xmax]):
-                        l.set_xdata([xmin_new, xmax_new])
-                k+=1
-
-def lighten_color(color, amount=0.5):  
-    # --------------------- SOURCE: @IanHincks ---------------------
-    try:
-        c = mc.cnames[color]
-    except:
-        c = color
-    c = colorsys.rgb_to_hls(*mc.to_rgb(c))
-    return colorsys.hls_to_rgb(c[0], 1 - amount * (1 - c[1]), c[2])
-
-fig = plt.figure()
-
-# make the transition types as percentage of totals conflict tansitions
-for metric in transition_types:
-
-    if metric == 'CR1':
-
-        new_conf_df['CR'] = new_conf_df['CR1'] + new_conf_df['CR2']
-
-        sns.boxplot(
-            y='CR',
-            x='density',
-            data=new_conf_df,
-            palette=concepts_colours,
-            hue='concept'
-        )
-        plt.ylabel(f'CR transitions as a percentage\n of total conflict causing transitions ')
-
-    elif metric == 'CR2':
-        continue
-    else:
-    
-        sns.boxplot(
-            y=metric,
-            x='density',
-            data=new_conf_df,
-            palette=concepts_colours,
-            hue='concept'
-        )
-
-        plt.ylabel(f'{metric} transitions as a percentage\n of total conflict causing transitions ')
-    
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-    adjust_box_widths(fig, 0.5)
-
-    # if metric != 'Total':
-    plt.ylim(-5, 105)
-
-    plt.savefig(f'images/{metric}_confs',bbox_inches='tight')
-    plt.clf()                              
-
-# make image of percentage of transition conflicts attributed to transitions
-sns.boxplot(
-    y='Unique transitions',
-    x='density',
-    data=new_conf_df,
-    palette=concepts_colours,
-    hue='concept'
-)
-plt.ylabel(f'Percent of conflicts attributed to a transition')
-plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-adjust_box_widths(fig, 0.5)
-
-# if metric != 'Total':
-# plt.ylim(-5, 105)
-
-plt.savefig(f'images/total_trans',bbox_inches='tight')
-plt.clf()    
-
-# make image of percentage of transitions that cause conflicts
-sns.boxplot(
-    y='Total Transitions',
-    x='density',
-    data=new_conf_df,
-    palette=concepts_colours,
-    hue='concept'
-)
-plt.ylabel(f'Percent of transitions that cause conflicts')
-plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-adjust_box_widths(fig, 0.5)
-# plt.ylim(-5, 105)
-plt.savefig(f'images/unique_confs',bbox_inches='tight')
-plt.clf()   
-
-# make interrupted transitions
-# make the transition types as percentage of totals conflict tansitions
-for metric in transition_types[1:]:
-
-    if metric == 'CR1':
-
-        new_trans_df['CR'] = new_trans_df['CR1'] + new_trans_df['CR2']
-
-        sns.boxplot(
-            y='CR',
-            x='density',
-            data=new_trans_df,
-            palette=concepts_colours,
-            hue='concept'
-        )
-        plt.ylabel(f'Interrupted CR transitions percentage')
-
-    elif metric == 'CR2':
-        continue
-    else:
-    
-        sns.boxplot(
-            y=metric,
-            x='density',
-            data=new_trans_df,
-            palette=concepts_colours,
-            hue='concept'
-        )
-
-        plt.ylabel(f'Interrupted {metric} transitions percentage')
-    
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-    adjust_box_widths(fig, 0.5)
-
-    # if metric != 'Total':
-    # plt.ylim(-5, 105)
-
-    plt.savefig(f'images/{metric}_interupted',bbox_inches='tight')
-    plt.clf()    
+new_conf_df.to_csv('conflict_df.csv', index=False)
+percent_new_conf_df.to_csv('percent_conflict.csv', index=False)
+new_trans_df.to_csv('inter_trans_df.csv', index=False)

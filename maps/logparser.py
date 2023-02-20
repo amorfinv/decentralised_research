@@ -14,7 +14,7 @@ from copy import deepcopy
 # ignore warnings with the way the gdf is created
 import warnings
 warnings.filterwarnings('ignore')
-
+results_loc = 'results_vert'
 def logparse(args):
     
     for i in track(range(len(args['combinations'])), description="Processing..."):
@@ -60,11 +60,11 @@ def logparse(args):
 def reglog(scenario_list, gpkg_name, gpkg_args):
 
     # filter out any non reglog files
-    reglog_files = [os.path.join('results',f) for f in scenario_list if 'REGLOG' in f]
+    reglog_files = [os.path.join(results_loc,f) for f in scenario_list if 'REGLOG' in f]
 
     # read the files and skip the first 9 rows
-    header_columns = ['ACID','ALT','LATS','LONS','EDGE_ID']
-    header_2 = ['ACID','ALT','LATS','LONS','EDGE_ID','scenario']
+    header_columns = ['ACID','ALT','LATS','LONS','EDGE_ID', 'AIRSPACETYPE', 'LAYERTYPE']
+    header_2 = ['ACID','ALT','LATS','LONS','EDGE_ID', 'AIRSPACETYPE', 'LAYERYPE', 'scenario']
 
     # get the start date
     data = {}
@@ -82,7 +82,8 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
     edge_geometry = nx.get_edge_attributes(G, "geometry")
     entry = 0
     
-    try:
+    # try:
+    if True:
 
         for idx, filepath in enumerate(reglog_files):
             day = idx + 1
@@ -93,9 +94,9 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
                 lines_gen = islice(infile, 9, None)
                 
                 # loop through five lines at time
-                slice_size = 5
+                slice_size = 7
 
-                for acids, alts, lats, lons, edgeids in zip(*[iter(lines_gen)]*slice_size):
+                for acids, alts, lats, lons, edgeids, airspace_type, layer_type in zip(*[iter(lines_gen)]*slice_size):
                     
                     time = float(acids.split(',')[0])
                     time_stamp = str(date + timedelta(seconds=time))
@@ -107,7 +108,7 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
                     edgeids = edgeids.strip().split(',')[1:]
                     edgeids_float = [tuple(map(int, edge.split('-'))) + (0,) for edge in edgeids]
                     edge_geom = list(map(edge_geometry.get, edgeids_float))
-    
+                    scenario = filepath[len(results_loc)+25:-4]
 
                     for acidx, acid in enumerate(acids):
                         data[entry] = {
@@ -118,9 +119,10 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
                             'geometry': Point(float(lons[acidx]), float(lats[acidx])),
                             'edge_id': edgeids_float[acidx],
                             'edge_id_str': edgeids[acidx],
-                            'scenario': filepath[32:-4],
+                            'scenario': scenario,
                             'edge_geometry': edge_geom[acidx]
                             }
+
 
                         entry += 1
 
@@ -135,7 +137,7 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
         gdf.to_file(gpkg_fpath + '.gpkg', driver='GPKG', layer=f'points_{gpkg_name}')
 
         # analyze heights if m2 or headallocnoflow in name
-        if 'm2' in gpkg_name or 'headallocnoflow' in gpkg_name:
+        if 'noflow' in gpkg_name:
             # save a gdf for edges
             edge_df = df.dropna()
             edge_df['geometry'] = edge_df['edge_geometry']
@@ -164,25 +166,26 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
             final_edge_gdf.to_file(gpkg_fpath + '.gpkg', driver='GPKG', layer=f'edge_{gpkg_name}')
         
 
-    except ValueError:
-        print('[red]Problem with these files:')
-        print(scenario_list)
+    # except ValueError:
+    #     print('[red]Problem with these files:')
+    #     print(scenario_list)
 
 
 def conflog(scenario_list, gpkg_name, gpkg_args):
 
     # filter out any non reglog files
-    conflog_files = [os.path.join('results',f) for f in scenario_list if 'CONFLOG' in f]
+    conflog_files = [os.path.join(results_loc,f) for f in scenario_list if 'CONFLOG' in f]
 
     # read the files and skip the first 9 rows
     header_columns = ['time','ACID1','ACID2','LAT1','LON1','ALT1','LAT2','LON2','ALT2','CPALAT','CPALON', 'EDGEID1', 'EDGEID2']
+    header_columns = ['time','ACID1','ACID2','LAT1','LON1','ALT1','LAT2','LON2','ALT2','CPALAT','CPALON', 'AIRSPACETYPE1', 'AIRSPACETYPE2', 'LAYERTYPE1', 'LAYERTYPE2', 'EDGEID1', 'EDGEID2', 'AIRSPACEALLOC1', 'AIRSPACEALLOC2']
 
     print(f'[green]Parsing {gpkg_name}...')
-    try:
+    if True:
 
         # place all logs in a dataframe
-        df = pd.concat((pd.read_csv(f, skiprows=9, header=None, names=header_columns).assign(scenario = f[8:-4]) for f in conflog_files))
-        
+        df = pd.concat((pd.read_csv(f, skiprows=9, header=None, names=header_columns).assign(scenario = f[len(results_loc)+1:-4]) for f in conflog_files))
+
         # convert time to datetime
         df['time'] = pd.to_datetime(df['time'], unit='s', errors='coerce')
 
@@ -197,15 +200,15 @@ def conflog(scenario_list, gpkg_name, gpkg_args):
         gpkg_fpath = os.path.join('gpkgs', gpkg_name)
         gdf.to_file(gpkg_fpath + '.gpkg', driver='GPKG')
 
-    except ValueError:
-        print('[red]Problem with these files:')
-        print(scenario_list)
+    # except ValueError:
+    #     print('[red]Problem with these files:')
+    #     print(scenario_list)
 
 
 def loslog(scenario_list, gpkg_name, gpkg_args):
 
     # filter out any non reglog files
-    loslog_files = [os.path.join('results',f) for f in scenario_list if 'LOSLOG' in f]
+    loslog_files = [os.path.join(results_loc,f) for f in scenario_list if 'LOSLOG' in f]
 
     # read the files and skip the first 9 rows
     header_columns = ['exittime','starttime','timemindist','ACID1','ACID2','LAT1','LON1','ALT1','LAT2','LON2','ALT2','DIST']

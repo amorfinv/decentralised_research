@@ -8,7 +8,7 @@ import geotifcreate as gtfc
 ################## STEP 1: Parse command line arguments ######################
 # filter the arguments
 args = cmdargs.parse()
-dir_files = 'results'
+dir_files = 'results_vert'
 
 ################## STEP 2: CREATE GEOPACKAGES #####################################
 

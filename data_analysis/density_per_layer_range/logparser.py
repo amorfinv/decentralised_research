@@ -18,7 +18,7 @@ from constrained import constrained_airspace_gdf
 import warnings
 warnings.filterwarnings('ignore')
 gpkgs_loc = '/Users/localadmin/Desktop/andresmorfin/decentralised_research/maps/gpkgs'
-results_loc = 'results_airspace'
+results_loc = 'results_vert'
 
 def logparse(args):
 
@@ -36,6 +36,20 @@ def logparse(args):
         (0, '375-500 feet'): '375-500 ft'
         }
 
+    concept_dict = {
+        'noflow': 'Baseline',
+        'noflowfulldenalloc': 'Density Allocation',
+        'noflowrandomalloc': 'Random Allocation',
+        'noflowdistalloc': 'Distance Allocation',
+    }
+
+    colors = [
+                (0.86, 0.3712, 0.33999999999999997), 
+                (0.5688000000000001, 0.86, 0.33999999999999997), 
+                (0.33999999999999997, 0.8287999999999999, 0.86), 
+                (0.6311999999999998, 0.33999999999999997, 0.86),
+                ]
+
     G = ox.load_graphml('other_data/finalized_graph.graphml')
     edge_length = nx.get_edge_attributes(G, "length")
 
@@ -45,10 +59,10 @@ def logparse(args):
         # figure of layer concept
         fig, axs = plt.subplots(5, sharex=True, sharey=True)
         fig.set_size_inches(w=9, h=11)
-        fig.suptitle(f'{density} scenario')
-        fig.text(0.5, 0.04, 'seconds', ha='center')
-        fig.text(0.04, 0.5, 'Aircraft density in constrained airspace (n_air/km)', va='center', rotation='vertical')
-        # fig.text(0.04, 0.5, 'Number of aircraft in constrained airspace', va='center', rotation='vertical')
+        # fig.suptitle(f'{density} scenario')
+        fig.text(0.5, 0.04, 'Time [s]', ha='center')
+        fig.text(0.04, 0.5, 'Aircraft density in constrained airspace (n_air/km) per allocated layer set', va='center', rotation='vertical')
+        # fig.text(0.04, 0.5, 'Number of aircraft in constrained airspace per allocated layer set[-]', va='center', rotation='vertical')
 
         # figure of layers for that concept
         con_data = defaultdict()
@@ -106,16 +120,16 @@ def logparse(args):
                 renamed_alt = renaming_cols[(0, alt_range)]
                 scale_dict[renamed_alt] = scaled_sum
 
-                #time_sorted_df[renamed_alt] = time_sorted_df[renamed_alt].div(scaled_sum/1000)
+                time_sorted_df[renamed_alt] = time_sorted_df[renamed_alt].div(scaled_sum/1000)
                 
-                time_sorted_df[renamed_alt] = time_sorted_df[renamed_alt]
+                # time_sorted_df[renamed_alt] = time_sorted_df[renamed_alt]
         
             
             # loop to create the five imagee
             for idx, column_name in enumerate(new_cols):
-        
-                axs[idx].plot(time_sorted_df.index, time_sorted_df[column_name], label=concept)
-                axs[idx].legend()
+                axs[idx].plot(time_sorted_df.index, time_sorted_df[column_name], label=concept_dict[concept], color=colors[j])
+                if idx == 0:
+                    axs[idx].legend()
                 axs[idx].yaxis.set_label_position("right")
                 axs[idx].set_ylabel(ylabel=column_name, rotation=0)
                 axs[idx].yaxis.set_label_coords(1.07,0.5)
@@ -179,7 +193,7 @@ def reglog(scenario_list, gpkg_name, gpkg_args):
     scenario = reglog_scenarios[0]
     density = ('_').join(scenario.split('_')[:-3])
     concept = scenario.split('_')[-1]
-
+ 
     # select the 0th repitition
     scen_gdf = gdf_constrained[gdf_constrained['scenario'] == scenario]
 

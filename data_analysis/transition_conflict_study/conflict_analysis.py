@@ -9,7 +9,6 @@ from matplotlib.patches import PathPatch
 import matplotlib
 import matplotlib.colors as mc
 import colorsys
-import math
 
 matplotlib.use('Agg')
 
@@ -283,8 +282,8 @@ for metric in metrics:
         hue='concept'
     )
 
-    plt.ylabel(f'{metric} conflicts')
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.ylabel(f'{metric} conflicts in constrained airspace [-]')
+    plt.legend(loc='upper left')
     adjust_box_widths(fig, 0.5)
 
     if metric != 'Total':
@@ -301,8 +300,8 @@ for metric in metrics:
         hue='concept'
     )
 
-    plt.ylabel(f'{metric} intrusions')
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.ylabel(f'{metric} intrusions in constrained airspace [-]')
+    plt.legend(loc='upper left')
     adjust_box_widths(fig, 0.5)
 
     if metric != 'Total':

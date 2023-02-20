@@ -150,3 +150,4 @@ data_analysis/density_per_layer_range/other_data/*
 
 data_analysis/transition_conflict_study/images/*
 data_analysis/transition_conflict_study/*.csv
+maps/gpkgs_airspace/*.gpkg

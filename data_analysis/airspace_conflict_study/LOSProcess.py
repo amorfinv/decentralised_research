@@ -116,10 +116,7 @@ for i, layerconf in enumerate(data1.keys()):
     plt.errorbar(i+1*offset,avg_los_3, yerr = std_3, capsize = 3, color = 'black')
     plt.errorbar(i+3*offset,avg_los_4, yerr = std_4, capsize = 3, color = 'black')
 
-legen_title = ['C-C', 'T-T', 'B-B', 'C-T', 'C-B', 'T-B']
-# plt.xticks(range(6), list(data1.keys()))
-plt.xticks(range(6), legen_title)
-
+plt.xticks(range(6), list(data1.keys()))
 plt.xlabel('Layer pairs')
 plt.ylabel('Average number intrusions [-]')
 # plt.ylim(0, 700)

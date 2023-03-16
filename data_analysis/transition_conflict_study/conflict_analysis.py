@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
+import config as cfg
+from graph_helpers import adjust_box_widths
 from matplotlib.patches import PathPatch
 import matplotlib
 import matplotlib.colors as mc
@@ -12,85 +14,15 @@ import colorsys
 
 matplotlib.use('Agg')
 
-log_location = 'logs'
-concepts = ['noflow', 'noflowfulldenalloc','noflowrandomalloc', 'noflowdistalloc']
 
+concepts_colours=sns.color_palette("hls", len(cfg.concepts_dict.keys()))
 
-densities = ['very_low', 'low', 'medium', 'high', 'ultra']
-repetitions = range(0,9)
-
-concepts_dict = {
-    'noflow'                : 'Baseline',
-    'noflowfulldenalloc'    : 'Density allocation',
-    'noflowrandomalloc'     : 'Random allocation',
-    'noflowdistalloc'       : 'Distance allocation',
-}
-
-
-concepts_colours=sns.color_palette("hls", len(concepts))
-
-conf_dict = {density: {concept: {repetition: 0 for repetition in repetitions} for concept in concepts}for density in densities}
-los_dict = {density: {concept: {repetition: 0 for repetition in repetitions} for concept in concepts}for density in densities}
 
 metrics = ['Total', 'Percentage of horizontal', 'Percentage of vertical', 'Percentage of back-to-back']
 cols = ['density', 'concept', 'repetition'] + metrics
 
 conf_df = pd.DataFrame(columns=cols)
 los_df = pd.DataFrame(columns=cols)
-
-
-def adjust_box_widths(g, fac):
-    """
-    Adjust the withs of a seaborn-generated boxplot.
-    """
-    k=0
-
-    # iterating through Axes instances
-    for ax in g.axes:
-
-        # iterating through axes artists:
-        for c in ax.get_children():
-            # searching for PathPatches
-            if isinstance(c, PathPatch):
-                # getting current width of box:
-                p = c.get_path()
-                verts = p.vertices
-                verts_sub = verts[:-1]
-                xmin = np.min(verts_sub[:, 0])
-                xmax = np.max(verts_sub[:, 0])
-                xmid = 0.5*(xmin+xmax)
-                xhalf = 0.5*(xmax - xmin)
-
-                # setting new width of box
-                xmin_new = xmid-fac*xhalf
-                xmax_new = xmid+fac*xhalf
-                verts_sub[verts_sub[:, 0] == xmin, 0] = xmin_new
-                verts_sub[verts_sub[:, 0] == xmax, 0] = xmax_new
-                
-                # Set the linecolor on the artist to the facecolor, and set the facecolor to None
-                col = lighten_color(c.get_facecolor(), 1.3)
-                c.set_edgecolor(col) 
-
-                for j in range((k)*6,(k)*6+6):
-                   line = ax.lines[j]
-                   line.set_color(col)
-                   line.set_mfc(col)
-                   line.set_mec(col)
-                   line.set_linewidth(0.7)
-                    
-                for l in ax.lines:
-                    if np.all(l.get_xdata() == [xmin, xmax]):
-                        l.set_xdata([xmin_new, xmax_new])
-                k+=1
-
-def lighten_color(color, amount=0.5):  
-    # --------------------- SOURCE: @IanHincks ---------------------
-    try:
-        c = mc.cnames[color]
-    except:
-        c = color
-    c = colorsys.rgb_to_hls(*mc.to_rgb(c))
-    return colorsys.hls_to_rgb(c[0], 1 - amount * (1 - c[1]), c[2])
 
 def convert_angle(angle):
     if angle > 180:
@@ -113,17 +45,18 @@ def kwikqdrdist(lata, lona, latb, lonb):
 
     return qdr, dist
 
-for density in densities:
+for density, density_name in cfg.density_dict.items():
 
-    for concept in concepts:
+    for concept, concept_name in cfg.concepts_dict.items():
 
-        for repetition in repetitions:
-
+        for repetition in cfg.repetitions:
+            
+            n_air = cfg.ac_in_constrained_dict[density][str(repetition)]['num_ac_constrained']
             # CONFLOG
 
             # get the scenario name and open the file
             scenario = f'Flight_intention_{density}_40_{repetition}_{concept}.log'
-            with open(f'{log_location}/CONFLOG_{scenario}') as f:
+            with open(f'{cfg.log_location}/CONFLOG_{scenario}') as f:
                 confs = f.readlines()[9:]
 
             # initialize some variables for conflicts and process the logs
@@ -185,8 +118,8 @@ for density in densities:
             df_conf_scn = pd.DataFrame(
                 [
                     [
-                        density,
-                        concepts_dict[concept],
+                        density_name,
+                        concept_name,
                         repetition,
                         total_confs,
                         horizontal_confs/total_confs*100,
@@ -201,7 +134,7 @@ for density in densities:
             conf_df = pd.concat([conf_df, df_conf_scn])
 
             # LOSLOG
-            with open(f'{log_location}/LOSLOG_{scenario}') as f:
+            with open(f'{cfg.log_location}/LOSLOG_{scenario}') as f:
                 losses = f.readlines()[9:]
             
             # initialize some data for conflicts and process them
@@ -255,8 +188,8 @@ for density in densities:
             df_los_scn = pd.DataFrame(
                 [
                     [
-                        density,
-                        concepts_dict[concept],
+                        density_name,
+                        concept_name,
                         repetition,
                         total_los,
                         horizontal_los/total_los*100,
@@ -284,6 +217,7 @@ for metric in metrics:
 
     plt.ylabel(f'{metric} conflicts in constrained airspace [-]')
     plt.legend(loc='upper left')
+    print('here')
     adjust_box_widths(fig, 0.5)
 
     if metric != 'Total':

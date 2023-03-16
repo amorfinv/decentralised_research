@@ -1,110 +1,26 @@
-import os
 import numpy as np
 import pandas as pd
-import geopandas as gpd
-
-import matplotlib.pyplot as plt 
-import seaborn as sns
-from matplotlib.patches import PathPatch
-import matplotlib
-import matplotlib.colors as mc
-import colorsys
-
 from rich import print
 
-matplotlib.use('Agg')
-
-# Log locations
-log_location = 'logs'
-concepts = ['noflow', 'noflowfulldenalloc','noflowrandomalloc', 'noflowdistalloc']
-densities = ['very_low', 'low', 'medium', 'high', 'ultra']
-repetitions = range(0,9)
-
-density_dict = {
-    'very_low': 'very low',
-    'low': 'low',
-    'medium': 'medium',
-    'high': 'high',
-    'ultra': 'ultra'
-}
+import config as cfg
 
 
-concepts_dict = {
-    'noflow'                : 'Baseline',
-    'noflowfulldenalloc'    : 'Density allocation',
-    'noflowrandomalloc'     : 'Random allocation',
-    'noflowdistalloc'       : 'Distance allocation',
-}
-
-concepts_colours=sns.color_palette("hls", len(concepts))
-
-
-# STEP 1 read in the conflict log
-conflict_columns = [
-    'time',
-    'ACID1',
-    'ACID2',
-    'LAT1',
-    'LON1',
-    'ALT1',
-    'LAT2',
-    'LON2',
-    'ALT2',
-    'CPALAT',
-    'CPALON',
-    'AIRSPACETYPE1',
-    'AIRSPACETYPE2',
-    'LAYERTYPE1',
-    'LAYERTYPE2',
-    'EDGEID1',
-    'EDGEID2',
-    'AIRSPACEALLOC1',
-    'AIRSPACEALLOC2',
-    ]
-
-transition_columns = [
-    'end_transition_time',
-    'start_transition_time',
-    'ACID',
-    'transition_type',
-    'intended_transition_type',
-    'start_alt',
-    'end_alt',
-    'start_conf_search',
-    'end_conf_search',
-]
-
-# LOG types
-transition_types = [
-    'Interrupted',
-    'Recover',
-    'CR1',
-    'CR2',
-    'Hopping up',
-    'Hopping down',
-    'Cruise to Turn',
-    'Turn to Cruise',
-    'Takeoff',
-    'Free',
-    'Missed'
-]
-
-cols = ['density', 'concept', 'repetition', 'Total Conflicts', 'Total Transitions', 'Unique transitions'] + transition_types
+cols = ['density', 'concept', 'repetition', 'Total Conflicts', 'Total Transitions', 'Unique transitions'] + cfg.transition_types
 new_conf_df = pd.DataFrame(columns=cols)
 percent_new_conf_df = pd.DataFrame(columns=cols)
 
-new_trans_cols = ['density', 'concept', 'repetition'] + transition_types[1:]
+new_trans_cols = ['density', 'concept', 'repetition'] + cfg.transition_types[1:]
 new_trans_df = pd.DataFrame(columns=new_trans_cols)
 
-for density in densities:
+for density, density_name in cfg.density_dict.items():
 
-    for concept in concepts:
+    for concept, concept_name in cfg.concepts_dict.items():
 
-        for repetition in repetitions:
+        for repetition in cfg.repetitions:
             
             # read in conflict log and get dataframe
-            conf_log = f'{log_location}/CONFLOG_Flight_intention_{density}_40_{repetition}_{concept}.log'
-            conf_df = pd.read_csv(conf_log, skiprows=9, header=None, names=conflict_columns)
+            conf_log = f'{cfg.log_location}/CONFLOG_Flight_intention_{density}_40_{repetition}_{concept}.log'
+            conf_df = pd.read_csv(conf_log, skiprows=9, header=None, names=cfg.CONF_cols)
             conf_df['time'] = pd.to_datetime(conf_df['time'], unit='s', errors='coerce')
             
             # only select dataframes where conflicts are in constrained
@@ -140,9 +56,9 @@ for density in densities:
 
 
             # read in transition log and get dataframe
-            trans_log = f'{log_location}/TRANSLOG_Flight_intention_{density}_40_{repetition}_{concept}.log'
+            trans_log = f'{cfg.log_location}/TRANSLOG_Flight_intention_{density}_40_{repetition}_{concept}.log'
 
-            trans_df = pd.read_csv(trans_log, skiprows=9, header=None, names=transition_columns)
+            trans_df = pd.read_csv(trans_log, skiprows=9, header=None, names=cfg.TRANS_cols)
             trans_df['start_transition_time'] = pd.to_datetime(trans_df['start_transition_time'], unit='s', errors='coerce')
             trans_df['end_transition_time'] = pd.to_datetime(trans_df['end_transition_time'], unit='s', errors='coerce')
             trans_df['start_conf_search'] = pd.to_datetime(trans_df['start_conf_search'], unit='s', errors='coerce')
@@ -197,8 +113,8 @@ for density in densities:
             percent_df_conf_scn = pd.DataFrame(
                 [
                     [
-                        density_dict[density],
-                        concepts_dict[concept],
+                        density_name,
+                        concept_name,
                         repetition,
                         total_confs,
                         total_trans_confs/trans_df.shape[0],
@@ -214,8 +130,8 @@ for density in densities:
             df_conf_scn = pd.DataFrame(
                 [
                     [
-                        density_dict[density],
-                        concepts_dict[concept],
+                        density_name,
+                        concept_name,
                         repetition,
                         total_confs,
                         total_trans_confs/trans_df.shape[0],
@@ -239,8 +155,8 @@ for density in densities:
 
             df_trans_scn = pd.DataFrame([
                 [
-                        density_dict[density],
-                        concepts_dict[concept],
+                        density_name,
+                        concept_name,
                         repetition,
                         *interrupted_trans_data
 

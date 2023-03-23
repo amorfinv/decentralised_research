@@ -76,7 +76,7 @@ for density, density_name in cfg.density_dict.items():
             # get the concept metric
             concept_metric = rep_df['_'.join(eff_metric.split('_')[:2])]
 
-            rep_df[eff_metric] = ((baseline_metric - concept_metric)/baseline_metric) * 100
+            rep_df[eff_metric] = ((concept_metric)/baseline_metric) * 100
 
         # now save in the dataframe
         for concept, concept_name in cfg.concepts_dict.items():

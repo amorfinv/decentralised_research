@@ -78,8 +78,8 @@ flst_metrics = [
     ]
 
 flst_metrics = {
-    'Flight time': 'Route duration', 
-    'Distance 2D': 'Horizontal distance', 
+    'Flight time': 'route duration', 
+    'Distance 2D': 'horizontal distance', 
     'Distance 3D': '3D distance',
-    'Distance ALT': 'Vertical distance',
+    'Distance ALT': 'vertical distance',
 }

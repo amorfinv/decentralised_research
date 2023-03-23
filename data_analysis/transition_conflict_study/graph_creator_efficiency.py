@@ -34,16 +34,16 @@ for metric, metric_name in cfg.flst_metrics.items():
         hue='concept'
     )
 
-    plt.ylabel(f'{metric_name} efficiency [%]')
+    plt.ylabel(f'Percentage of {metric_name} \n with respect to the baseline [%]')
     
     plt.legend(loc='upper right')
 
     if metric == 'Distance ALT':
-        plt.ylim(-5, 105)
+        plt.ylim(40, 130)
     elif metric == 'Flight time':
-        plt.ylim(-10, 2)
+        plt.ylim(90, 120)
     elif metric == 'Distance 3D':
-        plt.ylim(-2, 10)
+        plt.ylim(89, 110)
 
 
     adjust_box_widths(fig, 0.5)
